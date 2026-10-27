@@ -1,0 +1,27 @@
+<IfModule mod_ssl.c>
+<VirtualHost *:443>
+    ServerName studio.doemo.fr
+    DocumentRoot /var/www/studio
+    <Directory /var/www/studio>
+        Options -Indexes
+        AllowOverride None
+        Require all granted
+    </Directory>
+    <IfModule mod_headers.c>
+        Header always set Strict-Transport-Security "max-age=31536000"
+        Header always set X-Content-Type-Options "nosniff"
+        Header always set X-Frame-Options "DENY"
+        Header always set Referrer-Policy "same-origin"
+        Header always set Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; script-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+    </IfModule>
+    <Files "_s.php">
+        Require all denied
+    </Files>
+    DirectoryIndex index.html
+    ErrorLog ${APACHE_LOG_DIR}/studio.doemo.fr_error.log
+    CustomLog ${APACHE_LOG_DIR}/studio.doemo.fr_access.log combined
+
+
+
+</VirtualHost>
+</IfModule>
