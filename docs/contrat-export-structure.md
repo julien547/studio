@@ -1,5 +1,11 @@
 # Contrat proposé pour un export de BAT structuré
 
+Mise à jour : Julien impose une exécution entièrement sur Linux. Le profil
+AI24 à une page de la [version 0.3.0](generation-linux.md) fonctionne directement
+avec les données natives du BAT, sans cet export intermédiaire. Ce contrat
+reste une proposition pour d'autres profils ; il n'est pas un prérequis du lot
+de test désormais disponible. Le diagnostic ci-dessous décrit le besoin initial.
+
 Statut : proposition d'échange à implémenter et valider côté dessinateur. Aucun
 paquet de ce format n'a encore été fourni ; ce document ne prétend pas que son
 import est déjà implémenté. Le `.ai` réel donne déjà les noms et matrices des

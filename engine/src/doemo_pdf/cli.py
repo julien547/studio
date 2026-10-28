@@ -10,10 +10,11 @@ from .ai_metadata import inspect_ai_metadata
 from .settings import templates_dir
 from .batch import plan_batch
 from .levels import new_document, read_document, validate_document, clip_preview
+from .generate import inspect_generation, generate_batch
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description="DOEMO Studio : inspection et composition PDF de diagnostic.")
+    parser = argparse.ArgumentParser(description="DOEMO Studio : lots PDF de test sur Linux, inspection et contours vectoriels.")
     commands = parser.add_subparsers(dest="command", required=True)
     directory = commands.add_parser("templates-dir", help="Afficher le dossier privé d'une collection de trames.")
     directory.add_argument("--client", default="doemo", help="Identifiant de collection, doemo par défaut.")
@@ -24,6 +25,15 @@ def main(argv=None):
     batch = commands.add_parser("plan-batch", help="Préparer tous les candidats VEI et associer les trames automatiquement, sans générer de PDF.")
     batch.add_argument("source")
     batch.add_argument("--client", default="doemo")
+    ready = commands.add_parser('inspect-generation', help='Vérifier les associations natives et les trames avant un lot de test Linux.')
+    ready.add_argument('source')
+    ready.add_argument('--client', default='doemo')
+    generate = commands.add_parser('generate-test-batch', help='Générer tous les PDF de test et le ZIP sans Illustrator.')
+    generate.add_argument('source')
+    generate.add_argument('destination')
+    generate.add_argument('--client', default='doemo')
+    generate.add_argument('--levels', help='Sélections facultatives ; sans cette option le dessin complet est utilisé.')
+    generate.add_argument('--basename')
     init = commands.add_parser('levels-init')
     init.add_argument('source')
     validate = commands.add_parser('levels-validate')
@@ -55,6 +65,11 @@ def main(argv=None):
             result = inspect_ai_metadata(args.source)
         elif args.command == "plan-batch":
             result = plan_batch(args.source, args.client)
+        elif args.command == 'inspect-generation':
+            result = inspect_generation(args.source, args.client)
+        elif args.command == 'generate-test-batch':
+            result = generate_batch(args.source, args.destination, args.client,
+                                    read_document(args.levels) if args.levels else None, args.basename)
         elif args.command == 'levels-init':
             result = {'document': new_document(args.source)}
         elif args.command == 'levels-validate':

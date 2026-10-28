@@ -1,7 +1,6 @@
 <?php
-// Inspection et diagnostic explicite. L'action compose refuse la génération
-// métier tant que le moteur ne sait pas isoler les VEI et redresser les objets.
-// compose-diagnostic reste un essai technique : production_ready est toujours false.
+// Lots de test Linux, sélections facultatives et diagnostic historique distinct.
+// compose reste bloqué ; generate-test-batch est le parcours testé sans Adobe.
 // Accès : admin / administration / dessinateur. Fichiers privés (hors web).
 require __DIR__ . '/_s.php';
 const OR_TEMPLATES = '/var/lib/doemo-studio/templates';
@@ -73,10 +72,11 @@ function or_num($v, $min = -1e7, $max = 1e7) { if (!is_numeric($v)) return null;
 
 $action = (string)($_GET['action'] ?? '');
 require __DIR__ . '/_orientation_levels.php';
+require __DIR__ . '/_orientation_batch.php';
 
 if ($action === 'capabilities') {
     studio_json(200, ['ok' => true, 'production_ready' => false,
-        'generation_available' => false, 'diagnostic_available' => true,
+        'generation_available' => false, 'test_generation_available' => true, 'diagnostic_available' => true,
         'diagnostic_action' => 'compose-diagnostic', 'planning_action' => 'plan',
         'generation_scope' => 'all_vei', 'template_selection' => 'automatic_by_client_type_paper_orientation']);
 }
@@ -87,7 +87,7 @@ if ($action === 'compose') {
     // ne peut pas satisfaire une demande de déclinaison, même si le CLI réussit.
     studio_json(422, ['ok' => false, 'status' => 'generation_unavailable',
         'production_ready' => false, 'code' => 'GENERATION_NOT_IMPLEMENTED',
-        'error' => 'La génération de plans n’est pas encore opérationnelle : le moteur ne sait pas conserver un seul « Vous êtes ici » et redresser les textes et pictogrammes. Aucun plan n’a été généré.']);
+        'error' => 'Cette ancienne action de composition est désactivée. Utilisez la génération du lot de test pour les BAT pris en charge. Aucun plan n’a été généré par cette action.']);
 }
 
 if ($action === 'plan') {
@@ -104,6 +104,17 @@ if ($action === 'plan') {
     $batch = json_decode($out, true);
     if ($code !== 0 || !is_array($batch) || ($batch['status'] ?? '') !== 'planning_only') {
         studio_json(422, ['ok' => false, 'error' => 'Analyse du BAT impossible : ' . or_msg($err, 'préparation du lot impossible.')]);
+    }
+    [$checkCode, $checkOut, $checkErr] = or_run(['inspect-generation', OR_PRIVATE . "/$id/source.pdf", '--client', $collection], 100);
+    $generation = json_decode($checkOut, true);
+    if ($checkCode === 0 && is_array($generation) && ($generation['generation_available'] ?? false) === true) {
+        $batch['generation'] = $generation;
+        foreach ($batch['variants'] as &$variant) foreach ($generation['markers'] as $marker) if ($variant['id'] === $marker['id']) {
+            $variant['verified'] = true; $variant['direction'] = $marker['direction']; $variant['point'] = $marker['point']; $variant['index'] = $marker['index'];
+        }
+        unset($variant);
+    } else {
+        $batch['generation'] = ['generation_available' => false, 'error' => or_msg($checkErr, 'Ce BAT ne correspond pas encore au profil de génération pris en charge.')];
     }
     studio_json(200, ['ok' => true, 'status' => 'planning_only', 'production_ready' => false,
         'job' => $id, 'batch' => $batch]);
