@@ -51,6 +51,19 @@ CREATE TABLE IF NOT EXISTS model_versions(
 CREATE TABLE IF NOT EXISTS model_selection(
   app_id TEXT NOT NULL, engine TEXT NOT NULL, version_id TEXT NOT NULL REFERENCES model_versions(id),
   previous_version_id TEXT, set_by TEXT, set_at REAL NOT NULL, PRIMARY KEY(app_id, engine));
+CREATE TABLE IF NOT EXISTS memory_entries(
+  id TEXT PRIMARY KEY, scope TEXT NOT NULL CHECK(scope IN ('global','app')), app_id TEXT,
+  kind TEXT NOT NULL, key TEXT NOT NULL, value TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'draft' CHECK(status IN ('draft','validated','retired')),
+  author TEXT NOT NULL, created REAL NOT NULL, validated_by TEXT, validated_at REAL);
+CREATE UNIQUE INDEX IF NOT EXISTS memory_unique ON memory_entries(scope, COALESCE(app_id,''), key)
+  WHERE status!='retired';
+CREATE TABLE IF NOT EXISTS corrections(
+  id TEXT PRIMARY KEY, app_id TEXT NOT NULL, project_id TEXT, engine TEXT NOT NULL,
+  annotation_type TEXT NOT NULL, model_version TEXT, author TEXT NOT NULL, created REAL NOT NULL,
+  payload TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','validated','rejected')),
+  reuse_allowed INTEGER NOT NULL DEFAULT 0, validated_by TEXT, validated_at REAL);
+CREATE INDEX IF NOT EXISTS corrections_dataset ON corrections(engine, status, reuse_allowed);
 """
 
 

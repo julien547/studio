@@ -16,7 +16,7 @@ from fastapi import Depends, FastAPI, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
-from . import registry
+from . import memory, registry
 from .db import Database
 from .service import Orchestrator, OrchestratorError
 
@@ -87,6 +87,33 @@ class Actor(BaseModel):
     actor: str
 
 
+class MemoryWrite(BaseModel):
+    kind: str
+    value: Dict[str, Any]
+    author: str
+
+
+class AdminMemoryWrite(BaseModel):
+    kind: str
+    key: str
+    value: Dict[str, Any]
+    author: str
+
+
+class NewCorrection(BaseModel):
+    engine: str
+    annotation_type: str
+    author: str
+    payload: Dict[str, Any]
+    project: Optional[str] = None
+    model_version: Optional[str] = None
+
+
+class Decision(BaseModel):
+    actor: str
+    reuse_allowed: bool = False
+
+
 def create_app(orchestrator: Orchestrator = None, db_path: str = None) -> FastAPI:
     orch = orchestrator or Orchestrator(Database(db_path or os.environ.get("DOEMO_ORCH_DB", "/var/lib/doemo-studio/orchestrateur/orch.db")))
     app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None, title="DOEMO Orchestrateur IA")
@@ -142,6 +169,28 @@ def create_app(orchestrator: Orchestrator = None, db_path: str = None) -> FastAP
     def models(engine: Optional[str] = None, who=Depends(current_app)):
         return {"approved": registry.list_versions(orch, engine, approved_only=True),
                 "selected": registry.selections(orch, who["id"])}
+
+    # ---- mémoire commune et corrections (côté application) -------------------------
+    @app.get("/v1/memory")
+    def read_memory(who=Depends(current_app)):
+        return memory.read_for_app(orch, who["id"])
+
+    @app.put("/v1/memory/app/{key}")
+    def put_app_memory(key: str, body: MemoryWrite, who=Depends(current_app)):
+        return memory.put_app(orch, who["id"], body.kind, key, body.value, body.author)
+
+    @app.put("/v1/memory/global-proposals/{key}", status_code=202)
+    def propose(key: str, body: MemoryWrite, who=Depends(current_app)):
+        return memory.propose_global(orch, who["id"], body.kind, key, body.value, body.author)
+
+    @app.post("/v1/corrections", status_code=201)
+    def new_correction(body: NewCorrection, who=Depends(current_app)):
+        return {"id": memory.submit_correction(orch, who["id"], body.engine, body.annotation_type, body.author,
+                                               body.payload, body.project, body.model_version)}
+
+    @app.get("/v1/corrections")
+    def my_corrections(status: Optional[str] = None, who=Depends(current_app)):
+        return {"corrections": memory.list_corrections(orch, who["id"], status)}
 
     # ---- workers GPU -------------------------------------------------------------
     @app.post("/v1/worker/heartbeat")
@@ -208,5 +257,28 @@ def create_app(orchestrator: Orchestrator = None, db_path: str = None) -> FastAP
     def rollback_model(app_id: str, engine: str, body: Actor):
         registry.rollback(orch, app_id, engine, body.actor)
         return {"ok": True}
+
+    # ---- administration : mémoire globale, validation des corrections, jeux de données
+    @app.put("/v1/admin/memory/global", dependencies=[Depends(admin)])
+    def admin_set_global(body: AdminMemoryWrite):
+        return memory.set_global(orch, body.kind, body.key, body.value, body.author)
+
+    @app.post("/v1/admin/memory/{entry_id}/validate", dependencies=[Depends(admin)])
+    def admin_validate_global(entry_id: str, body: Actor):
+        return memory.validate_global(orch, entry_id, body.actor)
+
+    @app.post("/v1/admin/corrections/{correction_id}/validate", dependencies=[Depends(admin)])
+    def admin_validate_correction(correction_id: str, body: Decision):
+        memory.validate_correction(orch, correction_id, body.actor, body.reuse_allowed)
+        return {"ok": True}
+
+    @app.post("/v1/admin/corrections/{correction_id}/reject", dependencies=[Depends(admin)])
+    def admin_reject_correction(correction_id: str, body: Actor):
+        memory.reject_correction(orch, correction_id, body.actor)
+        return {"ok": True}
+
+    @app.get("/v1/admin/datasets/{engine}", dependencies=[Depends(admin)])
+    def admin_dataset(engine: str):
+        return memory.export_dataset(orch, engine)
 
     return app

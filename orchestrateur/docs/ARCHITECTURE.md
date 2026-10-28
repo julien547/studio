@@ -42,9 +42,9 @@ plus) et évite d'installer et d'exploiter deux services de plus en production. 
 n'emploie que du SQL standard ; passer à PostgreSQL ne demande que de remplacer `db.py`.
 **Point à confirmer** (§8).
 
-## 3. Livré dans cette première étape (code + 23 tests, non déployé)
+## 3. Livré (code + 37 tests, non déployé)
 
-Dossier `orchestrateur/` : `db.py`, `scheduler.py`, `service.py`, `registry.py`, `api.py`.
+Dossier `orchestrateur/` : `db.py`, `scheduler.py`, `service.py`, `registry.py`, `memory.py`, `worker_agent.py`, `api.py`, `bench/simulate.py`.
 
 * **Identification de chaque tâche** : application, utilisateur, projet, moteur (`qwen`, `paddleocr`,
   `rtmdet`, `murs`), type, priorité, version du modèle, état, avancement, étape.
@@ -66,6 +66,10 @@ Dossier `orchestrateur/` : `db.py`, `scheduler.py`, `service.py`, `registry.py`,
 * **Statistiques d'administration** (`/v1/admin/overview`) : applications, utilisateurs actifs, en
   cours / en attente, délais d'attente et de traitement moyens, workers (VRAM, modèles chargés),
   répartition par moteur / application / utilisateur / type, erreurs. `gpu_cost_usd` est vide pour l'instant.
+* **Agent worker** (`worker_agent.py`) : réclame, renouvelle le bail, applique l'annulation, ne dépasse jamais sa capacité ; les moteurs se branchent en « adaptateurs ».
+* **Mémoire commune à trois niveaux** (`memory.py`) : globale (une application ne peut que *proposer*, l'administrateur valide), propre à l'application (jamais partagée), projets clients (références seulement).
+* **Registre des corrections** : enregistrement immédiat et persistant avec application, projet, type d'annotation, modèle d'origine, auteur, date, statut et autorisation de réutilisation ; jeu de données **distinct par moteur**, un seul format par moteur ; seules les corrections validées *et* réutilisables en sortent.
+* **Simulation de l'ordonnanceur** : voir [SIMULATION.md](SIMULATION.md) (hypothèses de durée, pas des mesures).
 * **Test de concurrence** : 8 workers se disputent 40 tâches sur une vraie base ; aucune n'est attribuée deux fois.
 
 ## 4. Contrats pour les autres sessions (extraits)
@@ -94,11 +98,11 @@ Jeux de données **distincts** par moteur (Qwen, PaddleOCR, RTMDet, Murs), forma
 
 | # | Étape | Besoin d'accord / coût |
 |---|---|---|
-| 2 | **Agent worker** (boucle de réclamation, présence, annulation) et installation de l'orchestrateur sur OVH (service systemd, en HTTPS local derrière Apache) | Déploiement en production : **votre accord** |
+| 2 | ~~Agent worker~~ fait. **Installation de l'orchestrateur sur OVH** (service systemd local derrière Apache) | Déploiement en production : **votre accord** |
 | 3 | **Qwen avec vLLM** : mesurer VRAM, longueur de contexte, limites d'images, batching continu, nombre de requêtes actives | **Démarrer le pod RunPod (≈0,59 $/h)** : votre accord |
 | 4 | Services **OCR** et **RTMDet** concurrents ; politique de chargement/réservation VRAM (ne pas supposer que les 4 modèles tiennent ensemble) | Pod allumé |
 | 5 | Branchement de Relevé, Redessin, Entraînement IA (3 sessions) | Coordination des sessions |
-| 6 | Mémoire commune + jeux de données par moteur + pipeline d'entraînement versionné/évalué | — |
+| 6 | ~~Mémoire commune et jeux de données~~ faits. Reste : pipeline d'entraînement versionné/évalué (session Entraînement IA) | — |
 | 7 | **Benchmarks** : 1, 3, 5, 10 dessinateurs, plusieurs applications, vrais PDF ; attente, latence, débit, VRAM, erreurs, coût par tâche | Pod allumé |
 | 8 | Étude RunPod Pods vs Serverless et recommandation du nombre de GPU **d'après les mesures** | Aucun serveur payant créé sans politique budgétaire approuvée |
 | 9 | Tableau de bord dans studio.doemo.fr (API déjà prête) | Déploiement |
@@ -106,12 +110,12 @@ Jeux de données **distincts** par moteur (Qwen, PaddleOCR, RTMDet, Murs), forma
 
 ## 7. Ce qui n'est PAS fait (à ne pas annoncer)
 
-vLLM, workers OCR/RTMDet/Murs, routage multi-GPU en conditions réelles, mémoire commune,
+vLLM, adaptateurs OCR/RTMDet/Murs/Qwen réels, routage multi-GPU en conditions réelles,
 pipeline d'entraînement, tableau de bord visuel, benchmarks, étude de coûts RunPod. **Aucune capacité
 (nombre de dessinateurs, nombre de GPU) n'est annoncée : elle viendra des mesures de l'étape 7.**
 
 ## 8. Décisions demandées à Julien
 
-1. SQLite pour démarrer (recommandé) ou PostgreSQL + Redis dès maintenant (deux services de plus à installer sur OVH) ?
+1. ~~SQLite ou PostgreSQL + Redis~~ : **SQLite validé par Julien le 28/10/2026.**
 2. Autorisation de **démarrer le pod RunPod** pour les mesures (étapes 3, 4, 7, 10), avec un plafond de dépense.
 3. Politique budgétaire pour un éventuel 2ᵉ GPU (montant mensuel maximal, validation manuelle ou automatique).

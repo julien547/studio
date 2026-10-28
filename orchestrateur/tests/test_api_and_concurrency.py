@@ -83,3 +83,19 @@ def test_no_double_assignment_under_concurrency(tmp_path):
     [t.start() for t in threads]; [t.join() for t in threads]
     assert not errors
     assert len(got) == 40 and len(set(got)) == 40
+
+
+def test_memory_and_corrections_over_http(client):
+    a = client.post("/v1/admin/apps", json={"id": "releves", "label": "R"}, headers=auth(ADMIN)).json()["token"]
+    b = client.post("/v1/admin/apps", json={"id": "redessin", "label": "D"}, headers=auth(ADMIN)).json()["token"]
+    assert client.put("/v1/memory/global-proposals/RIA", json={"kind": "abbreviation", "value": {"s": "robinet"}, "author": "alice"}, headers=auth(a)).status_code == 202
+    assert client.get("/v1/memory", headers=auth(b)).json()["validated"] == []
+    proposal = client.get("/v1/memory", headers=auth(a)).json()["my_proposals"][0]
+    client.post("/v1/admin/memory/%s/validate" % proposal["id"], json={"actor": "julien"}, headers=auth(ADMIN))
+    assert [e["key"] for e in client.get("/v1/memory", headers=auth(b)).json()["validated"]] == ["RIA"]
+    cid = client.post("/v1/corrections", json={"engine": "paddleocr", "annotation_type": "texte", "author": "alice",
+                      "payload": {"format": "ocr_lines", "lines": ["x"]}}, headers=auth(a)).json()["id"]
+    assert client.get("/v1/corrections", headers=auth(b)).json()["corrections"] == []
+    client.post("/v1/admin/corrections/%s/validate" % cid, json={"actor": "julien", "reuse_allowed": True}, headers=auth(ADMIN))
+    assert client.get("/v1/admin/datasets/paddleocr", headers=auth(ADMIN)).json()["count"] == 1
+    assert client.get("/v1/admin/datasets/paddleocr", headers=auth(a)).status_code == 401   # réservé à l'administration
