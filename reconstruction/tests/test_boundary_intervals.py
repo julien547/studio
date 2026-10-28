@@ -94,7 +94,7 @@ def test_unqualified_pairing_does_not_claim_probability_or_semantic_detection():
     assert walls[0]['status'] == 'pending'
 
 
-def test_native_pdf_pairing_recovers_both_fragments(tmp_path):
+def test_native_pdf_strokes_keep_their_own_fragments_and_gap(tmp_path):
     from pypdf import PdfWriter
     from pypdf.generic import DecodedStreamObject, NameObject
     from doemo_reconstruction.extract import reconstruct
@@ -109,5 +109,5 @@ def test_native_pdf_pairing_recovers_both_fragments(tmp_path):
     doc = reconstruct(path)
     level = doc['levels'][0]
     assert level['method'] == 'vector'
-    assert shape(level['walls']) == [(10., 78., 50., 78.), (70., 78., 110., 78.)]
+    assert shape(level['walls']) == [(10., 76., 50., 76.), (10., 80., 110., 80.), (70., 76., 110., 76.)]
     assert level['scale'] is None and level['source_page'] == 1

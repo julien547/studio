@@ -116,8 +116,12 @@ def test_real_pdf_vector_recovery_precedes_raster(tmp_path):
     level=out['levels'][0]
     assert level['method']=='vector'
     assert len(level['raw_vectors'])==2
-    assert len(level['walls'])==1
-    assert level['walls'][0]['thickness']==pytest.approx(4)
+    # Independent native strokes are no longer guessed to be opposite wall faces.
+    assert len(level['walls'])==2
+    assert all(w['thickness'] is None for w in level['walls'])
+    from doemo_reconstruction.axis_review import review_axes
+    report=review_axes(level)
+    assert len(report)==1 and not report[0]['resolved']
     assert level['scale'] is None
 
 

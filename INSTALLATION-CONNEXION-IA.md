@@ -1,13 +1,15 @@
 # Installer la connexion de Studio aux trois IA RunPod
 
-Livraison **0.3.6**, dépôt privé `julien547/studio`, branche
+Livraison **0.3.7**, dépôt privé `julien547/studio`, branche
 `feat/redessin-ovh-tests`, [PR 1](https://github.com/julien547/studio/pull/1).
 Cette procédure est destinée à la session disposant des accès OVH et RunPod.
 Le code est publié ; **la connexion sur vos serveurs doit encore être installée
 et vérifiée avec les inférences réelles**.
 
-La version 0.3.6 conserve les [ouvertures lors de la correction vers un axe médian](reconstruction/ovh/FUSION_MURS_OUVERTURES.md)
-et inclut le [contrôle des doubles axes](reconstruction/ovh/CONTROLE_DOUBLES_AXES.md).
+La version 0.3.7 reprend directement les [axes des traits PDF natifs](reconstruction/ovh/IMPORT_AXES_PDF.md),
+sans chercher une deuxième ligne. Elle conserve les
+[ouvertures lors de la correction vers un axe médian](reconstruction/ovh/FUSION_MURS_OUVERTURES.md)
+et le [contrôle des doubles axes](reconstruction/ovh/CONTROLE_DOUBLES_AXES.md).
 Déployer ensemble le service Python et l’éditeur généré sur OVH. Un worker RunPod
 0.3.4 déjà installé peut être conservé. Pour une première installation, suivre
 toutes les étapes OVH et RunPod ci-dessous ; les contrôles des sorties IA et l’état
@@ -15,9 +17,11 @@ de chaque moteur sont inclus.
 
 ## Préserver la production
 
-Lire d’abord [AVERTISSEMENT-MODIFICATIONS-STUDIO.md](AVERTISSEMENT-MODIFICATIONS-STUDIO.md).
+Lire d’abord la [version actuelle de l’avertissement de production](https://github.com/julien547/studio/blob/main/AVERTISSEMENT-MODIFICATIONS-STUDIO.md).
 Cette livraison met à jour uniquement `/redessin/`, `api/redessin.php` et le service
 privé du redessin. Elle ne reconstruit pas `/app/` et ne déploie rien dans `/releves/`.
+Les projets déjà enregistrés ne sont pas recalculés. Tester le nouvel import sur
+un projet distinct pour conserver les corrections précédentes.
 
 - Conserver le menu actuel et `StructureBatiment.jsx` / `FramedApp.jsx` de
   `doemo-app`, branche **`feat/studio-host`**. Le redessin reste dans l’iframe sous le menu.

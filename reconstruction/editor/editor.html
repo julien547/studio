@@ -7,6 +7,7 @@
 <label>Projet JSON <input id="load" type="file" accept=".json"></label>
 <label>Niveau <select id="level"></select></label><label><input type="checkbox" id="floor"> Identification du niveau vérifiée</label>
 <div id="summary"></div><p class="hint">Les axes sont noirs. Halo orange : à contrôler. Bleu : sélection. Aucune échelle métrique déduite automatiquement.</p>
+<details id="importReview" open><summary>Import à contrôler</summary><div id="importWarnings" class="hint"></div></details>
 <label>Votre nom <input id="actor" placeholder="Dessinateur"></label>
 <h3>Mur sélectionné</h3><div id="selected" class="hint">Cliquez sur un mur.</div>
 <div class="row"><label>Début X <input type="number" step=".1" id="ax"></label><label>Début Y <input type="number" step=".1" id="ay"></label></div>
@@ -153,6 +154,8 @@ function fields(){
  $('approveOpening').disabled=!w?.openings.length;
 }
 function render(){if(!doc)return;const l=level(),svg=$('canvas');svg.replaceChildren();
+ $('importWarnings').replaceChildren();const importWarnings=Array.isArray(l.warnings)?l.warnings.filter(w=>typeof w==='string'):[];
+ $('importReview').hidden=!importWarnings.length;for(const warning of importWarnings){const p=document.createElement('p');p.textContent=warning;$('importWarnings').append(p)}
  const report=reviewAxes(l);axisPairs=report.filter(p=>!p.resolved);
  if(reviewPair&&!axisPairs.some(p=>JSON.stringify(p.wall_ids)===JSON.stringify(reviewPair)))reviewPair=null;
  $('axisReviewSummary').textContent=`${axisPairs.length} paire(s) à contrôler · ${report.length-axisPairs.length} paire(s) confirmée(s) distincte(s). Ce contrôle géométrique ne reconnaît pas les murs.`;

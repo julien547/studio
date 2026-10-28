@@ -1,4 +1,4 @@
-# DOEMO Reconstruction architecturale 0.3.6
+# DOEMO Reconstruction architecturale 0.3.7
 
 **Installation et raccordement des trois IA : [procédure complète](../INSTALLATION-CONNEXION-IA.md).**
 Lire l’[avertissement de production](../AVERTISSEMENT-MODIFICATIONS-STUDIO.md) avant
@@ -7,12 +7,14 @@ Cette livraison ne remplace ni `/app/` ni `/releves/`.
 
 Prototype local ajouté à DOEMO Studio. Le modèle indépendant contient des axes, épaisseurs et ouvertures de murs ; les SVG contiennent des axes noirs ouverts, sans remplissage, groupés par mur et interrompus aux ouvertures. Toutes les détections sont des propositions à valider. Il ne s’agit pas encore du module complet de production.
 
-La version courante conserve les [ouvertures lors de la fusion de deux bords en un axe médian](ovh/FUSION_MURS_OUVERTURES.md),
+La version courante récupère les [traits PDF natifs sur leur propre axe](ovh/IMPORT_AXES_PDF.md),
+sans appariement arbitraire de deux traits voisins. Elle conserve les
+[ouvertures lors de la fusion de deux bords en un axe médian](ovh/FUSION_MURS_OUVERTURES.md),
 avec contrôle du type et de la position avant validation. Le
 [contrôle des doubles axes](ovh/CONTROLE_DOUBLES_AXES.md) protège les exports validés.
 Le raccordement signé aux trois IA et la procédure de déploiement sont livrés ; les
 inférences réelles RunPod et la qualification du modèle spécialisé restent à faire.
-144 tests Python et le parcours navigateur synthétique passent.
+168 tests Python et le parcours navigateur synthétique passent.
 
 La version 0.3.0 ajoute un module web de test derrière la session DOEMO existante : import d’une page, file locale, correction et sauvegarde par utilisateur, SVG validé côté serveur et observations RunPod facultatives. La procédure de la session qui déploie est [Déployer sur OVH](ovh/DEPLOIEMENT_OVH.md). L’URL prévue après installation est `/redessin/` ; les poids et les plans clients sont exclus du dépôt.
 
@@ -56,7 +58,8 @@ du répertoire public. Suivre la procédure de déploiement pour cette variante.
 
 ## Géométrie et ouvertures
 
-- PDF : récupération des tracés et matrices des Form XObjects avant analyse d’image. Les courbes restent dans les tracés bruts ; elles ne sont pas converties artificiellement en murs rectilignes. Les clips restent visibles dans la référence PDF rendue et doivent être contrôlés sur les candidats.
+- PDF : les traits droits, pleins et opaques admissibles deviennent des axes à valider ; leur épaisseur physique reste inconnue. Un rectangle allongé admissible donne une seule médiane. Les pointillés, courbes, formes complexes, clips et Form XObjects restent dans les données brutes et la référence, sans axe natif automatique. Les matrices des formes sont conservées, mais leur visibilité complète n’est pas encore interprétée. Voir les seuils et limites de l’[import PDF](ovh/IMPORT_AXES_PDF.md).
+- Les pages mixtes conservent les propositions natives et raster : un trait d’annotation ne doit pas faire ignorer le scan. Les doubles éventuels doivent être résolus. Une page purement vectorielle ne repasse pas par la détection raster pour contourner les exclusions ; les murs manquants exigent une correction. Le panneau « Import à contrôler » affiche ces limites.
 - Raster : suppression des pixels colorés, masquage OCR facultatif, détection de segments, recherche de paires de bords parallèles et épaisseur observée. Le scan couleur original reste intégralement disponible.
 - Aucun comblement automatique d’un espace entre deux segments. Les portes et fenêtres sont des intervalles soustraits à un mur. Les axes gardent leur orientation, y compris diagonale. L’épaisseur graphique `stroke_width` ne modifie ni l’axe ni l’épaisseur détectée `thickness` ; cette dernière peut rester inconnue. Les raccordements demandent une vérification humaine.
 - L’édition exige un auteur, journalise avant/après et annule la validation des objets modifiés. Les ouvertures doivent être revérifiées avant de modifier la longueur d’un mur. Un déplacement conserve les fractions de ses ouvertures.

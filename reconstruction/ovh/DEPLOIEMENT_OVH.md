@@ -36,6 +36,12 @@ détectées encore ambiguës ; les projets et SVG de revue restent accessibles.
 La version 0.3.6 conserve les [ouvertures pendant la correction des deux bords](FUSION_MURS_OUVERTURES.md).
 Les ouvertures transférées exigent une nouvelle validation avant celle du mur.
 
+La version 0.3.7 ajoute l’[import des axes PDF natifs](IMPORT_AXES_PDF.md), avec
+affichage des limites de l’import dans l’éditeur. Déployer le service Python et
+l’éditeur généré ensemble. Les projets existants ne sont pas recalculés ; cette
+évolution s’applique aux nouveaux imports. Aucun changement de worker RunPod
+0.3.4 déjà installé n’est nécessaire pour cette évolution.
+
 Pour terminer le raccordement réel des IA, suivre la
 [procédure commune OVH–RunPod](RACCORDEMENT_RUNPOD.md). Le bouton d’analyse devient
 disponible après un contrôle réussi du service et des trois tests de démarrage.

@@ -6,7 +6,7 @@ Mise à jour du 28 octobre 2026. Le moteur PDF et les modules existants conserve
 
 | Étape | État | Livrable et condition de passage |
 | --- | --- | --- |
-| Import et coordonnées | Prototype implémenté | PDF vectoriels récupérés avant analyse raster ; scan conservé ; régions de niveaux sur une même page sans déplacement de coordonnées. Tester les documents représentatifs, rotations et recadrages avant généralisation. |
+| Import et coordonnées | Axes PDF natifs livrés en 0.3.7 | Traits pleins repris directement, rectangles simples réduits à leur médiane, pages mixtes conservées ; limites des chemins complexes affichées. Scans et coordonnées originales préservés. Les formes PDF composées et leur visibilité restent à développer. |
 | Reconstruction des murs | Prototype et contrôle des doubles axes livrés | Paires de bords parallèles, axes et épaisseurs en unités du document, raccords explicites, traits noirs médians. L’éditeur repère les paires proches et exige leur examen avant export lorsqu’elles sont approuvées. Les cadres, équipements et marches produisent encore des faux positifs ; la règle d’un axe par mur physique reste à vérifier par le dessinateur. |
 | Édition et validation | Prototype implémenté | Ajouter, supprimer, déplacer, prolonger, raccorder, changer l’épaisseur, réserver/corriger une ouverture, couper, annuler/refaire et sauvegarder. Les modifications annulent l’approbation. |
 | Prototype Animalis | Généré sur R−1 et RDC, à valider | Scan reçu `mon-plan (1).pdf`, A3, une page, deux niveaux. Deux régions distinctes, référence conservée et propositions éditables. Zéro mur approuvé automatiquement. Pas de calibration métrique. |
@@ -153,3 +153,24 @@ OVH, l’export et la sélection des corrections d’apprentissage sont vérifi�
 Voir [la procédure 0.3.6](../reconstruction/ovh/FUSION_MURS_OUVERTURES.md). Cette
 livraison ne constitue pas une reconnaissance automatique des portes/fenêtres,
 une inférence RunPod réelle ou une validation dans Adobe Illustrator.
+
+## Import des traits PDF natifs 0.3.7
+
+Un trait plein admissible est repris sur son propre axe, sans seconde ligne
+requise et sans épaisseur physique inventée. Les rectangles simples allongés
+donnent une seule médiane. Les traits voisins indépendants restent à interpréter
+par le dessinateur ; l’import ne les fusionne pas arbitrairement. Les coupures
+entre sous-tracés, les matrices, recadrages et rotations sont conservés.
+
+Les chemins complexes, pointillés, découpages et Form XObjects restent différés
+pour la récupération native ; cette limite est affichée dans l’éditeur. Les
+pages mixtes gardent les propositions natives et raster, avec contrôle nécessaire
+des doublons et des ouvertures. Une page purement vectorielle ne contourne pas
+les exclusions par une vectorisation de pixels. La récupération complète des
+formes PDF et la prise en compte des occultations restent à développer.
+
+168 tests Python et le parcours navigateur passent. Un nouvel essai privé de la
+page 1 scannée conserve exactement les 381 propositions antérieures. Aucun projet
+existant n’est recalculé, aucun mur n’est approuvé automatiquement. Voir la
+[procédure d’import et de recette](../reconstruction/ovh/IMPORT_AXES_PDF.md).
+Les inférences réelles RunPod et le modèle spécialisé restent à qualifier.

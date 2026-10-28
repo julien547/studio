@@ -22,7 +22,21 @@ const doc=walls=>({schema:'doemo.architecture/1',revision:0,history:[],source:{s
   const mount=walls=>page.evaluate(d=>window.doemoEditor.mount(document.querySelector('#host'),d,'Dessinateur',()=>{}),doc(walls));
   const get=()=>page.evaluate(()=>window.doemoEditor.document());
   const pairMerge=async()=>{await page.locator('#axisPairs').selectOption('0');await page.locator('#mergeAxisPair').click()};
+  // Import limitations must be visible, rendered as text and cleared on reload.
+  const imported=doc([]);imported.levels[0].warnings=['Tracé PDF sans axe automatique : contrôler le mur manquant.', '<img src=x onerror="alert(1)">'];
+  await page.evaluate(d=>window.doemoEditor.mount(document.querySelector('#host'),d,'Dessinateur',()=>{}),imported);
+  assert.equal(await page.locator('#importReview').isVisible(),true);
+  assert.match(await page.locator('#importWarnings').textContent(),/contrôler le mur manquant/);
+  assert.equal(await page.locator('#importWarnings img').count(),0);
+  assert.equal(await page.locator('#host header').count(),0);
+  const native=doc([{...wall('native',[10,20],[110,20]),thickness:null,status:'pending',method:'native_pdf_stroke'}]);
+  await page.evaluate(d=>window.doemoEditor.mount(document.querySelector('#host'),d,'Dessinateur',()=>{}),native);
+  await page.locator('g[data-id="native"] path').last().click({force:true});
+  assert.equal(await page.locator('#thickness').inputValue(),'');
+  await page.locator('#approve').click();assert.equal((await get()).levels[0].walls[0].thickness,null);
   await mount([wall('first',[10,20],[110,20],[opening(.2,.4)]),wall('second',[110,24],[10,24],[opening(.6,.8)])]);
+  assert.equal(await page.locator('#importReview').isVisible(),false);
+  assert.equal(await page.locator('#importWarnings').textContent(),'');
   await pairMerge();let d=await get();
   assert.equal(d.levels[0].walls.length,1);assert.equal(d.levels[0].walls[0].openings.length,1);
   assert.equal(d.levels[0].walls[0].openings[0].status,'pending');
@@ -74,7 +88,8 @@ const doc=walls=>({schema:'doemo.architecture/1',revision:0,history:[],source:{s
   assert.deepEqual(errors,[]);
   const report={passed:true,one_median_with_gap:true,opening_validation_required:true,black_svg:true,
     reversed_face:true,type_conflict_visible:true,partial_tails_preserved:true,full_exclusion_refused:true,
-    diagonal:true,undo_redo:true,json_reload:true,source_provenance:true,real_gpu_inference:false,errors};
+    diagonal:true,undo_redo:true,json_reload:true,source_provenance:true,import_warnings_visible:true,
+    warning_text_escaped:true,native_thickness_unknown:true,no_embedded_header:true,real_gpu_inference:false,errors};
   console.log(JSON.stringify(report));
  }finally{if(browser)await browser.close();await new Promise(resolve=>server.close(resolve))}
 })().catch(e=>{console.error(e);process.exit(1)});

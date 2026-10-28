@@ -1,6 +1,6 @@
-# Vérification de la livraison OVH 0.3.6
+# Vérification de la livraison OVH 0.3.7
 
-Le 28 octobre 2026, 144 tests Python passent. Ils couvrent les axes noirs, les
+Le 28 octobre 2026, 168 tests Python passent. Ils couvrent les axes noirs, les
 ouvertures, la validation humaine, les contrats d’inférence, l’authentification
 du worker, les reprises après interruption, l’isolation des projets par utilisateur
 et la détection des sauvegardes concurrentes. Les tests d’IA utilisent des doubles ;
@@ -107,3 +107,18 @@ Le test navigateur publié `tests/browser/median-openings.cjs` vérifie la séle
 des bords inversés, les types contradictoires, l’axe diagonal, les parties restantes,
 le refus d’un recouvrement entièrement vide, la validation, l’export noir avec
 coupure, annuler/refaire et le rechargement JSON. Aucun plan client ni GPU utilisé.
+
+La livraison 0.3.7 ajoute 24 cas sur des PDF générés : un seul trait, polylignes
+et coupures, peinture répétée, rectangles pleins ou tracés, pointillés, opacité,
+clipping, formes avec trou, diagonales, matrices, recadrage et quatre rotations.
+Les coordonnées récupérées sont aussi comparées aux pixels de la référence rendue.
+Les tests de pages mixtes vérifient qu’une annotation vectorielle ne masque pas
+le traitement du scan. Les Form XObjects conservent leurs coordonnées brutes,
+sans ignorer leur découpage pour proposer un axe.
+
+Le parcours Chromium vérifie l’affichage des avertissements d’import comme texte,
+leur disparition au chargement d’un autre projet et l’absence de bandeau intégré.
+Le nouvel essai privé de la page 1 de `2(2).pdf` conserve exactement les 381
+géométries du traitement raster précédent et les 468 paires à contrôler. Aucun
+mur approuvé, aucune échelle inventée. Les fichiers du plan restent hors du dépôt.
+Voir [la recette d’import PDF](IMPORT_AXES_PDF.md) pour le contrôle après installation.
