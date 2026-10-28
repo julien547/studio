@@ -34,6 +34,11 @@ Les pages de niveaux portent un cartouche d’octobre 2025, le BAT porte une mis
 2024. Le même site/bâtiment est suggéré, mais l’identité de l’état architectural et
 le recalage des différents niveaux **ne sont pas validés**.
 
+L’essai automatique SIFT/RANSAC entre la page 1 du relevé et le BAT complet a
+retourné **« Alignement automatique non fiable »**. Aucun alignement ni placement
+n’a été accepté à sa place. Des points manuels répartis et un contrôle indépendant
+restent nécessaires avant tout transfert de coordonnées.
+
 Le mode local combine les pixels colorés, les composantes connexes, les formes et les
 indices OCR. La première exécution contient les résultats suivants :
 
@@ -78,3 +83,20 @@ exécutable dans ce cloud : import des groupes, sauvegarde AI native et réouver
 L’essai natif nécessitera un relevé avec ses équipements confirmés, des pictogrammes
 SAI approuvés, un recalage accepté et un poste Illustrator sous licence. Les zones
 PE/PI de ces scans ne constituent pas cette vérité terrain d’équipements incendie.
+
+## Validation logicielle locale
+
+- 30 tests du nouveau backend réussis, y compris isolation des projets, révisions,
+  archives malveillantes, recalage, garde d’export, refus d’un PDF renommé AI et
+  fidélité des octets du bundle vectoriel.
+- 6 contrôles du cœur Illustrator et 3 contrôles du frontend réussis ; les deux
+  fichiers Illustrator passent aussi l’analyse syntaxique ECMAScript 3.
+- Compilation TypeScript/Vite réussie ; syntaxe des points d’entrée PHP vérifiée.
+- Parcours Chromium sur le dossier réel : page, images, sélection d’annotations,
+  extraits et catalogue vérifiés sans erreur JavaScript. Les captures sont dans
+  `/workspace/studio-releves-audit/`, hors du dépôt source.
+- 123 tests du moteur PDF existant réussis après récupération de la mise à jour
+  déjà présente sur `main` ; son code n’est pas modifié par ce module.
+
+Ces contrôles vérifient les fonctions développées, pas une réussite de reconnaissance
+manuscrite de production ni une exécution d’Illustrator dans le cloud.
