@@ -8,7 +8,7 @@
     "validation": 12,
     "test": 0
   },
-  "reference_validated_by_user": false,
+  "reference_validated_by_user": true,
   "examples": [
     {
       "id": "cotonniere-df-rdc-a-sud",
@@ -660,7 +660,6 @@
     }
   ],
   "blockers": [
-    "Confirmation du plan de référence marqué SPÉCIMEN.",
     "Relecture et validation des propositions dans DOEMO.",
     "Autorisation du projet enregistrée et troisième site indépendant pour le test."
   ]

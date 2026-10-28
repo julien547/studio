@@ -5,8 +5,9 @@ Site : Bureaux de la Cotonnière, 18 rue de la Cotonnière, 14000 Caen.
 
 - `sources/333333.pdf` : relevé annoté, 2 pages ; RDC puis R+1, bâtiments A et B.
 - `sources/CO26100349-1.pdf` : plan mis au propre, 1 page avec les niveaux 1 et 0,
-  daté du 27 octobre 2026. Il porte **SPÉCIMEN** : confirmation utilisateur demandée,
-  pas encore enregistrée dans ce lot.
+  daté du 27 octobre 2026. Malgré le marquage **SPÉCIMEN**, Julien l’a explicitement
+  confirmé comme référence : « Oui, référence validée ». Cela ne valide pas
+  automatiquement les recadrages ni les réponses préparées par l’assistant.
 - `revue.html` : détails et interprétations proposés, consultables localement.
 - `images/` : rendu des pages et 12 recadrages des annotations, sans redessin.
 - `draft-examples.json` : provenance, géométrie de recadrage, empreintes, champs API.

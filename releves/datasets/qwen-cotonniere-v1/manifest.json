@@ -4,13 +4,13 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "871e8c858d4d40b97d51c6aed101767656f221dc3f52f3af17d9cd502888d78a",
-      "size": 3480
+      "sha256": "731439eea81ce8e81f50ad3fc58f9b1f836668ecbfa6af1fc4a528b7fc8f3fc3",
+      "size": 3607
     },
     {
       "path": "draft-examples.json",
-      "sha256": "41a7ebac459bee28c21fc8fe862ac76d16f00b4e39ac04771f4b2ab13bdbed1f",
-      "size": 27606
+      "sha256": "142436c0c47d1e1872584915107ef365152db49bddc21a7e03aa6c0895ca2622",
+      "size": 27543
     },
     {
       "path": "images/cotonniere-bt-r1-b.png",
@@ -89,8 +89,8 @@
     },
     {
       "path": "propositions.json",
-      "sha256": "953dd11d92849e2722af38942630e5e25c8602f67eeb5f39980c73f7327c20d7",
-      "size": 4672
+      "sha256": "428347b5b8cf4ebbda64553085ca2e40c545d88c49a6b69df0bde011c679bb55",
+      "size": 4870
     },
     {
       "path": "qwen-draft.jsonl",
@@ -99,8 +99,8 @@
     },
     {
       "path": "revue.html",
-      "sha256": "56747ecbc04d714d78929a33351ecbe0ae4084bbc1667379af27a0b99a3ff345",
-      "size": 9276
+      "sha256": "eab0717e73532a3e0fce9614fd06931f78422f76e8ee71e24f67e768501560ae",
+      "size": 9295
     },
     {
       "path": "sources/333333.pdf",

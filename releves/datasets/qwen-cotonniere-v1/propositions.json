@@ -2,8 +2,8 @@
   "schema": "doemo.qwen-source-proposals/1",
   "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
   "group_scope": "Bâtiments A et B, niveaux 0 et 1 : même dossier et mêmes PDF",
-  "reference_validated_by_user": false,
-  "reference_status": "awaiting_confirmation_specimen",
+  "reference_validated_by_user": true,
+  "reference_status": "user_confirmed",
   "examples": [
     {
       "id": "cotonniere-df-rdc-a-sud",
@@ -149,5 +149,9 @@
       "reference_evidence": "Légende : SANITAIRES PMR ; vérifier le rattachement du trait de rappel avant tout placement.",
       "context": ""
     }
-  ]
+  ],
+  "reference_validation_evidence": {
+    "answer": "Oui, référence validée",
+    "scope": "CO26100349-1.pdf comme plan de référence ; ne valide pas automatiquement les recadrages ou réponses générées"
+  }
 }

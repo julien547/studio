@@ -3,7 +3,7 @@
 | Dossier | Source | Propositions | Affectation proposée | État |
 | --- | --- | ---: | --- | --- |
 | [Animalis](qwen-animalis-v1/README.md) | RELEVEDEUX.pdf et corrections du dessinateur | 11 | Entraînement | Recadrages/réponses à relire |
-| [Cotonnière](qwen-cotonniere-v1/README.md) | 333333.pdf + CO26100349-1.pdf | 12 | Validation | Référence SPÉCIMEN à confirmer ; réponses à relire |
+| [Cotonnière](qwen-cotonniere-v1/README.md) | 333333.pdf + CO26100349-1.pdf | 12 | Validation | Référence confirmée par Julien ; réponses à relire |
 | Troisième site | À fournir | 0 | Test | Manquant |
 
 **23 propositions, 2 groupes de sites, aucun dataset encore prêt pour la recette GPU.**

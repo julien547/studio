@@ -70,8 +70,8 @@ def main():
     payload = dict(schema='doemo.qwen-draft-pack/1',engine='qwen',ready_for_training=False,building_groups=1,
                    split_counts={'train':0,'validation':len(examples),'test':0},
                    reference_validated_by_user=proposals['reference_validated_by_user'],examples=examples,
-                   blockers=['Confirmation du plan de référence marqué SPÉCIMEN.',
-                             'Relecture et validation des propositions dans DOEMO.',
+                   blockers=([] if proposals['reference_validated_by_user'] else ['Confirmation du plan de référence marqué SPÉCIMEN.']) +
+                            ['Relecture et validation des propositions dans DOEMO.',
                              'Autorisation du projet enregistrée et troisième site indépendant pour le test.'])
     (ROOT / 'draft-examples.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n')
     (ROOT / 'qwen-draft.jsonl').write_text('\n'.join(encoded(e['conversation']) for e in examples)+'\n')
@@ -79,7 +79,8 @@ def main():
         '<title>Qwen — revue Cotonnière</title><style>body{font:16px system-ui;max-width:1100px;margin:30px auto;padding:16px;background:#f5f6f8}'
         'article{padding:24px;margin:20px 0;background:white;border:1px solid #ccd;overflow:auto}img{float:left;margin:0 24px 20px 0}pre{white-space:pre-wrap}</style>'
         '<h1>Cotonnière — 12 propositions à relire</h1><p>Un seul groupe : bâtiments A/B et niveaux 0/1. Réservé à la validation, pas à l’entraînement. '
-        'Le PDF mis au propre porte SPÉCIMEN : confirmation de la référence requise.</p><p>'
+        + ('Le PDF mis au propre est confirmé comme référence par Julien. Les réponses restent à relire.</p><p>'
+           if proposals['reference_validated_by_user'] else 'Le PDF mis au propre porte SPÉCIMEN : confirmation de la référence requise.</p><p>') +
         '<a href="sources/333333.pdf">Relevé original, 2 pages</a> · <a href="sources/CO26100349-1.pdf">Plan mis au propre</a></p>'
         + ''.join(cards) + '</html>')
     files=[p for p in ROOT.rglob('*') if p.is_file() and p.name!='manifest.json']
