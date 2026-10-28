@@ -1,6 +1,7 @@
 """MVP routes added to the existing protected project API."""
 import hashlib
 import json
+import os
 import uuid
 from pathlib import Path
 from typing import Literal
@@ -56,10 +57,37 @@ class AcceptAnalysis(Model):
     revision: int = Field(ge=0)
 
 
+class PreparePlacements(AcceptAnalysis):
+    document_id: str
+    page: int = Field(ge=1)
+
+
 def attach(app, store, actor, admin, get, doc):
     with store.connect() as c:
         for item in CATALOGUE:
             c.execute('INSERT OR IGNORE INTO equipment_catalogue VALUES(?,?)',(item.code,item.model_dump_json()))
+
+    @app.get('/projects/placement-capabilities')
+    def placement_capabilities(who=Depends(actor)):
+        return {'multimodal':bool(os.environ.get('DOEMO_VISION_ENDPOINT') and os.environ.get('DOEMO_VISION_MODEL'))}
+
+    @app.post('/projects/{ident}/prepare-placements')
+    def prepare_placements(ident: str, data: PreparePlacements, who=Depends(actor)):
+        p=get(ident,who);source,_=doc(ident,data.document_id,who,data.page)
+        if source['role']!='survey':raise ValueError('Choisir un relevé')
+        state=ProjectState.model_validate(p['state'])
+        if state.revision!=data.revision:
+            from .store import Conflict
+            raise Conflict('Projet modifié : recharger avant la préparation')
+        from .placement import prepare,summary
+        library=store.library(state.library_id) if state.library_id else None
+        with store.connect() as c:catalogue=[json.loads(r[0]) for r in c.execute('SELECT data FROM equipment_catalogue')]
+        before=state.model_dump()
+        prepare(state,library,catalogue,data.document_id,data.page)
+        from .exchange import validate_state
+        if state.model_dump()!=before:store.save(ident,who.login,validate_state(state,p['documents']),'prepare-placements')
+        result=get(ident,who)
+        return {'project':result,'summary':summary(ProjectState.model_validate(result['state']),library,data.document_id,data.page)}
 
     @app.get('/projects/catalogue')
     def catalogue(who=Depends(actor)):

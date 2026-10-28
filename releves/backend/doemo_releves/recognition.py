@@ -19,7 +19,7 @@ from .models import Annotation, Box, Model, Point
 
 COLORS = {"red": ((0, 16), (168, 180)), "orange": ((16, 26),), "yellow": ((26, 36),),
           "green": ((36, 88),), "blue": ((88, 130),), "violet": ((130, 151),), "pink": ((151, 168),)}
-TERMS = re.compile(r"\b(?:EXT|CO[₂2]|ABC|AB\s*9|AB\s*50|DM|RIA|BAES|PE|PI|DF|SSI)\b|désenfum", re.I)
+TERMS = re.compile(r"\b(?:PCF|VEI|H[₂2]O|EP6|EXT|CO[₂2]|ABC|AB\s*9|AB\s*50|DM|RIA|BAES|PE|PI|DF|SSI)\b|désenfum", re.I)
 
 
 def ocr(image):
@@ -158,7 +158,11 @@ def multimodal_proposals(image_path, document_id, page, region=None):
         "Recherche les annotations ajoutées ET les pictogrammes d'équipements déjà imprimés dans le plan. "
         "Dans evidence, indique explicitement 'manuscrit', 'imprimé dans le plan' ou 'origine incertaine'. "
         "Ne compte pas les symboles de légende, consignes, logos, totaux, titres ou locaux comme des placements. "
-        "Ne crée pas deux placements pour un symbole et son libellé. "
+        "Ne crée pas deux placements pour un symbole et son libellé. Deux équipements distincts conservent deux positions. "
+        "Cherche aussi les portes coupe-feu (PCF) et Vous êtes ici (VEI). "
+        "Pour equipment_type, utilise PCF pour une porte coupe-feu, EXT_PORTATIF pour tout extincteur "
+        "sans distinction d’agent ou de capacité, VEI pour Vous êtes ici ou un repère PE du relevé DOEMO. "
+        "Conserve PE dans text ; PI reste distinct de VEI. Une couleur seule ne prouve pas un équipement. "
         "PE/PI peuvent désigner Plan d'évacuation / Plan d'intervention ; utilise la légende visible pour "
         "le confirmer. Ne les transforme pas en extincteur ou en poteau d'incendie par défaut. "
         "Préserve le texte observé, sans corriger une lettre douteuse en devinant. "

@@ -31,6 +31,7 @@ type Summary = {
 };
 type Job = {
   id: string;
+  payload?: { document_id: string; page: number; engine: string };
   status: string;
   stage: string;
   error: string | null;
@@ -129,7 +130,8 @@ function Login({ onLogin }: { onLogin: (u: User) => void }) {
 function Root() {
   const [user, setUser] = useState<User | null>(null),
     [loading, setLoading] = useState(true),
-    [advanced, setAdvanced] = useState(false);
+    [advanced, setAdvanced] = useState(false),
+    [activeProject, setActiveProject] = useState("");
   useEffect(() => {
     void fetch(standalone ? "/session" : "/api/me.php")
       .then((r) => (r.ok ? r.json() : null))
@@ -164,7 +166,7 @@ function Root() {
           </button>
           <span>Recalage BAT, bibliothèque et préparation Illustrator</span>
         </div>
-        <AdvancedApp />
+        <AdvancedApp initialProject={activeProject} />
       </>
     );
   return (
@@ -175,7 +177,11 @@ function Root() {
           setUser(null),
         );
       }}
-      onAdvanced={() => setAdvanced(true)}
+      initialProject={activeProject}
+      onAdvanced={(id) => {
+        setActiveProject(id);
+        setAdvanced(true);
+      }}
     />
   );
 }
@@ -183,10 +189,12 @@ function Studio({
   user,
   onLogout,
   onAdvanced,
+  initialProject,
 }: {
   user: User;
   onLogout: () => void;
-  onAdvanced: () => void;
+  onAdvanced: (id: string) => void;
+  initialProject: string;
 }) {
   const editor = useEditor(),
     p = editor.project;
@@ -208,7 +216,9 @@ function Studio({
     [tool, setTool] = useState<Tool>("select"),
     [zoom, setZoom] = useState(100),
     [showBoxes, setBoxes] = useState(true),
-    [showAnchors, setAnchors] = useState(true);
+    [showAnchors, setAnchors] = useState(true),
+    [showSymbols, setSymbols] = useState(true),
+    [multimodal, setMultimodal] = useState(false);
   const [floorName, setFloorName] = useState("R-1"),
     [jobs, setJobs] = useState<Job[]>([]),
     [history, setHistory] = useState<
@@ -219,6 +229,11 @@ function Studio({
     [importEngine, setImportEngine] = useState("paddleocr"),
     [imageWidth, setImageWidth] = useState(""),
     [imageHeight, setImageHeight] = useState("");
+  useEffect(() => {
+    api<{ multimodal: boolean }>("/projects/placement-capabilities")
+      .then((c) => setMultimodal(c.multimodal))
+      .catch(() => {});
+  }, []);
   const [catalogueDraft, setCatalogueDraft] = useState<Entry | null>(null);
   const source = p?.documents.find((d) => d.id === documentId),
     pageData = source?.pages[page - 1],
@@ -265,7 +280,10 @@ function Studio({
     setGpu(gs.status);
   }
   useEffect(() => {
-    void run("Ouverture…", refresh);
+    void run("Ouverture…", async () => {
+      await refresh();
+      if (initialProject) await open(initialProject);
+    });
   }, []);
   useEffect(() => {
     if (!p) return;
@@ -484,6 +502,33 @@ function Studio({
       "Résultat archivé. Examinez les observations avant de les intégrer.",
     );
   }
+  async function preparePlacements(sourceId = documentId, sourcePage = page) {
+    if (!p || !sourceId) return;
+    await editor.save();
+    const latest = await api<Project>(`/projects/${p.id}`);
+    const result = await api<{
+      project: Project;
+      summary: { preview_ready: number; unresolved: number };
+    }>(`/projects/${p.id}/prepare-placements`, "POST", {
+      revision: latest.state.revision,
+      document_id: sourceId,
+      page: sourcePage,
+    });
+    editor.install(result.project);
+    setSymbols(true);
+    setNotice(
+      `${result.summary.preview_ready} pictogramme(s) affichable(s) sur cette page · ${result.summary.unresolved} placement(s) à vérifier. Les positions inconnues restent à pointer.`,
+    );
+  }
+  async function exportIllustrator() {
+    if (!p) return;
+    await editor.save();
+    await api(`/projects/${p.id}/placements`);
+    window.location.href = url(`/projects/${p.id}/bundle`);
+    setNotice(
+      "Décompressez le ZIP. Dans Illustrator, fermez le BAT puis lancez DOEMO-Pose-Pictogrammes.jsx : choisissez placements.json, le BAT d’origine et le dossier library. Le script enregistre une nouvelle copie AI.",
+    );
+  }
   async function applyJob(job: Job) {
     if (!p) return;
     await editor.save();
@@ -493,9 +538,13 @@ function Studio({
         revision: latest.state.revision,
       }),
     );
-    setNotice(
-      "Propositions ajoutées à la revue. Aucune correction existante remplacée.",
-    );
+    const jobDocument = job.payload?.document_id || documentId;
+    const jobPage = job.payload?.page || page;
+    setDocument(jobDocument);
+    setPage(jobPage);
+    setFloor("");
+    setSelected([]);
+    await preparePlacements(jobDocument, jobPage);
   }
   const isAdmin = ["admin", "administration"].includes(user.role);
   return (
@@ -599,11 +648,30 @@ function Studio({
               onClick={() =>
                 void run("Ouverture Illustrator…", async () => {
                   await editor.save();
-                  onAdvanced();
+                  onAdvanced(p.id);
                 })
               }
             >
               Illustrator & SAI ↗
+            </button>
+            <button
+              disabled={!source || !!busy}
+              onClick={() =>
+                void run("Préparation des pictogrammes…", preparePlacements)
+              }
+            >
+              Préparer les pictogrammes
+            </button>
+            <button
+              disabled={!!busy}
+              onClick={() =>
+                void run(
+                  "Vérification de l’export Illustrator…",
+                  exportIllustrator,
+                )
+              }
+            >
+              Exporter pour Illustrator
             </button>
             <div className="spacer" />
             <span className={editor.dirty ? "save-pending" : "save-ok"}>
@@ -807,7 +875,18 @@ function Studio({
               />
               Positions et liaisons
             </label>
+            <label className="check">
+              <input
+                type="checkbox"
+                checked={showSymbols}
+                onChange={(e) => setSymbols(e.target.checked)}
+              />
+              Pictogrammes SAI
+            </label>
             <div className="rail-note">
+              Les symboles en pointillés sont à vérifier. Taille indicative sur
+              le relevé ; taille exacte en millimètres dans l’export BAT.
+              <br />
               Le cadre repère l’annotation.
               <br />
               Le point repère l’équipement.
@@ -948,6 +1027,27 @@ function Studio({
                   selected={selected}
                   showBoxes={showBoxes}
                   showAnchors={showAnchors}
+                  showSymbols={showSymbols}
+                  pageWidthPt={pageData.pdf_size_pt?.[0]}
+                  symbols={Object.fromEntries(
+                    (lib?.archive_verified ? lib.assets : [])
+                      .filter(
+                        (x) =>
+                          x.preview &&
+                          x.approved &&
+                          x.verified &&
+                          x.pictogram_candidate,
+                      )
+                      .map((x) => [
+                        x.id,
+                        {
+                          href: url(
+                            `/libraries/${lib!.id}/assets/${x.id}/preview`,
+                          ),
+                          name: x.name,
+                        },
+                      ]),
+                  )}
                   onSelect={setSelected}
                   onBox={draw}
                   onAnchor={(q) => {
@@ -1079,7 +1179,7 @@ function Studio({
                     onClick={() =>
                       void run("Ouverture…", async () => {
                         await editor.save();
-                        onAdvanced();
+                        onAdvanced(p.id);
                       })
                     }
                   >
@@ -1212,6 +1312,43 @@ function Studio({
                         `/libraries/${lib!.id}/assets/${asset.id}/preview`,
                       )}
                     />
+                  )}
+                  {a.asset_id && a.equipment_type && (
+                    <label className="check">
+                      <input
+                        type="checkbox"
+                        checked={p.state.mappings.some(
+                          (m) =>
+                            m.confirmed &&
+                            m.asset_id === a.asset_id &&
+                            m.equipment_type === a.equipment_type,
+                        )}
+                        onChange={(e) => {
+                          const confirmed = e.target.checked;
+                          editor.edit((s) => ({
+                            ...s,
+                            mappings: [
+                              ...s.mappings.filter(
+                                (m) =>
+                                  !(
+                                    m.asset_id === a.asset_id &&
+                                    m.equipment_type === a.equipment_type
+                                  ),
+                              ),
+                              {
+                                annotation:
+                                  a.text.trim().slice(0, 200) ||
+                                  a.equipment_type,
+                                equipment_type: a.equipment_type,
+                                asset_id: a.asset_id!,
+                                confirmed,
+                              },
+                            ],
+                          }));
+                        }}
+                      />
+                      Correspondance métier / SAI vérifiée
+                    </label>
                   )}
                   <div className="position-card">
                     <strong>Position réelle de l’équipement</strong>
@@ -1356,6 +1493,10 @@ function Studio({
                     value={engine}
                     onChange={(e) => setEngine(e.target.value)}
                   >
+                    <option value="multimodal" disabled={!multimodal}>
+                      Équipements et positions · IA multimodale
+                      {multimodal ? "" : " · à configurer"}
+                    </option>
                     <option value="local">OCR local · sans GPU</option>
                     <option value="paddleocr">PaddleOCR · RunPod</option>
                     <option value="qwen">Qwen · RunPod</option>
@@ -1367,6 +1508,13 @@ function Studio({
                   disabled={!source || !!busy}
                   onClick={() =>
                     void run("Mise en file…", async () => {
+                      if (
+                        engine === "multimodal" &&
+                        !window.confirm(
+                          "Envoyer cette page au fournisseur IA configuré pour reconnaître les équipements et leurs positions ? Cette analyse peut être facturée.",
+                        )
+                      )
+                        return;
                       await api(`/projects/${p.id}/jobs`, "POST", {
                         document_id: documentId,
                         page,
@@ -1378,6 +1526,54 @@ function Studio({
                 >
                   Analyser avec l’IA
                 </button>
+                <p>
+                  Pour proposer les pictogrammes avec leurs positions,
+                  choisissez « Équipements et positions ». PaddleOCR lit les
+                  textes ; RTMDet COCO fournit un diagnostic générique ; Qwen
+                  renvoie des observations textuelles.
+                </p>
+                <button
+                  disabled={!source || !!busy}
+                  onClick={() => void run("Préparation…", preparePlacements)}
+                >
+                  Associer les pictogrammes SAI
+                </button>
+                <h3>Placements à compléter</h3>
+                {!lib && (
+                  <p>
+                    Choisissez la bibliothèque du projet dans Propriétés, sans
+                    annotation sélectionnée.
+                  </p>
+                )}
+                {annotations
+                  .filter(
+                    (x) =>
+                      x.status !== "rejected" &&
+                      (!x.equipment_type ||
+                        !x.asset_id ||
+                        !x.anchor ||
+                        !x.floor_id),
+                  )
+                  .slice(0, 20)
+                  .map((x) => (
+                    <button
+                      key={x.id}
+                      className="full-width"
+                      onClick={() => {
+                        setSelected([x.id]);
+                        setTab("properties");
+                      }}
+                    >
+                      {x.text || "Annotation"} ·{" "}
+                      {!x.equipment_type
+                        ? "type à identifier"
+                        : !x.asset_id
+                          ? "SAI à associer"
+                          : !x.anchor
+                            ? "position à pointer"
+                            : "niveau à attribuer"}
+                    </button>
+                  ))}
                 <h3>Importer un résultat existant</h3>
                 <label>
                   Format

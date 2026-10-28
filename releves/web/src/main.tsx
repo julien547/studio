@@ -58,7 +58,7 @@ const statuses: Record<string, string> = {
 const pointText = (p: Point) => `${(p.x * 100).toFixed(1)} %, ${(p.y * 100).toFixed(1)} %`;
 type Pair = { source: Point; target: Point };
 
-export function AdvancedApp() {
+export function AdvancedApp({ initialProject = "" }: { initialProject?: string } = {}) {
   const [projects, setProjects] = useState<{ id: string; name: string }[]>([]),
     [p, setP] = useState<Project | null>(null),
     [libraries, setLibraries] = useState<Library[]>([]);
@@ -140,7 +140,7 @@ export function AdvancedApp() {
     setLibraries(await api("/libraries"));
   }
   useEffect(() => {
-    void run("Ouverture…", refresh);
+    void run("Ouverture…", async () => { await refresh(); if (initialProject) await open(initialProject); });
   }, []);
   useEffect(() => {
     const fn = (e: BeforeUnloadEvent) => {

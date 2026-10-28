@@ -301,3 +301,118 @@ test("authenticated project, source floors, annotation vs equipment, autosave, u
   ).toBeVisible();
   expect(errors).toEqual([]);
 });
+
+test("SAI symbols are positioned at equipment anchors, draggable, persistent and exported with Illustrator", async ({
+  page,
+}) => {
+  const ident = execFileSync(
+    python,
+    [
+      "-c",
+      `
+import sys,json
+from pathlib import Path
+sys.path.insert(0,${JSON.stringify(resolve("../backend/tests"))})
+from test_placement_flow import setup,mark
+from doemo_releves.models import ProjectState,Point
+c,ident,library=setup(Path(${JSON.stringify(root)}),data_root=Path(${JSON.stringify(root)}),owner='test-designer')
+s=ProjectState.model_validate(c.get('/projects/'+ident).json()['state'])
+s.annotations=[mark('p1','PCF'),mark('e1','CO₂'),mark('v1','PE'),mark('u1','inconnu',False)]
+s.annotations[0].anchor=Point(x=.3,y=.4);s.annotations[1].anchor=Point(x=.5,y=.4);s.annotations[2].anchor=Point(x=.7,y=.4)
+with c.app.state.store.connect() as con:
+ con.execute('INSERT INTO jobs(id,project_id,actor,status,stage,payload,result) VALUES(?,?,?,?,?,?,?)',('posefixture',ident,'test-designer','completed','Résultat fixture',json.dumps({'engine':'multimodal','document_id':'survey','page':1}),json.dumps({'annotations':[a.model_dump() for a in s.annotations],'observations':[],'warnings':['Résultat CPU de test ; aucune IA réelle exécutée.']})))
+print(ident)
+`,
+    ],
+    { encoding: "utf8" },
+  ).trim();
+  await page.goto(origin + "/releves/");
+  await page.getByLabel("Identifiant", { exact: true }).fill("test-designer");
+  await page
+    .getByLabel("Mot de passe", { exact: true })
+    .fill("test-only-long-password");
+  await page.getByRole("button", { name: "Se connecter", exact: true }).click();
+  await page.getByLabel("Projet", { exact: true }).selectOption(ident);
+  await page.getByRole("button", { name: "Analyses IA", exact: true }).click();
+  await page
+    .getByRole("button", { name: "Ajouter à la revue", exact: true })
+    .click();
+  await page
+    .getByRole("button", { name: "Préparer les pictogrammes", exact: true })
+    .click();
+  const symbols = page.getByTestId("placed-pictogram");
+  await expect(symbols).toHaveCount(3);
+  await expect(symbols.first()).toHaveAttribute(
+    "transform",
+    "translate(300,400) rotate(0)",
+  );
+  await expect(symbols.first().locator("image")).toHaveAttribute(
+    "href",
+    /\/assets\/pcf\/preview/,
+  );
+  await expect(page.getByText(/3 pictogramme\(s\) affichable/)).toBeVisible();
+  await page
+    .getByRole("button", { name: "Exporter pour Illustrator", exact: true })
+    .click();
+  await expect(page.getByRole("alert")).toContainText("confirmer séparément");
+  // Move the actual symbol. The annotation box remains at the observed text.
+  const b = (await symbols.first().boundingBox())!;
+  await page.mouse.move(b.x + b.width / 2, b.y + b.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(b.x + b.width / 2 + 25, b.y + b.height / 2 + 20, {
+    steps: 5,
+  });
+  await page.mouse.up();
+  await page.getByRole("button", { name: "Enregistrer", exact: true }).click();
+  let project = await (
+    await page.request.get(origin + "/api/projects/" + ident)
+  ).json();
+  expect(project.state.annotations[0].anchor.x).toBeGreaterThan(0.3);
+  expect(project.state.annotations[0].bbox.x).toBe(0.1);
+  expect(project.state.annotations[0].review.position).toBe(false);
+  await page.reload();
+  await page.getByLabel("Projet", { exact: true }).selectOption(ident);
+  await expect(page.getByTestId("placed-pictogram")).toHaveCount(3);
+  // Confirm each actual placement through the same API used by the review form.
+  project = await (
+    await page.request.get(origin + "/api/projects/" + ident)
+  ).json();
+  for (const a of project.state.annotations) {
+    if (a.id === "u1") a.status = "rejected";
+    else {
+      a.status = "confirmed";
+      for (const k of Object.keys(a.review)) a.review[k] = true;
+    }
+  }
+  for (const m of project.state.mappings) m.confirmed = true;
+  const saved = await page.request.put(
+    origin + "/api/projects/" + ident + "/state",
+    { headers: { Origin: origin }, data: project.state },
+  );
+  expect(saved.ok()).toBeTruthy();
+  await page.reload();
+  await page.getByLabel("Projet", { exact: true }).selectOption(ident);
+  const download = page.waitForEvent("download");
+  await page
+    .getByRole("button", { name: "Exporter pour Illustrator", exact: true })
+    .click();
+  expect((await download).suggestedFilename()).toBe("DOEMO-placements.zip");
+  await page.screenshot({
+    path: "/tmp/doemo-pictograms-browser.png",
+    fullPage: true,
+  });
+  await page
+    .getByRole("button", { name: "Illustrator & SAI ↗", exact: true })
+    .click();
+  await expect(
+    page.getByText("BAT de référence", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "← Retour à l’atelier", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "← Retour à l’atelier", exact: true })
+    .click();
+  await expect(page.getByLabel("Projet", { exact: true })).toHaveValue(ident);
+  await expect(page.getByTestId("placed-pictogram")).toHaveCount(3);
+});

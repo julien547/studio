@@ -197,6 +197,7 @@ def test_exif_rotated_image_original_frame(tmp_path):
 def test_gpu_gateway_requires_token_and_does_not_claim_inference(tmp_path,monkeypatch):
     import importlib.util
     from pathlib import Path
+    monkeypatch.syspath_prepend(str(Path(__file__).parents[2]/'services/runpod'))
     spec=importlib.util.spec_from_file_location('test_runpod_gateway',Path(__file__).parents[2]/'services/runpod/gateway.py')
     gateway=importlib.util.module_from_spec(spec);spec.loader.exec_module(gateway)
     monkeypatch.setenv('DOEMO_RUNPOD_TOKEN','t'*40)

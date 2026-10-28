@@ -166,3 +166,10 @@ publie aucun modèle. Installer la migration `005` et le gateway compatible ense
 Le [pilote de reconnaissance PaddleOCR](docs/ENTRAINEMENT-PADDLEOCR.md) réutilise
 la file commune, avec profil accepté indépendant, checkpoints poids/optimiseur
 et métriques CER/WER. Recette GPU requise ; aucun poids actif n’est remplacé.
+
+### Pose des pictogrammes
+
+Le [parcours reconnaissance → SAI → Illustrator](docs/POSE-PICTOGRAMMES.md) relie
+l’analyse multimodale à des propositions d’implantation, aux aperçus SAI déplaçables
+et au paquet d’export Illustrator. Les positions ambiguës et les correspondances
+restent à contrôler ; les ressources vectorielles doivent être importées et approuvées.

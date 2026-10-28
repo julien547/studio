@@ -20,7 +20,7 @@ from . import gpu
 class AnalysisJob(Model):
     document_id: str
     page: int = Field(ge=1)
-    engine: Literal['local','paddleocr','qwen','rtmdet']
+    engine: Literal['local','multimodal','paddleocr','qwen','rtmdet']
 
 
 def configured():
@@ -60,7 +60,7 @@ def attach_queue(app,store,actor,get,doc):
         with gpu.lifecycle_lock(store), store.connect() as c:
             c.execute('INSERT INTO jobs(id,project_id,actor,status,stage,payload) VALUES(?,?,?,?,?,?)',
                 (job,ident,who.login,'queued','En attente',data.model_dump_json()))
-            if data.engine!='local':
+            if data.engine in ('qwen','paddleocr','rtmdet'):
                 c.execute('UPDATE gpu_control SET last_activity=?,next_poll=0 WHERE id=1',(time.time(),))
         return {'id':job,'status':'queued'}
 
@@ -102,13 +102,13 @@ def process_one(store):
         with gpu.lifecycle_lock(store), store.connect() as c:
             c.execute('UPDATE jobs SET status=?,stage=?,result=?,error=?,updated=CURRENT_TIMESTAMP WHERE id=?',
                 (status,stage,json.dumps(result) if result is not None else None,error,job['id']))
-            if engine!='local':c.execute('UPDATE gpu_control SET last_activity=? WHERE id=1',(time.time(),))
+            if engine in ('qwen','paddleocr','rtmdet'):c.execute('UPDATE gpu_control SET last_activity=? WHERE id=1',(time.time(),))
     try:
         path=store.root/'documents'/payload['document_id']/f"page-{payload['page']}.png"
-        if engine=='local':
+        if engine in ('local','multimodal'):
             from .worker import run_job
-            update('running','Reconnaissance OCR locale')
-            result=run_job('recognition',{'image_path':str(path),'document_id':payload['document_id'],'page':payload['page'],'mode':'local','legend_box':None})
+            update('running','Reconnaissance des équipements et positions' if engine=='multimodal' else 'Reconnaissance OCR locale')
+            result=run_job('recognition',{'image_path':str(path),'document_id':payload['document_id'],'page':payload['page'],'mode':engine,'legend_box':None})
             result.update(observations=[],warnings=result['report'].get('warnings',[]))
         else:
             managed=gpu.enabled()
@@ -143,7 +143,7 @@ def process_one(store):
             result['raw']=response
         update('completed','Résultat prêt à vérifier',result)
     except (httpx.HTTPError,KeyError) as exc:
-        if gpu.enabled() and engine!='local':
+        if gpu.enabled() and engine in ('qwen','paddleocr','rtmdet'):
             # A training checkpoint is not a failed inference attempt. Keep the
             # same request until the compute slot is released, without burning
             # the five transport retries or launching a duplicate GPU inference.

@@ -40,6 +40,9 @@ type Props = {
     point: Point,
   ) => void;
   showImage?: boolean;
+  symbols?: Record<string, { href: string; name: string }>;
+  showSymbols?: boolean;
+  pageWidthPt?: number | null;
   proposals?: { bbox: Box; text: string }[];
 };
 export function PlanCanvas(p: Props) {
@@ -315,6 +318,53 @@ export function PlanCanvas(p: Props) {
                     />
                   </g>
                 )}
+                {p.showSymbols &&
+                  a.status !== "rejected" &&
+                  a.anchor &&
+                  a.asset_id &&
+                  p.symbols?.[a.asset_id] &&
+                  (() => {
+                    const symbol = p.symbols![a.asset_id!];
+                    const size = p.pageWidthPt
+                      ? (((a.size_mm * 72) / 25.4) * w) / p.pageWidthPt
+                      : (w * a.size_mm) / 297;
+                    const x = a.anchor!.x * w,
+                      y = a.anchor!.y * h;
+                    return (
+                      <g
+                        data-id={a.id}
+                        data-anchor="true"
+                        data-testid="placed-pictogram"
+                        transform={`translate(${x},${y}) rotate(${a.rotation_deg})`}
+                      >
+                        <title>
+                          {symbol.name} ·{" "}
+                          {a.status === "confirmed" ? "validé" : "à vérifier"}
+                        </title>
+                        <image
+                          href={symbol.href}
+                          x={-size / 2}
+                          y={-size / 2}
+                          width={size}
+                          height={size}
+                          preserveAspectRatio="xMidYMid meet"
+                        />
+                        <rect
+                          x={-size / 2 - 2}
+                          y={-size / 2 - 2}
+                          width={size + 4}
+                          height={size + 4}
+                          fill="none"
+                          stroke={color}
+                          strokeDasharray={
+                            a.status === "confirmed" ? undefined : "4 3"
+                          }
+                          strokeWidth={active ? 2.5 : 1}
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      </g>
+                    );
+                  })()}
               </g>
             );
           })}
