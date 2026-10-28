@@ -1,0 +1,175 @@
+{
+  "schema": "doemo.qwen-seed-corrections/1",
+  "building_key": "animalis-70-boulevard-de-grenelle-paris",
+  "source_name": "RELEVEDEUX.pdf",
+  "source_pdf_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+  "coordinate_frame": "normalized_top_left_on_original_scan",
+  "geometry_reviewed": false,
+  "examples": [
+    {
+      "id": "animalis-02",
+      "source_region": {
+        "x": 0.13208333333333333,
+        "y": 0.34708308780200353,
+        "w": 0.0275,
+        "h": 0.05008839127872716
+      },
+      "floor_context": "r-1",
+      "equipment_type": "EXT_PORTATIF",
+      "decision": "classify",
+      "quantity": null,
+      "user_evidence": "POUR LES EXTINCTEURS NOUS METTONS LE PICTO EXTINCTEUR PORTATIF, SANS DISTINCTION",
+      "convention_context": "Convention DOEMO : un pictogramme extincteur portatif commun, sans distinction d’agent ou de capacité."
+    },
+    {
+      "id": "animalis-04",
+      "source_region": {
+        "x": 0.36375,
+        "y": 0.27342368886269885,
+        "w": 0.024166666666666666,
+        "h": 0.04124926340601061
+      },
+      "floor_context": "r-1",
+      "equipment_type": "VEI",
+      "decision": "classify",
+      "quantity": null,
+      "user_evidence": "4. C EST ECRIS PE METTRE VOUS ETES ICI OU VEI",
+      "convention_context": "Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers."
+    },
+    {
+      "id": "animalis-06",
+      "source_region": {
+        "x": 0.10208333333333333,
+        "y": 0.31231585150265173,
+        "w": 0.03666666666666667,
+        "h": 0.03830288744843842
+      },
+      "floor_context": "r-1",
+      "equipment_type": "VEI",
+      "decision": "classify",
+      "quantity": null,
+      "user_evidence": "6 ET 7 ET 11 ET 12 VOUS ETES CI VEI",
+      "convention_context": "Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers."
+    },
+    {
+      "id": "animalis-07",
+      "source_region": {
+        "x": 0.35125,
+        "y": 0.23983500294637597,
+        "w": 0.03625,
+        "h": 0.043606364172068354
+      },
+      "floor_context": "r-1",
+      "equipment_type": "VEI",
+      "decision": "classify",
+      "quantity": null,
+      "user_evidence": "6 ET 7 ET 11 ET 12 VOUS ETES CI VEI",
+      "convention_context": "Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers."
+    },
+    {
+      "id": "animalis-11",
+      "source_region": {
+        "x": 0.6658333333333334,
+        "y": 0.2504419563936358,
+        "w": 0.030416666666666668,
+        "h": 0.049499116087212726
+      },
+      "floor_context": "rdc",
+      "equipment_type": "VEI",
+      "decision": "classify",
+      "quantity": null,
+      "user_evidence": "6 ET 7 ET 11 ET 12 VOUS ETES CI VEI",
+      "convention_context": "Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers."
+    },
+    {
+      "id": "animalis-12",
+      "source_region": {
+        "x": 0.8716666666666667,
+        "y": 0.4578668238067177,
+        "w": 0.035,
+        "h": 0.05362404242781379
+      },
+      "floor_context": "rdc",
+      "equipment_type": "VEI",
+      "decision": "classify",
+      "quantity": null,
+      "user_evidence": "6 ET 7 ET 11 ET 12 VOUS ETES CI VEI",
+      "convention_context": "Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers."
+    },
+    {
+      "id": "animalis-05",
+      "source_region": {
+        "x": 0.3075,
+        "y": 0.41543901001767825,
+        "w": 0.02375,
+        "h": 0.03830288744843842
+      },
+      "floor_context": "r-1",
+      "equipment_type": null,
+      "decision": "exclude",
+      "quantity": null,
+      "user_evidence": "5 NE RIEN METTRE",
+      "convention_context": "Consigne spécifique du dessinateur : ne rien poser dans la zone 5. Cette exclusion ne se déduit pas du seul aspect du symbole."
+    },
+    {
+      "id": "animalis-08",
+      "source_region": {
+        "x": 0.54,
+        "y": 0.14437242192103714,
+        "w": 0.03208333333333333,
+        "h": 0.04242781378903948
+      },
+      "floor_context": "rdc",
+      "equipment_type": "EXT_PORTATIF",
+      "decision": "classify",
+      "quantity": 2,
+      "user_evidence": "Deux extincteurs",
+      "convention_context": "Pour la réserve au niveau 0, le dessinateur confirme deux extincteurs aux deux repères 8 du plan corrigé. Le relevé seul ne suffit pas à établir ce nombre."
+    },
+    {
+      "id": "animalis-13",
+      "source_region": {
+        "x": 0.06458333333333334,
+        "y": 0.20329994107248084,
+        "w": 0.041666666666666664,
+        "h": 0.06776664702416028
+      },
+      "floor_context": "r-1",
+      "equipment_type": "PCF",
+      "decision": "classify",
+      "quantity": null,
+      "user_evidence": "il manque les portes coupe feu pcf une au -1 et une au 0",
+      "convention_context": "Convention DOEMO : PCF signifie porte coupe-feu, avec son pictogramme dédié ; ce n’est pas un extincteur."
+    },
+    {
+      "id": "animalis-14",
+      "source_region": {
+        "x": 0.5458333333333333,
+        "y": 0.09899823217442545,
+        "w": 0.041666666666666664,
+        "h": 0.05833824395992929
+      },
+      "floor_context": "rdc",
+      "equipment_type": "PCF",
+      "decision": "classify",
+      "quantity": null,
+      "user_evidence": "il manque les portes coupe feu pcf une au -1 et une au 0",
+      "convention_context": "Convention DOEMO : PCF signifie porte coupe-feu, avec son pictogramme dédié ; ce n’est pas un extincteur."
+    },
+    {
+      "id": "animalis-15",
+      "source_region": {
+        "x": 0.9129166666666667,
+        "y": 0.3918680023571008,
+        "w": 0.01875,
+        "h": 0.031231585150265175
+      },
+      "floor_context": "rdc",
+      "equipment_type": null,
+      "decision": "review",
+      "quantity": null,
+      "user_evidence": "15 JE NE SAIS PAS",
+      "convention_context": "Dans ce dossier, le dessinateur n’a pas identifié la zone 15. La conserver indéterminée ; ne rien poser automatiquement."
+    }
+  ]
+}

@@ -1,0 +1,647 @@
+{
+  "schema": "doemo.qwen-draft-pack/1",
+  "engine": "qwen",
+  "ready_for_training": false,
+  "building_groups": 1,
+  "split_counts": {
+    "train": 11,
+    "validation": 0,
+    "test": 0
+  },
+  "original_document_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+  "source_image_sha256": "92d2d3d9ba9458b618a45bcb1b65328e172845f2887c9e20061d8bf06120450b",
+  "examples": [
+    {
+      "id": "animalis-02",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "train",
+      "building_key": "animalis-70-boulevard-de-grenelle-paris",
+      "original_document_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+      "image": "images/animalis-02.png",
+      "image_sha256": "c71134ebdc2303d52e5eacf14431fc1956201418ae4c5a350a77da4ed8a5f225",
+      "image_size": [
+        256,
+        256
+      ],
+      "original_region": {
+        "x": 0.13208333333333333,
+        "y": 0.34708308780200353,
+        "w": 0.0275,
+        "h": 0.05008839127872716
+      },
+      "crop_pixels": [
+        222,
+        503,
+        478,
+        759
+      ],
+      "crop_source_size": [
+        2400,
+        1697
+      ],
+      "user_evidence": "POUR LES EXTINCTEURS NOUS METTONS LE PICTO EXTINCTEUR PORTATIF, SANS DISTINCTION",
+      "interpretation_scope": "designation_only",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"EXT_PORTATIF\",\"quantity\":null}",
+        "convention": "Animalis r-1, animalis-02, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention DOEMO : un pictogramme extincteur portatif commun, sans distinction d’agent ou de capacité.",
+        "observed": "",
+        "notes": "Source RELEVEDEUX.pdf ; animalis-02 ; désignation uniquement ; revue humaine requise."
+      },
+      "conversation": {
+        "image": "images/animalis-02.png",
+        "split": "train",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Animalis r-1, animalis-02, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention DOEMO : un pictogramme extincteur portatif commun, sans distinction d’agent ou de capacité."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"EXT_PORTATIF\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "animalis-04",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "train",
+      "building_key": "animalis-70-boulevard-de-grenelle-paris",
+      "original_document_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+      "image": "images/animalis-04.png",
+      "image_sha256": "67b604b20cfca5ef33f2be2cd62d271d459e2fc39aff87b2b12fd49c61ae68bb",
+      "image_size": [
+        256,
+        256
+      ],
+      "original_region": {
+        "x": 0.36375,
+        "y": 0.27342368886269885,
+        "w": 0.024166666666666666,
+        "h": 0.04124926340601061
+      },
+      "crop_pixels": [
+        774,
+        371,
+        1030,
+        627
+      ],
+      "crop_source_size": [
+        2400,
+        1697
+      ],
+      "user_evidence": "4. C EST ECRIS PE METTRE VOUS ETES ICI OU VEI",
+      "interpretation_scope": "designation_only",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}",
+        "convention": "Animalis r-1, animalis-04, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers.",
+        "observed": "",
+        "notes": "Source RELEVEDEUX.pdf ; animalis-04 ; désignation uniquement ; revue humaine requise."
+      },
+      "conversation": {
+        "image": "images/animalis-04.png",
+        "split": "train",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Animalis r-1, animalis-04, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "animalis-06",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "train",
+      "building_key": "animalis-70-boulevard-de-grenelle-paris",
+      "original_document_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+      "image": "images/animalis-06.png",
+      "image_sha256": "b79302075a804474e0c9b687c0e3b2f358a885f9e3acc65315d40a9f2e9c337b",
+      "image_size": [
+        256,
+        256
+      ],
+      "original_region": {
+        "x": 0.10208333333333333,
+        "y": 0.31231585150265173,
+        "w": 0.03666666666666667,
+        "h": 0.03830288744843842
+      },
+      "crop_pixels": [
+        161,
+        434,
+        417,
+        690
+      ],
+      "crop_source_size": [
+        2400,
+        1697
+      ],
+      "user_evidence": "6 ET 7 ET 11 ET 12 VOUS ETES CI VEI",
+      "interpretation_scope": "designation_only",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}",
+        "convention": "Animalis r-1, animalis-06, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers.",
+        "observed": "",
+        "notes": "Source RELEVEDEUX.pdf ; animalis-06 ; désignation uniquement ; revue humaine requise."
+      },
+      "conversation": {
+        "image": "images/animalis-06.png",
+        "split": "train",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Animalis r-1, animalis-06, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "animalis-07",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "train",
+      "building_key": "animalis-70-boulevard-de-grenelle-paris",
+      "original_document_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+      "image": "images/animalis-07.png",
+      "image_sha256": "2338c7b6f3b74fe76b59e6c602366224455901ce10352b8e8f1404225fcd4a96",
+      "image_size": [
+        256,
+        256
+      ],
+      "original_region": {
+        "x": 0.35125,
+        "y": 0.23983500294637597,
+        "w": 0.03625,
+        "h": 0.043606364172068354
+      },
+      "crop_pixels": [
+        758,
+        316,
+        1014,
+        572
+      ],
+      "crop_source_size": [
+        2400,
+        1697
+      ],
+      "user_evidence": "6 ET 7 ET 11 ET 12 VOUS ETES CI VEI",
+      "interpretation_scope": "designation_only",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}",
+        "convention": "Animalis r-1, animalis-07, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers.",
+        "observed": "",
+        "notes": "Source RELEVEDEUX.pdf ; animalis-07 ; désignation uniquement ; revue humaine requise."
+      },
+      "conversation": {
+        "image": "images/animalis-07.png",
+        "split": "train",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Animalis r-1, animalis-07, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "animalis-11",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "train",
+      "building_key": "animalis-70-boulevard-de-grenelle-paris",
+      "original_document_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+      "image": "images/animalis-11.png",
+      "image_sha256": "21ee3339e422018cdb2902b6559af07841c99560a98aac0cd87372d57e5198fc",
+      "image_size": [
+        256,
+        256
+      ],
+      "original_region": {
+        "x": 0.6658333333333334,
+        "y": 0.2504419563936358,
+        "w": 0.030416666666666668,
+        "h": 0.049499116087212726
+      },
+      "crop_pixels": [
+        1506,
+        338,
+        1762,
+        594
+      ],
+      "crop_source_size": [
+        2400,
+        1697
+      ],
+      "user_evidence": "6 ET 7 ET 11 ET 12 VOUS ETES CI VEI",
+      "interpretation_scope": "designation_only",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}",
+        "convention": "Animalis rdc, animalis-11, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers.",
+        "observed": "",
+        "notes": "Source RELEVEDEUX.pdf ; animalis-11 ; désignation uniquement ; revue humaine requise."
+      },
+      "conversation": {
+        "image": "images/animalis-11.png",
+        "split": "train",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Animalis rdc, animalis-11, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "animalis-12",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "train",
+      "building_key": "animalis-70-boulevard-de-grenelle-paris",
+      "original_document_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+      "image": "images/animalis-12.png",
+      "image_sha256": "8db7215fe9dbb37953c57a661dfa7c495636dea4311b1c885d6d3237a9565fb2",
+      "image_size": [
+        256,
+        256
+      ],
+      "original_region": {
+        "x": 0.8716666666666667,
+        "y": 0.4578668238067177,
+        "w": 0.035,
+        "h": 0.05362404242781379
+      },
+      "crop_pixels": [
+        2006,
+        694,
+        2262,
+        950
+      ],
+      "crop_source_size": [
+        2400,
+        1697
+      ],
+      "user_evidence": "6 ET 7 ET 11 ET 12 VOUS ETES CI VEI",
+      "interpretation_scope": "designation_only",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}",
+        "convention": "Animalis rdc, animalis-12, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers.",
+        "observed": "",
+        "notes": "Source RELEVEDEUX.pdf ; animalis-12 ; désignation uniquement ; revue humaine requise."
+      },
+      "conversation": {
+        "image": "images/animalis-12.png",
+        "split": "train",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Animalis rdc, animalis-12, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention propre au dossier Animalis : les repères 4, 6, 7, 11 et 12 correspondent à « Vous êtes ici ». Ne pas généraliser PI à tous les dossiers."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "animalis-05",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "train",
+      "building_key": "animalis-70-boulevard-de-grenelle-paris",
+      "original_document_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+      "image": "images/animalis-05.png",
+      "image_sha256": "ccc504ebf6a73564eafd986862fdc84460a540cc89015736b60c39da04c05a62",
+      "image_size": [
+        256,
+        256
+      ],
+      "original_region": {
+        "x": 0.3075,
+        "y": 0.41543901001767825,
+        "w": 0.02375,
+        "h": 0.03830288744843842
+      },
+      "crop_pixels": [
+        638,
+        609,
+        894,
+        865
+      ],
+      "crop_source_size": [
+        2400,
+        1697
+      ],
+      "user_evidence": "5 NE RIEN METTRE",
+      "interpretation_scope": "designation_only",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "interpretation": "{\"anchor\":null,\"decision\":\"exclude\",\"equipment_type\":null,\"quantity\":null}",
+        "convention": "Animalis r-1, animalis-05, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Consigne spécifique du dessinateur : ne rien poser dans la zone 5. Cette exclusion ne se déduit pas du seul aspect du symbole.",
+        "observed": "",
+        "notes": "Source RELEVEDEUX.pdf ; animalis-05 ; désignation uniquement ; revue humaine requise."
+      },
+      "conversation": {
+        "image": "images/animalis-05.png",
+        "split": "train",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Animalis r-1, animalis-05, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Consigne spécifique du dessinateur : ne rien poser dans la zone 5. Cette exclusion ne se déduit pas du seul aspect du symbole."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"exclude\",\"equipment_type\":null,\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "animalis-08",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "train",
+      "building_key": "animalis-70-boulevard-de-grenelle-paris",
+      "original_document_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+      "image": "images/animalis-08.png",
+      "image_sha256": "8fc48c73529a267864c2958248327245d295dd7131731ef04d04ae57f3a22974",
+      "image_size": [
+        256,
+        256
+      ],
+      "original_region": {
+        "x": 0.54,
+        "y": 0.14437242192103714,
+        "w": 0.03208333333333333,
+        "h": 0.04242781378903948
+      },
+      "crop_pixels": [
+        1206,
+        153,
+        1462,
+        409
+      ],
+      "crop_source_size": [
+        2400,
+        1697
+      ],
+      "user_evidence": "Deux extincteurs",
+      "interpretation_scope": "designation_only",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"EXT_PORTATIF\",\"quantity\":2}",
+        "convention": "Animalis rdc, animalis-08, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Pour la réserve au niveau 0, le dessinateur confirme deux extincteurs aux deux repères 8 du plan corrigé. Le relevé seul ne suffit pas à établir ce nombre.",
+        "observed": "",
+        "notes": "Source RELEVEDEUX.pdf ; animalis-08 ; désignation uniquement ; revue humaine requise."
+      },
+      "conversation": {
+        "image": "images/animalis-08.png",
+        "split": "train",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Animalis rdc, animalis-08, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Pour la réserve au niveau 0, le dessinateur confirme deux extincteurs aux deux repères 8 du plan corrigé. Le relevé seul ne suffit pas à établir ce nombre."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"EXT_PORTATIF\",\"quantity\":2}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "animalis-13",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "train",
+      "building_key": "animalis-70-boulevard-de-grenelle-paris",
+      "original_document_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+      "image": "images/animalis-13.png",
+      "image_sha256": "cb67fe7106d014937b72b392659fddc2a6bc4c58480a4f1ff0e9327cae0dff2d",
+      "image_size": [
+        256,
+        256
+      ],
+      "original_region": {
+        "x": 0.06458333333333334,
+        "y": 0.20329994107248084,
+        "w": 0.041666666666666664,
+        "h": 0.06776664702416028
+      },
+      "crop_pixels": [
+        77,
+        274,
+        333,
+        530
+      ],
+      "crop_source_size": [
+        2400,
+        1697
+      ],
+      "user_evidence": "il manque les portes coupe feu pcf une au -1 et une au 0",
+      "interpretation_scope": "designation_only",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"PCF\",\"quantity\":null}",
+        "convention": "Animalis r-1, animalis-13, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention DOEMO : PCF signifie porte coupe-feu, avec son pictogramme dédié ; ce n’est pas un extincteur.",
+        "observed": "",
+        "notes": "Source RELEVEDEUX.pdf ; animalis-13 ; désignation uniquement ; revue humaine requise."
+      },
+      "conversation": {
+        "image": "images/animalis-13.png",
+        "split": "train",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Animalis r-1, animalis-13, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention DOEMO : PCF signifie porte coupe-feu, avec son pictogramme dédié ; ce n’est pas un extincteur."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"PCF\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "animalis-14",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "train",
+      "building_key": "animalis-70-boulevard-de-grenelle-paris",
+      "original_document_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+      "image": "images/animalis-14.png",
+      "image_sha256": "fc76360e3eca0239f6d0065f81aed28401f4eeb09a2cdf452656b4d20cebd7ec",
+      "image_size": [
+        256,
+        256
+      ],
+      "original_region": {
+        "x": 0.5458333333333333,
+        "y": 0.09899823217442545,
+        "w": 0.041666666666666664,
+        "h": 0.05833824395992929
+      },
+      "crop_pixels": [
+        1232,
+        89,
+        1488,
+        345
+      ],
+      "crop_source_size": [
+        2400,
+        1697
+      ],
+      "user_evidence": "il manque les portes coupe feu pcf une au -1 et une au 0",
+      "interpretation_scope": "designation_only",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"PCF\",\"quantity\":null}",
+        "convention": "Animalis rdc, animalis-14, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention DOEMO : PCF signifie porte coupe-feu, avec son pictogramme dédié ; ce n’est pas un extincteur.",
+        "observed": "",
+        "notes": "Source RELEVEDEUX.pdf ; animalis-14 ; désignation uniquement ; revue humaine requise."
+      },
+      "conversation": {
+        "image": "images/animalis-14.png",
+        "split": "train",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Animalis rdc, animalis-14, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Convention DOEMO : PCF signifie porte coupe-feu, avec son pictogramme dédié ; ce n’est pas un extincteur."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"PCF\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "animalis-15",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "train",
+      "building_key": "animalis-70-boulevard-de-grenelle-paris",
+      "original_document_sha256": "d482fc3847033b78dbaa7bd52b284d40f25c4bcb532cf57e0b74f2c6c6c8529e",
+      "image": "images/animalis-15.png",
+      "image_sha256": "53275d196386e1cce2ca161b14d457b5f26ecd21759b837c4bb9fd88655b032a",
+      "image_size": [
+        256,
+        256
+      ],
+      "original_region": {
+        "x": 0.9129166666666667,
+        "y": 0.3918680023571008,
+        "w": 0.01875,
+        "h": 0.031231585150265175
+      },
+      "crop_pixels": [
+        2085,
+        563,
+        2341,
+        819
+      ],
+      "crop_source_size": [
+        2400,
+        1697
+      ],
+      "user_evidence": "15 JE NE SAIS PAS",
+      "interpretation_scope": "designation_only",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "interpretation": "{\"anchor\":null,\"decision\":\"review\",\"equipment_type\":null,\"quantity\":null}",
+        "convention": "Animalis rdc, animalis-15, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Dans ce dossier, le dessinateur n’a pas identifié la zone 15. La conserver indéterminée ; ne rien poser automatiquement.",
+        "observed": "",
+        "notes": "Source RELEVEDEUX.pdf ; animalis-15 ; désignation uniquement ; revue humaine requise."
+      },
+      "conversation": {
+        "image": "images/animalis-15.png",
+        "split": "train",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Animalis rdc, animalis-15, repère central. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null ; quantity=null sauf nombre confirmé. Dans ce dossier, le dessinateur n’a pas identifié la zone 15. La conserver indéterminée ; ne rien poser automatiquement."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"review\",\"equipment_type\":null,\"quantity\":null}"
+          }
+        ]
+      }
+    }
+  ],
+  "blockers": [
+    "Relecture des détails et réponses avant validation dans DOEMO.",
+    "Deux autres groupes de bâtiments indépendants corrigés et validés.",
+    "Autorisation du projet enregistrée dans DOEMO avant export."
+  ]
+}

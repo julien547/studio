@@ -1,0 +1,91 @@
+{
+  "schema": "doemo.qwen-draft-manifest/1",
+  "ready_for_training": false,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "be04249f2122a176c420c7df41b3fe185a0c41f0ca8817985bce7373e362d60e",
+      "size": 4847
+    },
+    {
+      "path": "corrections.json",
+      "sha256": "c93608f8447c17c19d9f94be792b63cb36227da64855e84f7af30af1fe294a2a",
+      "size": 6382
+    },
+    {
+      "path": "draft-examples.json",
+      "sha256": "671cf1d4098fca09ed734de3ae66d671fb7f6021763c6f1e8b8c025cf81da2ec",
+      "size": 26374
+    },
+    {
+      "path": "images/animalis-02.png",
+      "sha256": "c71134ebdc2303d52e5eacf14431fc1956201418ae4c5a350a77da4ed8a5f225",
+      "size": 47746
+    },
+    {
+      "path": "images/animalis-04.png",
+      "sha256": "67b604b20cfca5ef33f2be2cd62d271d459e2fc39aff87b2b12fd49c61ae68bb",
+      "size": 40604
+    },
+    {
+      "path": "images/animalis-05.png",
+      "sha256": "ccc504ebf6a73564eafd986862fdc84460a540cc89015736b60c39da04c05a62",
+      "size": 27577
+    },
+    {
+      "path": "images/animalis-06.png",
+      "sha256": "b79302075a804474e0c9b687c0e3b2f358a885f9e3acc65315d40a9f2e9c337b",
+      "size": 50679
+    },
+    {
+      "path": "images/animalis-07.png",
+      "sha256": "2338c7b6f3b74fe76b59e6c602366224455901ce10352b8e8f1404225fcd4a96",
+      "size": 45923
+    },
+    {
+      "path": "images/animalis-08.png",
+      "sha256": "8fc48c73529a267864c2958248327245d295dd7131731ef04d04ae57f3a22974",
+      "size": 29685
+    },
+    {
+      "path": "images/animalis-11.png",
+      "sha256": "21ee3339e422018cdb2902b6559af07841c99560a98aac0cd87372d57e5198fc",
+      "size": 35630
+    },
+    {
+      "path": "images/animalis-12.png",
+      "sha256": "8db7215fe9dbb37953c57a661dfa7c495636dea4311b1c885d6d3237a9565fb2",
+      "size": 28384
+    },
+    {
+      "path": "images/animalis-13.png",
+      "sha256": "cb67fe7106d014937b72b392659fddc2a6bc4c58480a4f1ff0e9327cae0dff2d",
+      "size": 40318
+    },
+    {
+      "path": "images/animalis-14.png",
+      "sha256": "fc76360e3eca0239f6d0065f81aed28401f4eeb09a2cdf452656b4d20cebd7ec",
+      "size": 30611
+    },
+    {
+      "path": "images/animalis-15.png",
+      "sha256": "53275d196386e1cce2ca161b14d457b5f26ecd21759b837c4bb9fd88655b032a",
+      "size": 44916
+    },
+    {
+      "path": "qwen-draft.jsonl",
+      "sha256": "c468342ff6dfeb455072898e04843ce6302e6f8aa64d93b3485fbf14a906dcfc",
+      "size": 5764
+    },
+    {
+      "path": "releve-source.png",
+      "sha256": "92d2d3d9ba9458b618a45bcb1b65328e172845f2887c9e20061d8bf06120450b",
+      "size": 1032393
+    },
+    {
+      "path": "revue.html",
+      "sha256": "ac4b24494adf7dd9753ba38f7bdbbc2da8241172a45e5fe0ddd57e355483b9c1",
+      "size": 9347
+    }
+  ]
+}
