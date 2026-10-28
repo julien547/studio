@@ -1,7 +1,7 @@
 # Raccorder réellement les trois IA à l’éditeur OVH
 
 Transmission à la session qui déploie OVH et à celle qui prépare l’image RunPod.
-Livraison 0.3.5, branche `feat/redessin-ovh-tests`, [PR Studio 1](https://github.com/julien547/studio/pull/1).
+Livraison 0.3.6, branche `feat/redessin-ovh-tests`, [PR Studio 1](https://github.com/julien547/studio/pull/1).
 Commencer par [INSTALLATION-CONNEXION-IA.md](../../INSTALLATION-CONNEXION-IA.md) :
 configuration OVH, clés, lancement automatique RunPod et préservation du menu actuel.
 **Le raccordement réel n’a pas été exécuté depuis cette session.** Les chemins
@@ -80,7 +80,7 @@ des résultats non sauvegardés avant toute décision d’arrêt.
 
 ## 3. Vérifier le service actif depuis OVH
 
-Après installation de la version 0.3.5 selon [DEPLOIEMENT_OVH.md](DEPLOIEMENT_OVH.md) :
+Après installation de la version 0.3.6 selon [DEPLOIEMENT_OVH.md](DEPLOIEMENT_OVH.md) :
 
 ```bash
 sudo -u doemo-redessin /opt/doemo-redessin/venv/bin/python \

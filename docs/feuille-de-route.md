@@ -133,3 +133,23 @@ ne mesurent pas une précision. Aucun mur ni aucune échelle n’a été validé
 [la procédure et les limites](../reconstruction/ovh/CONTROLE_DOUBLES_AXES.md).
 La qualification d’un modèle sémantique spécialisé, l’annotation humaine de référence
 et les essais réels RunPod/Illustrator restent les prochaines conditions de passage.
+
+## Conservation des ouvertures 0.3.6
+
+La correction explicite de deux bords vers un axe médian conserve maintenant les
+ouvertures, y compris sur les portions restantes et lorsque les bords sont orientés
+en sens opposés. Les passages communs sont réunis ; les portions pleines entre des
+ouvertures disjointes restent présentes. Les indications contradictoires conservent
+leur provenance et imposent un contrôle humain du type et de la position.
+
+Les ouvertures transférées et les murs résultants repassent en attente. Le bouton
+**Valider l’ouverture** permet de confirmer chaque réservation avant de valider
+le mur. Un recouvrement entièrement occupé par les ouvertures refuse la fusion.
+Les SVG restent composés de segments noirs colinéaires interrompus aux passages.
+
+144 tests Python et le parcours Chromium synthétique passent. Le test navigateur
+est livré dans le dépôt, avec sa procédure d’exécution. Les sauvegardes/rechargements
+OVH, l’export et la sélection des corrections d’apprentissage sont vérifiés en local.
+Voir [la procédure 0.3.6](../reconstruction/ovh/FUSION_MURS_OUVERTURES.md). Cette
+livraison ne constitue pas une reconnaissance automatique des portes/fenêtres,
+une inférence RunPod réelle ou une validation dans Adobe Illustrator.

@@ -1,4 +1,4 @@
-# DOEMO Reconstruction architecturale 0.3.3
+# DOEMO Reconstruction architecturale 0.3.6
 
 **Installation et raccordement des trois IA : [procédure complète](../INSTALLATION-CONNEXION-IA.md).**
 Lire l’[avertissement de production](../AVERTISSEMENT-MODIFICATIONS-STUDIO.md) avant
@@ -6,6 +6,13 @@ tout déploiement. Le redessin reste dans l’iframe sous le menu actuel, sans b
 Cette livraison ne remplace ni `/app/` ni `/releves/`.
 
 Prototype local ajouté à DOEMO Studio. Le modèle indépendant contient des axes, épaisseurs et ouvertures de murs ; les SVG contiennent des axes noirs ouverts, sans remplissage, groupés par mur et interrompus aux ouvertures. Toutes les détections sont des propositions à valider. Il ne s’agit pas encore du module complet de production.
+
+La version courante conserve les [ouvertures lors de la fusion de deux bords en un axe médian](ovh/FUSION_MURS_OUVERTURES.md),
+avec contrôle du type et de la position avant validation. Le
+[contrôle des doubles axes](ovh/CONTROLE_DOUBLES_AXES.md) protège les exports validés.
+Le raccordement signé aux trois IA et la procédure de déploiement sont livrés ; les
+inférences réelles RunPod et la qualification du modèle spécialisé restent à faire.
+144 tests Python et le parcours navigateur synthétique passent.
 
 La version 0.3.0 ajoute un module web de test derrière la session DOEMO existante : import d’une page, file locale, correction et sauvegarde par utilisateur, SVG validé côté serveur et observations RunPod facultatives. La procédure de la session qui déploie est [Déployer sur OVH](ovh/DEPLOIEMENT_OVH.md). L’URL prévue après installation est `/redessin/` ; les poids et les plans clients sont exclus du dépôt.
 
@@ -41,7 +48,11 @@ doemo-reconstruction connector projet.json import-illustrator.json
 
 `niveaux.json` est une liste de régions `{id, name, source_page, bbox:[x0,y0,x1,y1]}`. Plusieurs niveaux peuvent partager la même page. Le repère reste celui de la page entière : x vers la droite, y vers le bas, dimensions de la page conservées. Les PDF utilisent les points du document ; une image seule utilise les pixels. Ce ne sont pas des dimensions du bâtiment. Aucune valeur métrique n’est ajoutée sans une cote explicitement validée.
 
-`editor/editor.html` permet de charger le JSON, puis de corriger les murs et de sauvegarder le projet, les SVG ou les corrections approuvées. L’éditeur est local, sans téléversement réseau, sans sauvegarde serveur automatique. Le nom du valideur est déclaratif dans ce prototype. Pour servir ce prototype sur le domaine Studio, externaliser le script inline et conserver la CSP et les contrôles de session existants ; ne pas exposer le répertoire Python et les sources clients dans la racine publique.
+`editor/editor.html` est la variante autonome : chargement JSON, correction et
+sauvegarde locale ; le nom du valideur y est déclaratif. La variante web livrée
+utilise `redessin/editor.js`, généré par `ovh/build_web.py`, les sessions PHP et le
+service privé OVH. Elle conserve la CSP, l’identité serveur et les projets hors
+du répertoire public. Suivre la procédure de déploiement pour cette variante.
 
 ## Géométrie et ouvertures
 
@@ -52,8 +63,10 @@ doemo-reconstruction connector projet.json import-illustrator.json
 - Pour deux traces parallèles représentant les faces d’un même mur, sélectionner la
   première, cliquer « Deux bords → un axe médian », puis sélectionner la seconde.
   La portion commune devient un axe à valider ; les portions non communes restent
-  disponibles. La commande refuse les ouvertures renseignées et les traces sans
-  recouvrement. Elle n’est jamais lancée automatiquement sur des murs voisins.
+  disponibles. Les ouvertures sont projetées et conservées sur les objets
+  résultants, puis repassent en attente de validation. La commande refuse les traces
+  sans recouvrement ou dont toute la portion commune est exclue par les ouvertures.
+  Elle n’est jamais lancée automatiquement sur des murs voisins.
 - Les SVG de revue incluent les propositions en traits noirs, marquées `data-status="pending"`. Le halo orange est réservé au contrôle dans l’éditeur et au PNG de comparaison. Les SVG validés incluent uniquement les murs approuvés. Le calque Référence est présent mais masqué. Les autres calques sont préparés ; les portes sont actuellement des réservations de passages, sans vantail inventé. Les escaliers, fenêtres détaillées et pièces ne sont pas encore reconstruits automatiquement.
 
 ## Modèles et droits
@@ -72,12 +85,30 @@ Le connecteur réel n’est pas présent dans ce checkout : le transport et le p
 
 ## Vérification
 
+Les tests de comparaison géométrique utilisent aussi **Node.js 22 ou supérieur**.
+Les dépendances Python de recette sont celles des extras `test,service` ci-dessus.
+
 ```bash
 cd reconstruction
 python -m pytest -q
 ```
 
 Tests : paires diagonales, respect des coupures, intervalles d’ouvertures, raccords géométriques à épaisseurs différentes, séparation revue/validé, validation de cotes, rejet des données invalides, conservation des coordonnées des niveaux, extraction d’un PDF vectoriel réel généré pour le test. Les corrections sauvegardées par l’éditeur peuvent être rechargées par le moteur Python.
+
+Le parcours navigateur livré utilise uniquement des géométries synthétiques.
+Depuis la racine du dépôt, dans un environnement de recette séparé :
+
+```bash
+python3 reconstruction/ovh/build_web.py
+npm install --prefix /tmp/doemo-redessin-ui-tests --no-audit --no-fund playwright@1.62.1
+/tmp/doemo-redessin-ui-tests/node_modules/.bin/playwright install chromium
+NODE_PATH=/tmp/doemo-redessin-ui-tests/node_modules node reconstruction/tests/browser/median-openings.cjs
+```
+
+Si Chromium est déjà installé, son exécutable peut être fourni via
+`DOEMO_TEST_CHROMIUM` à la place du téléchargement. Le test démarre un serveur
+local temporaire sur un port libre, affiche son rapport JSON puis ferme le
+navigateur et le serveur. Il n’utilise aucun compte Studio, plan client ni GPU.
 
 Le plan Animalis, les projets générés et les captures ne sont pas stockés dans le dépôt source. Leur SHA-256 figure dans le projet JSON pour rattacher les corrections au bon document.
 
@@ -95,8 +126,8 @@ Les spécifications RunPod remplacent les anciennes hypothèses OVH GPU/Ollama. 
 
 L’éditeur ajoute coupe, correction/suppression d’ouverture, annuler/refaire avec révisions croissantes, réglage du trait graphique et épaisseur détectée facultative. Le contrat Illustrator passe à `/2` ; ne pas envoyer les anciens polygones `/1` au nouveau JSX.
 
-Essai courant : exclusivement page 1 de `2(2).pdf`, PDF cinq pages dont la première est un scan, sans tracé vectoriel récupérable. Le moteur v0.24 produit 400 candidats bruts. Le regroupement expérimental des contours propose 101 axes, dont 37 diagonaux ; 221 traces isolées restent non interprétées. Zéro ouverture automatiquement reconnue et zéro mur validé. Les coordonnées du document sont préservées ; seul le PNG de comparaison est tourné pour la lecture. Ces chiffres décrivent les sorties, pas leur exactitude. Les murs manquants, faux murs, passages et raccords nécessitent une revue. Aucun appel RunPod n’a été effectué.
+Essai initial : exclusivement page 1 de `2(2).pdf`, PDF cinq pages dont la première est un scan, sans tracé vectoriel récupérable. Le moteur v0.24 produit 400 candidats bruts. Le regroupement expérimental des contours propose 101 axes, dont 37 diagonaux ; 221 traces isolées restent non interprétées. Zéro ouverture automatiquement reconnue et zéro mur validé. Les coordonnées du document sont préservées ; seul le PNG de comparaison est tourné pour la lecture. Ces chiffres décrivent les sorties, pas leur exactitude. Les murs manquants, faux murs, passages et raccords nécessitent une revue. Aucun appel RunPod n’a été effectué.
 
-Vérifications : 50 tests Python et parcours Chromium de l’éditeur (style indépendant, coupe, annuler/refaire, correction d’ouverture, sauvegarde et export SVG). Les tests de service utilisent des doubles ; ils ne prouvent pas un déploiement GPU.
+Vérifications initiales (0.3.0) : 50 tests Python et parcours Chromium de l’éditeur (style indépendant, coupe, annuler/refaire, correction d’ouverture, sauvegarde et export SVG). Les tests de service utilisent des doubles ; ils ne prouvent pas un déploiement GPU.
 
 Le correctif 0.2.1 ajoute un inventaire de l’hôte et du volume persistant avant restauration, distingue les liens Python cassés des venvs absents, contrôle l’espace disque et vérifie l’identité du worker après migration. Les trois environnements sont maintenant restaurés selon le dernier rapport du propriétaire ; les inférences restent à vérifier depuis le raccordement réel.

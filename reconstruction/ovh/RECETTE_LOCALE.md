@@ -1,6 +1,6 @@
-# Vérification de la livraison OVH 0.3.5
+# Vérification de la livraison OVH 0.3.6
 
-Le 28 octobre 2026, 128 tests Python passent. Ils couvrent les axes noirs, les
+Le 28 octobre 2026, 144 tests Python passent. Ils couvrent les axes noirs, les
 ouvertures, la validation humaine, les contrats d’inférence, l’authentification
 du worker, les reprises après interruption, l’isolation des projets par utilisateur
 et la détection des sauvegardes concurrentes. Les tests d’IA utilisent des doubles ;
@@ -95,3 +95,15 @@ de murs distincts, annuler/refaire, rechargement JSON et cadrage des deux traces
 La page 1 conserve ses 381 propositions ; 468 paires proches sont signalées sans
 modification ni validation automatique. Ce nombre n’est pas un taux de qualité.
 Voir [la portée et la recette de ce contrôle](CONTROLE_DOUBLES_AXES.md).
+
+La livraison 0.3.6 projette les ouvertures sur l’axe médian et les portions
+restantes. Elle conserve l’union des passages renseignés, leur provenance et
+les désaccords de type. Toutes les ouvertures transférées restent en attente.
+Le serveur refuse un mur approuvé comportant une ouverture non validée ; la
+sauvegarde et le rechargement conservent ces états.
+
+Les tests comparent Python et JavaScript sur 40 configurations synthétiques.
+Le test navigateur publié `tests/browser/median-openings.cjs` vérifie la sélection
+des bords inversés, les types contradictoires, l’axe diagonal, les parties restantes,
+le refus d’un recouvrement entièrement vide, la validation, l’export noir avec
+coupure, annuler/refaire et le rechargement JSON. Aucun plan client ni GPU utilisé.

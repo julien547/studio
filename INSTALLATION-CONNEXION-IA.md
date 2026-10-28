@@ -1,13 +1,14 @@
 # Installer la connexion de Studio aux trois IA RunPod
 
-Livraison **0.3.5**, dépôt privé `julien547/studio`, branche
+Livraison **0.3.6**, dépôt privé `julien547/studio`, branche
 `feat/redessin-ovh-tests`, [PR 1](https://github.com/julien547/studio/pull/1).
 Cette procédure est destinée à la session disposant des accès OVH et RunPod.
 Le code est publié ; **la connexion sur vos serveurs doit encore être installée
 et vérifiée avec les inférences réelles**.
 
-La version 0.3.5 ajoute le [contrôle des doubles axes](reconstruction/ovh/CONTROLE_DOUBLES_AXES.md)
-côté OVH. Déployer ensemble le service Python et l’éditeur généré. Un worker RunPod
+La version 0.3.6 conserve les [ouvertures lors de la correction vers un axe médian](reconstruction/ovh/FUSION_MURS_OUVERTURES.md)
+et inclut le [contrôle des doubles axes](reconstruction/ovh/CONTROLE_DOUBLES_AXES.md).
+Déployer ensemble le service Python et l’éditeur généré sur OVH. Un worker RunPod
 0.3.4 déjà installé peut être conservé. Pour une première installation, suivre
 toutes les étapes OVH et RunPod ci-dessous ; les contrôles des sorties IA et l’état
 de chaque moteur sont inclus.
@@ -236,3 +237,7 @@ propositions en attente et refuse les paires ambiguës détectées parmi les mur
 approuvés. Résoudre ces paires dans **Doubles axes possibles**, puis contrôler dans
 Illustrator qu’aucun mur n’a été approuvé deux fois sous la forme de deux tracés
 parallèles. Le contrôle géométrique n’est pas exhaustif.
+
+Lors d’une correction de deux bords, vérifier aussi les ouvertures transférées sur
+l’axe médian et les portions restantes. Elles sont conservées mais repassent en
+attente de validation : contrôler chaque ouverture avant de valider le mur.

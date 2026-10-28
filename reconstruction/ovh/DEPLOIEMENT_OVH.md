@@ -33,6 +33,9 @@ repérage des paires proches, sélection guidée, correction vers une médiane o
 confirmation de deux murs distincts. Les exports validés refusent les paires
 détectées encore ambiguës ; les projets et SVG de revue restent accessibles.
 
+La version 0.3.6 conserve les [ouvertures pendant la correction des deux bords](FUSION_MURS_OUVERTURES.md).
+Les ouvertures transférées exigent une nouvelle validation avant celle du mur.
+
 Pour terminer le raccordement réel des IA, suivre la
 [procédure commune OVH–RunPod](RACCORDEMENT_RUNPOD.md). Le bouton d’analyse devient
 disponible après un contrôle réussi du service et des trois tests de démarrage.

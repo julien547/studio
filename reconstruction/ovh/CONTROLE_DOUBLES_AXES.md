@@ -1,4 +1,4 @@
-# Contrôler les doubles axes — livraison 0.3.5
+# Contrôler les doubles axes — livraison 0.3.6
 
 La règle DOEMO est **un mur physique = un seul trait noir plein sur son axe médian**.
 Les portes et passages interrompent le trait. L’épaisseur graphique reste indépendante
@@ -16,9 +16,9 @@ sélectionner et qualifier, indépendamment de RTMDet COCO.
    objets en bleu sur le plan original ; les tracés exportés restent noirs.
 3. Si les deux traces sont les bords d’un même mur, utiliser **Même mur → axe médian**.
    La portion commune devient un axe unique à valider. Les parties qui dépassent
-   restent indépendantes. La commande conserve sa protection des ouvertures : elle
-   refuse les objets portant des ouvertures renseignées et ne les efface pas pour
-   permettre la fusion. Contrôler et corriger ces cas individuellement.
+   restent indépendantes. Depuis 0.3.6, les ouvertures sont conservées sur l’axe et
+   les portions restantes, puis soumises à une nouvelle validation. Suivre la
+   [procédure de conservation des passages](FUSION_MURS_OUVERTURES.md).
 4. S’il s’agit de deux murs physiques distincts, cliquer **Confirmer deux murs distincts**
    et renseigner le motif de cette interprétation. Les deux murs restent indépendants.
    Cette décision ne valide pas les murs eux-mêmes.
@@ -59,7 +59,7 @@ ou supprimer. La reconnaissance sémantique des murs n’est pas déclarée acqu
 
 ## Vérification
 
-128 tests Python passent, avec comparaison des calculs Python/JavaScript pour les
+144 tests Python passent, avec comparaison des calculs Python/JavaScript pour les
 rotations, sens inversés, ouvertures et décisions. Le parcours Chromium vérifie :
 fusion vers un axe noir, refus de l’export ambigu, confirmation explicite de deux
 murs, invalidation après modification, annuler/refaire, rechargement JSON et
@@ -74,7 +74,7 @@ le dessinateur. Les documents, rapports détaillés et captures restent hors Git
 
 ## Installation
 
-Déployer la version 0.3.5 sur OVH avec la [procédure existante](DEPLOIEMENT_OVH.md).
+Déployer la version 0.3.6 sur OVH avec la [procédure existante](DEPLOIEMENT_OVH.md).
 Le moteur Python et `redessin/editor.js` doivent être installés ensemble. Vérifier
 la version de `/health`, ouvrir un projet de recette puis tester les choix décrits
 plus haut. Les anciens projets sont compatibles ; les contrôles se recalculent à

@@ -4,7 +4,7 @@ let active = null;
 window.doemoEditor = {
   mount: async function(host, initial, user, onChange) {
     const root = host.shadowRoot || host.attachShadow({mode:'open'});
-    root.innerHTML = "<style>\n:host{font:14px system-ui;color:#e8eef6;background:#101925}*{box-sizing:border-box}body{margin:0}header{height:68px;display:flex;align-items:center;gap:24px;padding:12px 22px;border-bottom:1px solid #334052}header strong{font-size:22px;letter-spacing:2px}header span{color:#b7c6d8}.badge{background:#493714;color:#ffd38a;border-radius:16px;padding:6px 12px;font-size:12px}main{display:grid;grid-template-columns:290px 1fr;height:782px}aside{padding:16px;overflow:auto;border-right:1px solid #334052}label{display:block;margin:10px 0;color:#bccadb}button,select,input{font:inherit;border-radius:5px;border:1px solid #46556a;background:#223147;color:white;padding:8px;max-width:100%}button{cursor:pointer}button:hover{background:#38506d}button:disabled{opacity:.45;cursor:default}.row{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0}.row>*{flex:1}input[type=number]{width:114px}input[type=checkbox]{width:auto}.hint{font-size:12px;line-height:1.6;color:#acbed4}.green{background:#15544a}.danger{background:#60352f}#stage{display:flex;flex-direction:column;min-width:0}#tools{padding:10px;background:#192638;display:flex;gap:10px;align-items:center;flex-wrap:wrap}#viewport{overflow:auto;flex:1;background:#66717d;padding:20px}svg{background:white;display:block;width:100%;height:auto;touch-action:none}#message{min-height:36px;padding:10px 18px;color:#ffd38a;background:#192638}h3{font-size:14px;margin-top:22px}#observations{max-height:140px;overflow:auto}#observations div{padding:6px 0;border-bottom:1px solid #344052}#summary{font-variant-numeric:tabular-nums;line-height:1.8}a{color:#9bd6ff}\n[hidden]{display:none!important}main{grid-template-rows:minmax(0,1fr)}#stage,#viewport{min-height:0}</style>\n\n<main><aside>\n<label>Projet JSON <input id=\"load\" type=\"file\" accept=\".json\"></label>\n<label>Niveau <select id=\"level\"></select></label><label><input type=\"checkbox\" id=\"floor\"> Identification du niveau vérifiée</label>\n<div id=\"summary\"></div><p class=\"hint\">Les axes sont noirs. Halo orange : à contrôler. Bleu : sélection. Aucune échelle métrique déduite automatiquement.</p>\n<label>Votre nom <input id=\"actor\" placeholder=\"Dessinateur\"></label>\n<h3>Mur sélectionné</h3><div id=\"selected\" class=\"hint\">Cliquez sur un mur.</div>\n<div class=\"row\"><label>Début X <input type=\"number\" step=\".1\" id=\"ax\"></label><label>Début Y <input type=\"number\" step=\".1\" id=\"ay\"></label></div>\n<div class=\"row\"><label>Fin X <input type=\"number\" step=\".1\" id=\"bx\"></label><label>Fin Y <input type=\"number\" step=\".1\" id=\"by\"></label></div>\n<label>Épaisseur détectée (vide = inconnue) <input type=\"number\" min=\".1\" step=\".1\" id=\"thickness\" value=\"3\"></label>\n<div class=\"row\"><button id=\"apply\">Appliquer</button><button id=\"approve\" class=\"green\">Valider le mur</button></div>\n<div class=\"row\"><button id=\"opening\">Créer une ouverture</button><button id=\"delete\" class=\"danger\">Supprimer</button></div>\n<label>Trait graphique (unités du document) <input type=\"number\" min=\".1\" max=\"50\" step=\".1\" id=\"strokeWidth\" value=\"1\"></label><button id=\"style\">Appliquer le trait</button><div class=\"row\"><button id=\"split\">Couper le mur</button><button id=\"connect\">Raccorder la fin B</button><button id=\"calibrate\">Calibrer une cote</button></div>\n<p class=\"hint\">Déplacez un mur en le faisant glisser. Modifiez ses extrémités pour le prolonger. Un raccord exige le choix explicite de deux murs. Toute modification annule leur validation.</p>\n<button id=\"median\">Deux bords → un axe médian</button><p class=\"hint\">À utiliser seulement si deux traces représentent les bords du même mur. L’axe est créé sur leur portion commune ; les parties qui dépassent sont conservées. Le résultat reste à valider.</p>\n<h3>Doubles axes possibles</h3><p id=\"axisReviewSummary\" class=\"hint\"></p><select id=\"axisPairs\" aria-label=\"Paire de traces à contrôler\"></select>\n<div class=\"row\"><button id=\"showAxisPair\">Voir les deux traces</button><button id=\"mergeAxisPair\">Même mur → axe médian</button></div>\n<button id=\"distinctAxisPair\">Confirmer deux murs distincts</button><p class=\"hint\">Contrôlez le plan original. Deux traces proches peuvent appartenir à des murs différents. La confirmation exige un motif et devient caduque si leur géométrie change. Les axes superposés doivent être corrigés.</p>\n<h3>Ouvertures du mur</h3><select id=\"openingList\"></select><div class=\"row\"><button id=\"editOpening\">Corriger</button><button id=\"removeOpening\">Supprimer l’ouverture</button></div><h3>Zones à contrôler</h3><div id=\"observations\" class=\"hint\"></div>\n<h3>Enregistrer</h3><div class=\"row\"><button id=\"save\">Projet JSON</button><button id=\"svgExport\">SVG validé</button></div><div class=\"row\"><button id=\"draft\">SVG de revue</button><button id=\"training\">Corrections validées</button></div><p class=\"hint\">Enregistrez le JSON pour conserver les corrections. L’export SVG validé ne contient que les murs approuvés du niveau affiché. Ouvrez le SVG dans Illustrator pour contrôler les objets.</p>\n</aside><section id=\"stage\"><div id=\"tools\"><button id=\"add\">Ajouter un mur</button><button id=\"undo\">Annuler</button><button id=\"redo\">Refaire</button><label><input id=\"reference\" type=\"checkbox\" checked> Plan original</label><label><input id=\"candidates\" type=\"checkbox\" checked> Propositions</label><label><input id=\"zones\" type=\"checkbox\" checked> Zones à contrôler</label><button id=\"focus\">Cadrer le niveau</button><button id=\"full\">Page entière</button><label>Zoom <input type=\"range\" id=\"zoom\" min=\"100\" max=\"300\" value=\"100\"></label></div><div id=\"viewport\"><svg id=\"canvas\" xmlns=\"http://www.w3.org/2000/svg\"></svg></div><div id=\"message\" role=\"status\">Chargez un projet ou utilisez la page de test incluse.</div></section></main>\n";
+    root.innerHTML = "<style>\n:host{font:14px system-ui;color:#e8eef6;background:#101925}*{box-sizing:border-box}body{margin:0}header{height:68px;display:flex;align-items:center;gap:24px;padding:12px 22px;border-bottom:1px solid #334052}header strong{font-size:22px;letter-spacing:2px}header span{color:#b7c6d8}.badge{background:#493714;color:#ffd38a;border-radius:16px;padding:6px 12px;font-size:12px}main{display:grid;grid-template-columns:290px 1fr;height:782px}aside{padding:16px;overflow:auto;border-right:1px solid #334052}label{display:block;margin:10px 0;color:#bccadb}button,select,input{font:inherit;border-radius:5px;border:1px solid #46556a;background:#223147;color:white;padding:8px;max-width:100%}button{cursor:pointer}button:hover{background:#38506d}button:disabled{opacity:.45;cursor:default}.row{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0}.row>*{flex:1}input[type=number]{width:114px}input[type=checkbox]{width:auto}.hint{font-size:12px;line-height:1.6;color:#acbed4}.green{background:#15544a}.danger{background:#60352f}#stage{display:flex;flex-direction:column;min-width:0}#tools{padding:10px;background:#192638;display:flex;gap:10px;align-items:center;flex-wrap:wrap}#viewport{overflow:auto;flex:1;background:#66717d;padding:20px}svg{background:white;display:block;width:100%;height:auto;touch-action:none}#message{min-height:36px;padding:10px 18px;color:#ffd38a;background:#192638}h3{font-size:14px;margin-top:22px}#observations{max-height:140px;overflow:auto}#observations div{padding:6px 0;border-bottom:1px solid #344052}#summary{font-variant-numeric:tabular-nums;line-height:1.8}a{color:#9bd6ff}\n[hidden]{display:none!important}main{grid-template-rows:minmax(0,1fr)}#stage,#viewport{min-height:0}</style>\n\n<main><aside>\n<label>Projet JSON <input id=\"load\" type=\"file\" accept=\".json\"></label>\n<label>Niveau <select id=\"level\"></select></label><label><input type=\"checkbox\" id=\"floor\"> Identification du niveau vérifiée</label>\n<div id=\"summary\"></div><p class=\"hint\">Les axes sont noirs. Halo orange : à contrôler. Bleu : sélection. Aucune échelle métrique déduite automatiquement.</p>\n<label>Votre nom <input id=\"actor\" placeholder=\"Dessinateur\"></label>\n<h3>Mur sélectionné</h3><div id=\"selected\" class=\"hint\">Cliquez sur un mur.</div>\n<div class=\"row\"><label>Début X <input type=\"number\" step=\".1\" id=\"ax\"></label><label>Début Y <input type=\"number\" step=\".1\" id=\"ay\"></label></div>\n<div class=\"row\"><label>Fin X <input type=\"number\" step=\".1\" id=\"bx\"></label><label>Fin Y <input type=\"number\" step=\".1\" id=\"by\"></label></div>\n<label>Épaisseur détectée (vide = inconnue) <input type=\"number\" min=\".1\" step=\".1\" id=\"thickness\" value=\"3\"></label>\n<div class=\"row\"><button id=\"apply\">Appliquer</button><button id=\"approve\" class=\"green\">Valider le mur</button></div>\n<div class=\"row\"><button id=\"opening\">Créer une ouverture</button><button id=\"delete\" class=\"danger\">Supprimer</button></div>\n<label>Trait graphique (unités du document) <input type=\"number\" min=\".1\" max=\"50\" step=\".1\" id=\"strokeWidth\" value=\"1\"></label><button id=\"style\">Appliquer le trait</button><div class=\"row\"><button id=\"split\">Couper le mur</button><button id=\"connect\">Raccorder la fin B</button><button id=\"calibrate\">Calibrer une cote</button></div>\n<p class=\"hint\">Déplacez un mur en le faisant glisser. Modifiez ses extrémités pour le prolonger. Un raccord exige le choix explicite de deux murs. Toute modification annule leur validation.</p>\n<button id=\"median\">Deux bords → un axe médian</button><p class=\"hint\">À utiliser seulement si deux traces représentent les bords du même mur. L’axe est créé sur leur portion commune ; les parties qui dépassent et les ouvertures sont conservées. Les murs et ouvertures transférés restent à valider.</p>\n<h3>Doubles axes possibles</h3><p id=\"axisReviewSummary\" class=\"hint\"></p><select id=\"axisPairs\" aria-label=\"Paire de traces à contrôler\"></select>\n<div class=\"row\"><button id=\"showAxisPair\">Voir les deux traces</button><button id=\"mergeAxisPair\">Même mur → axe médian</button></div>\n<button id=\"distinctAxisPair\">Confirmer deux murs distincts</button><p class=\"hint\">Contrôlez le plan original. Deux traces proches peuvent appartenir à des murs différents. La confirmation exige un motif et devient caduque si leur géométrie change. Les axes superposés doivent être corrigés.</p>\n<h3>Ouvertures du mur</h3><select id=\"openingList\"></select><p id=\"openingReview\" class=\"hint\"></p><div class=\"row\"><button id=\"editOpening\">Corriger</button><button id=\"approveOpening\">Valider l’ouverture</button><button id=\"removeOpening\">Supprimer l’ouverture</button></div><h3>Zones à contrôler</h3><div id=\"observations\" class=\"hint\"></div>\n<h3>Enregistrer</h3><div class=\"row\"><button id=\"save\">Projet JSON</button><button id=\"svgExport\">SVG validé</button></div><div class=\"row\"><button id=\"draft\">SVG de revue</button><button id=\"training\">Corrections validées</button></div><p class=\"hint\">Enregistrez le JSON pour conserver les corrections. L’export SVG validé ne contient que les murs approuvés du niveau affiché. Ouvrez le SVG dans Illustrator pour contrôler les objets.</p>\n</aside><section id=\"stage\"><div id=\"tools\"><button id=\"add\">Ajouter un mur</button><button id=\"undo\">Annuler</button><button id=\"redo\">Refaire</button><label><input id=\"reference\" type=\"checkbox\" checked> Plan original</label><label><input id=\"candidates\" type=\"checkbox\" checked> Propositions</label><label><input id=\"zones\" type=\"checkbox\" checked> Zones à contrôler</label><button id=\"focus\">Cadrer le niveau</button><button id=\"full\">Page entière</button><label>Zoom <input type=\"range\" id=\"zoom\" min=\"100\" max=\"300\" value=\"100\"></label></div><div id=\"viewport\"><svg id=\"canvas\" xmlns=\"http://www.w3.org/2000/svg\"></svg></div><div id=\"message\" role=\"status\">Chargez un projet ou utilisez la page de test incluse.</div></section></main>\n";
     const realDocument = globalThis.document;
     const document = {
       getElementById: id => root.getElementById(id),
@@ -25,6 +25,28 @@ function intervals(w){let cursor=0,out=[];for(const o of [...w.openings].sort((a
   if(o.start>cursor)out.push([cursor,o.start]);cursor=o.end;
 }if(cursor<1)out.push([cursor,1]);return out}
 function axis(w,lo=0,hi=1){return [lo,hi].map(t=>w.a.map((v,i)=>v+(w.b[i]-v)*t))}
+// BEGIN OPENING TRANSFER — no inferred gap, scale or approval.
+function projectOpenings(w,start,end){
+ if(![start,end].every(Number.isFinite)||start===end)throw Error('Intervalle de projection invalide');intervals(w);
+ const out=[];for(const [index,o]of w.openings.entries()){
+  const [a,b]=[o.start,o.end].map(t=>(t-start)/(end-start)).sort((x,y)=>x-y),lo=Math.max(0,a),hi=Math.min(1,b);
+  if(lo<hi)out.push([index,{...o,start:lo,end:hi,status:'pending'}]);
+ }return out.sort((a,b)=>a[1].start-b[1].start||a[1].end-b[1].end);
+}
+function medianOpenings(walls,ranges){
+ const projected=[];for(const [i,w]of walls.entries())for(const [index,o]of projectOpenings(w,...ranges[i])){
+  const source=w.openings[index];projected.push({wall_id:w.id,opening_index:index,source_interval:[source.start,source.end],projected_interval:[o.start,o.end],kind:source.kind,source_status:source.status});
+ }
+ projected.sort((a,b)=>a.projected_interval[0]-b.projected_interval[0]||a.projected_interval[1]-b.projected_interval[1]||(a.wall_id<b.wall_id?-1:a.wall_id>b.wall_id?1:a.opening_index-b.opening_index));
+ const groups=[];for(const source of projected){const [start,end]=source.projected_interval,last=groups.at(-1);
+  if(last&&start<=last.end){last.end=Math.max(last.end,end);last.sources.push(source)}else groups.push({start,end,sources:[source]});
+ }
+ const openings=[],audit=[];for(const g of groups){const kinds=[...new Set(g.sources.map(s=>s.kind))].sort();
+  openings.push({start:g.start,end:g.end,kind:kinds.length===1?kinds[0]:'passage',status:'pending'});
+  audit.push({target_interval:[g.start,g.end],source_kinds:kinds,type_conflict:kinds.length>1,sources:g.sources,review:['position','type']});
+ }return [openings,audit];
+}
+// END OPENING TRANSFER
 // BEGIN AXIS REVIEW — pure geometry, tested against the Python implementation.
 function axisSnapshot(w){return [w.id,[...w.a],[...w.b],w.thickness,w.openings.map(o=>[o.kind,o.start,o.end]).sort((a,b)=>a[0]<b[0]?-1:a[0]>b[0]?1:a[1]-b[1]||a[2]-b[2])]}
 function closeAxes(first,second){
@@ -84,6 +106,7 @@ function check(d){
    if(w.a.length!==2||w.b.length!==2||![...w.a,...w.b].every(Number.isFinite)||distance(w.a,w.b)<1e-6||(w.thickness!==null&&(!Number.isFinite(w.thickness)||w.thickness<=0)))throw Error('Mur invalide');
    if(!['pending','approved','rejected'].includes(w.status))throw Error('État invalide');
    for(const p of [w.a,w.b])if(p[0]<0||p[0]>l.width||p[1]<0||p[1]>l.height)throw Error('Mur hors page');intervals(w);
+   if(w.status==='approved'&&w.openings.some(o=>o.status!=='approved'))throw Error('Mur validé avec une ouverture non validée');
   }checkAxisReviews(l);
  }return d;
 }
@@ -93,8 +116,8 @@ function mutate(operation,fn){try{
  try{fn();check(doc);level().axis_reviews=validAxisReviews(level())}catch(e){Object.assign(level(),snapshot);throw e}
  undo.push({levelId:level().id,snapshot});if(undo.length>40)undo.shift();redo=[];
  doc.revision++;doc.history.push({revision:doc.revision,actor:name,level_id:level().id,operation,before,after:journal(level())});
- onChange();render();say('Correction en mémoire. Cliquez sur Enregistrer sur OVH.');
-}catch(e){if(doc)render();say(e.message)}}
+ onChange();render();say('Correction en mémoire. Cliquez sur Enregistrer sur OVH.');return true;
+}catch(e){if(doc)render();say(e.message);return false}}
 function historyMove(from,to,op){try{
  if(!from.length)return;const name=actor(),entry=from[from.length-1],l=doc.levels.find(l=>l.id===entry.levelId),before=journal(l);
  Object.assign(l,clone(entry.snapshot));try{check(doc)}catch(e){Object.assign(l,before);throw e}
@@ -108,9 +131,14 @@ function fields(){
  const w=chosen();$('selected').textContent=w?`${w.id.slice(0,16)} · ${w.status==='approved'?'validé':'à valider'} · ${w.openings.length} ouverture(s)`:'Cliquez sur un mur.';
  if(w){for(const [id,v]of Object.entries({ax:w.a[0],ay:w.a[1],bx:w.b[0],by:w.b[1],thickness:w.thickness}))$(id).value=v===null?'':Number(v.toFixed(3))}
  $('strokeWidth').value=level().stroke_width??1;
- $('openingList').replaceChildren();for(const [i,o]of (w?.openings||[]).entries()){
- const option=document.createElement('option');option.value=i;option.textContent=`${i+1} · ${o.kind} · ${o.start.toFixed(3)}–${o.end.toFixed(3)} · ${o.status}`;$('openingList').append(option);
+ const previous=+$('openingList').value;$('openingList').replaceChildren();for(const [i,o]of (w?.openings||[]).entries()){
+ const option=document.createElement('option');option.value=i;option.textContent=`${i+1} · ${{door:'porte',window:'fenêtre',passage:'passage'}[o.kind]} · ${o.start.toFixed(3)}–${o.end.toFixed(3)} · ${o.status==='approved'?'validée':'à contrôler'}`;$('openingList').append(option);
  }
+ if(w?.openings[previous])$('openingList').value=String(previous);
+ const pending=(w?.openings||[]).filter(o=>o.status!=='approved').length;
+ const conflict=(w?.evidence||[]).some(e=>Array.isArray(e.opening_transfer)&&e.opening_transfer.some(t=>t.type_conflict));
+ $('openingReview').textContent=pending?`${pending} ouverture(s) à contrôler avant de valider le mur. Vérifiez la position et le type sur le plan original.`+(conflict?' Des types différents ont été regroupés en passage provisoire. Corrigez le type si nécessaire.':''):'';
+ $('approveOpening').disabled=!w?.openings.length;
 }
 function render(){if(!doc)return;const l=level(),svg=$('canvas');svg.replaceChildren();
  const report=reviewAxes(l);axisPairs=report.filter(p=>!p.resolved);
@@ -161,7 +189,6 @@ function connect(w,v,end){const a=w.a,b=w.b,c=v.a,d=v.b,dx=b[0]-a[0],dy=b[1]-a[1
 function median(w,v){
  if(!w||!v)return say('Sélectionnez de nouveau les deux traces.');
  if(w===v)return say('Choisissez deux traces distinctes.');
- if(w.openings.length||v.openings.length)return say('Les ouvertures renseignées doivent être contrôlées séparément avant cette opération.');
  if(w.status==='rejected'||v.status==='rejected')return say('Trace rejetée.');
  const length=distance(w.a,w.b),other=distance(v.a,v.b),ux=(w.b[0]-w.a[0])/length,uy=(w.b[1]-w.a[1])/length;
  if(Math.abs(ux*(v.b[1]-v.a[1])-uy*(v.b[0]-v.a[0]))/other>Math.sin(Math.PI/180))return say('Les traces ne sont pas parallèles (tolérance 1 degré).');
@@ -171,19 +198,24 @@ function median(w,v){
  const offsets=faces[0].map((p,i)=>ux*(faces[1][i][1]-p[1])-uy*(faces[1][i][0]-p[0]));
  if(offsets[0]*offsets[1]<=0||Math.min(...offsets.map(Math.abs))<1e-6||Math.max(...offsets.map(Math.abs))>24||Math.abs(offsets[0]-offsets[1])>.5)return say('Séparation ambiguë ou supérieure à 24 unités du document.');
  const points=faces[0].map((p,i)=>p.map((n,k)=>(n+faces[1][i][k])/2)),id=crypto.randomUUID();
- mutate({op:'merge_parallel_faces',id:w.id,other_id:v.id,max_separation:24},()=>{
+ let openingCount=0;
+ const merged=mutate({op:'merge_parallel_faces',id:w.id,other_id:v.id,max_separation:24},()=>{
   const center={id,kind:'wall',a:points[0],b:points[1],thickness:offsets.reduce((n,t)=>n+Math.abs(t),0)/2,status:'pending',confidence:0,method:'manual_parallel_faces',openings:[],
     evidence:[{source_walls:[w.id,v.id],paired_sides:faces,source_intervals:ranges,human_interpretation:'same_wall_faces'}]},pieces=[center];
+  const [openings,audit]=medianOpenings([w,v],ranges);center.openings=openings;center.evidence[0].opening_transfer=audit;
+  if(!intervals(center).length)throw Error('Les ouvertures occupent tout le recouvrement : aucune portion pleine à redessiner');
   for(const [i,source]of [w,v].entries()){
    const [start,end]=ranges[i].map(t=>Math.max(0,Math.min(1,t))).sort((a,b)=>a-b);
    for(const [rlo,rhi]of [[0,start],[end,1]]){
     if((rhi-rlo)*distance(source.a,source.b)<1e-6)continue;
     const part=clone(source);part.id=crypto.randomUUID();[part.a,part.b]=axis(source,rlo,rhi);part.status='pending';
+    part.openings=projectOpenings(source,rlo,rhi).map(([,o])=>o);
     part.evidence.push({unmerged_remainder_of:source.id,source_interval:[rlo,rhi]});pieces.push(part);
    }
   }
-  level().walls=level().walls.filter(x=>x.id!==w.id&&x.id!==v.id).concat(pieces);selected=id;
+  level().walls=level().walls.filter(x=>x.id!==w.id&&x.id!==v.id).concat(pieces);selected=id;openingCount=pieces.reduce((n,p)=>n+p.openings.length,0);
  });
+ if(merged&&openingCount)say(`Axe médian créé ; ${openingCount} ouverture(s) conservée(s) sur les objets résultants. Contrôlez chaque ouverture puis validez les murs.`);
 }
 $('apply').onclick=()=>{const w=chosen();if(!w)return;const near=(v,old)=>Math.abs(v-old)<.001?old:v,a=[near(+$('ax').value,w.a[0]),near(+$('ay').value,w.a[1])],b=[near(+$('bx').value,w.b[0]),near(+$('by').value,w.b[1])],t=$('thickness').value===''?null:+$('thickness').value;
  if(w.openings.length&&distance(a.map((v,i)=>v-w.a[i]),b.map((v,i)=>v-w.b[i]))>1e-9)return say('Déplacez le mur ou corrigez ses ouvertures avant de changer sa longueur.');
@@ -200,6 +232,7 @@ function openingForm(previous={start:.4,end:.6,kind:'door'}){
 }
 $('opening').onclick=()=>{const w=chosen();if(!w)return;const o=openingForm();if(o)mutate({op:'opening',id:w.id,...o},()=>{w.openings.push(o);w.status='pending'})};
 $('editOpening').onclick=()=>{const w=chosen(),i=+$('openingList').value;if(!w?.openings[i])return;const o=openingForm(w.openings[i]);if(o)mutate({op:'update_opening',id:w.id,index:i,...o},()=>{w.openings[i]=o;w.status='pending'})};
+$('approveOpening').onclick=()=>{const w=chosen(),i=+$('openingList').value;if(!w?.openings[i])return;if(w.openings[i].status==='approved')return say('Cette ouverture est déjà validée.');mutate({op:'approve_opening',id:w.id,index:i},()=>{w.openings[i].status='approved';w.status='pending'})};
 $('removeOpening').onclick=()=>{const w=chosen(),i=+$('openingList').value;if(w?.openings[i])mutate({op:'delete_opening',id:w.id,index:i},()=>{w.openings.splice(i,1);w.status='pending'})};
 $('split').onclick=()=>{const w=chosen();if(!w)return;const answer=prompt('Position de coupe sur le mur (fraction entre 0 et 1)','0.5');if(answer===null)return;const t=Number(answer);
  mutate({op:'split',id:w.id,fraction:t},()=>{

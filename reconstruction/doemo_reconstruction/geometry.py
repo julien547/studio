@@ -148,14 +148,63 @@ def pair_boundaries(lines, min_thickness=1., max_thickness=24., min_length=12.):
     return candidates
 
 
+def project_openings(w, start, end):
+    """Clip gaps to a selected source interval, including reversed orientation.
+
+    Return source indices with pending openings. Never round, widen or close gaps.
+    """
+    if not all(math.isfinite(v) for v in (start, end)) or start == end:
+        raise ValueError('Intervalle de projection invalide')
+    solid_intervals(w)
+    out = []
+    for index, opening in enumerate(w['openings']):
+        if opening['kind'] not in ('door', 'window', 'passage') or opening['status'] not in ('pending', 'approved'):
+            raise ValueError('Ouverture invalide')
+        lo, hi = sorted((opening[k]-start)/(end-start) for k in ('start', 'end'))
+        lo, hi = max(0., lo), min(1., hi)
+        if lo < hi:
+            out.append((index, {**opening, 'start': lo, 'end': hi, 'status': 'pending'}))
+    return sorted(out, key=lambda item: (item[1]['start'], item[1]['end']))
+
+
+def median_openings(walls, ranges):
+    """Conservative union of observed exclusions, with traceable type conflicts."""
+    projected = []
+    for w, interval in zip(walls, ranges):
+        for index, opening in project_openings(w, *interval):
+            original = w['openings'][index]
+            projected.append({'wall_id': w['id'], 'opening_index': index,
+                              'source_interval': [original['start'], original['end']],
+                              'projected_interval': [opening['start'], opening['end']],
+                              'kind': original['kind'], 'source_status': original['status']})
+    groups = []
+    for source in sorted(projected, key=lambda s: (*s['projected_interval'], s['wall_id'], s['opening_index'])):
+        start, end = source['projected_interval']
+        if groups and start <= groups[-1]['end']:
+            groups[-1]['end'] = max(groups[-1]['end'], end)
+            groups[-1]['sources'].append(source)
+        else:
+            groups.append({'start': start, 'end': end, 'sources': [source]})
+    openings, audit = [], []
+    for group in groups:
+        kinds = sorted({source['kind'] for source in group['sources']})
+        openings.append({'start': group['start'], 'end': group['end'],
+                         'kind': kinds[0] if len(kinds) == 1 else 'passage', 'status': 'pending'})
+        audit.append({'target_interval': [group['start'], group['end']],
+                      'source_kinds': kinds, 'type_conflict': len(kinds) > 1,
+                      'sources': group['sources'], 'review': ['position', 'type']})
+    return openings, audit
+
+
 def merge_parallel_faces(w1, w2, max_separation=24.):
     """Explicit human interpretation of two traces as faces of the SAME wall.
 
     Replace only their common observed extent by one median; preserve unmatched
-    tails as pending traces. Openings require separate review, never implicit union.
+    tails as pending traces. Preserve the union of known gaps on the new axis;
+    transfer and clip gaps on tails too. Every transferred opening needs review.
     """
-    if w1['id'] == w2['id'] or w1['openings'] or w2['openings']:
-        raise ValueError('Choisir deux traces distinctes sans ouverture renseignée')
+    if w1['id'] == w2['id']:
+        raise ValueError('Choisir deux traces distinctes')
     if any(w['status'] == 'rejected' for w in (w1, w2)):
         raise ValueError('Trace rejetée')
     if not math.isfinite(max_separation) or max_separation <= 0:
@@ -179,6 +228,10 @@ def merge_parallel_faces(w1, w2, max_separation=24.):
     center = wall(*median, sum(map(abs, offsets))/2, method='manual_parallel_faces',
                   evidence=[{'source_walls': [w1['id'], w2['id']], 'paired_sides': faces,
                              'source_intervals': ranges, 'human_interpretation': 'same_wall_faces'}])
+    center['openings'], audit = median_openings((w1, w2), ranges)
+    center['evidence'][0]['opening_transfer'] = audit
+    if not solid_intervals(center):
+        raise ValueError('Les ouvertures occupent tout le recouvrement : aucune portion pleine à redessiner')
     remainders = []
     for w, interval in zip((w1, w2), ranges):
         start, end = sorted(max(0., min(1., t)) for t in interval)
@@ -189,6 +242,7 @@ def merge_parallel_faces(w1, w2, max_separation=24.):
             piece = copy.deepcopy(w)
             piece['id'] = uuid.uuid4().hex
             piece['a'], piece['b'] = axis_points(w, rlo, rhi)
+            piece['openings'] = [opening for _, opening in project_openings(w, rlo, rhi)]
             piece['status'] = 'pending'
             piece['evidence'].append({'unmerged_remainder_of': w['id'], 'source_interval': [rlo, rhi]})
             remainders.append(piece)
@@ -295,12 +349,14 @@ def edit(doc, level_id, operation, actor):
         elif op=='opening':
             w['openings'].append({k:operation[k] for k in ('start','end','kind','status')})
             w['status']='pending'
-        elif op in ('update_opening','delete_opening'):
+        elif op in ('update_opening','delete_opening','approve_opening'):
             idx=operation['index']
             if type(idx) is not int or not 0<=idx<len(w['openings']):
                 raise ValueError('Ouverture introuvable')
             if op=='delete_opening':
                 w['openings'].pop(idx)
+            elif op=='approve_opening':
+                w['openings'][idx]['status']='approved'
             else:
                 w['openings'][idx]={k:operation[k] for k in ('start','end','kind','status')}
             w['status']='pending'

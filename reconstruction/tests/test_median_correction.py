@@ -43,12 +43,13 @@ def test_ambiguous_parallel_merge_is_rejected(other):
         merge_parallel_faces(wall([10, 20], [100, 20], 1), wall(*other, 1))
 
 
-def test_existing_openings_block_the_merge_without_mutation():
+def test_existing_openings_are_transferred_pending_without_mutating_sources():
     first, second = wall([10, 20], [100, 20], 1), wall([10, 24], [100, 24], 1)
     first['openings'] = [{'start': .3, 'end': .5, 'kind': 'door', 'status': 'approved'}]
     before = copy.deepcopy(first)
-    with pytest.raises(ValueError):
-        merge_parallel_faces(first, second)
+    result = merge_parallel_faces(first, second)
+    assert result[0]['openings'] == [{'start': .3, 'end': .5, 'kind': 'door', 'status': 'pending'}]
+    assert result[0]['evidence'][0]['opening_transfer'][0]['sources'][0]['wall_id'] == first['id']
     assert first == before
 
 

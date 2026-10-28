@@ -1,5 +1,10 @@
 # Correction des axes — livraison 0.3.2
 
+Historique de la livraison 0.3.2. Depuis **0.3.6**, la commande conserve aussi les
+ouvertures et exige leur validation après transfert : voir la
+[procédure actuelle](FUSION_MURS_OUVERTURES.md). Le refus des ouvertures décrit
+ci-dessous concernait la version initiale.
+
 Cette livraison corrige un défaut géométrique du prototype et ajoute une correction
 manuelle pour les doubles traces. Elle ne contient aucun nouveau modèle de
 segmentation et n’exécute aucune inférence RunPod.
@@ -75,5 +80,5 @@ d’apprentissage validé.
 Déployer le dernier commit de `feat/redessin-ovh-tests` en suivant
 [DEPLOIEMENT_OVH.md](DEPLOIEMENT_OVH.md), qui conserve les projets et la configuration
 de connexion. Le fichier `redessin/editor.js` généré est inclus dans cette livraison.
-Vérifier que `/health` indique `0.3.2`, puis tester la commande dans un projet de
+Vérifier que `/health` indique la version installée (`0.3.6` pour la livraison actuelle), puis tester la commande dans un projet de
 recette. Le [raccordement OVH–RunPod](RACCORDEMENT_RUNPOD.md) reste une recette distincte.
