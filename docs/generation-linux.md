@@ -1,4 +1,4 @@
-# Génération Linux 0.3.0 — lots de test
+# Génération Linux 0.3.1 — lots de test
 
 Le bouton **Générer tous les plans** produit maintenant les PDF puis un ZIP,
 sans Illustrator, pour le profil de BAT pris en charge. Il devient disponible
@@ -46,8 +46,19 @@ client choisi. Une trame manquante ou ambiguë bloque le lot complet.
   Le PE réserve l'espace sous Prévention, le PI le bas droit de la page.
 - Construit la légende depuis les symboles vectoriels identifiés. Ses libellés
   viennent des noms natifs ; sa présentation diffère de la bibliothèque Illustrator.
+  Un cadre vectoriel vert entoure la légende des PE, rouge celle des PI.
+- Place la ligne « Mise à jour… » tout en bas de la page, sous les consignes,
+  avec un espace réservé sous le logo. L'indice de mise à jour du BAT est conservé.
+  La date du jour est calculée une seule fois au démarrage du lot, en heure de
+  Paris (`DOEMO_TIMEZONE`, facultatif, fuseau IANA ; défaut `Europe/Paris`).
+  La référence finale suit le numéro du VEI : `CO26100364-1`, `CO26100364-2`, etc.
+  Seul ce texte de publication est réécrit en Helvetica ; les textes du dessin
+  architectural gardent leurs glyphes incorporés. Le nom des fichiers conserve
+  le nom du BAT et le suffixe `VEI-XX` pour identifier la source et la déclinaison.
 - Vérifie après réouverture les flux des fragments source, les ressources
-  incorporées, les empreintes des entrées et la direction du VEI.
+  incorporées, les empreintes des entrées et la direction du VEI. La vérification
+  des fragments inchangés exclut le cartouche date/référence volontairement réécrit,
+  signalé par `publication_metadata_rewritten` dans chaque résultat.
 
 Le ZIP est proposé uniquement après réussite de tous les PDF. Le manifeste est
 publié en dernier. Une erreur ne laisse pas un ZIP partiel téléchargeable ; aucun
@@ -99,7 +110,7 @@ Ce fonctionnement est synchrone ; il n'y a pas encore de file persistante de wor
 
 ```text
 /opt/doemo-studio/src/engine/                 code moteur
-/opt/doemo-studio/venv-pdf/                   environnement Python 0.3.0
+/opt/doemo-studio/venv-pdf/                   environnement Python 0.3.1
 /var/www/studio/api/                         PHP, dont les deux routeurs internes
 /var/www/studio/app/                         build doemo-app, branche feat/studio-host
 /var/lib/doemo-studio/templates/doemo/        trames DOEMO

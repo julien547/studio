@@ -4,6 +4,8 @@ Outputs are test plans requiring visual review. Unsupported bindings/layouts
 fail the whole batch; a ZIP is published only after every PDF has been checked.
 """
 from pathlib import Path
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import json
 import math
 import os
@@ -14,6 +16,7 @@ import zipfile
 
 import pikepdf
 import pathops
+from pypdf._codecs.core_font_metrics import CORE_FONT_METRICS
 
 from .pdf import open_pdf, selected_page, file_hash, resources_fingerprint, digest
 from .scene import Scene, I, instruction, multiply, transform_box, union
@@ -48,6 +51,24 @@ def role(layer):
     if name.startswith(('logo','doemo_logo','doemo logo')):return 'logo'
     if name.startswith(('legende','légende')):return 'legend'
     return 'plan'
+
+
+def batch_date():
+    """One local calendar date for the whole lot, even across midnight."""
+    return datetime.now(ZoneInfo(os.environ.get('DOEMO_TIMEZONE') or 'Europe/Paris')).date()
+
+
+def footer_label(scene, indices, number, generated_on):
+    if not indices:return None,None
+    # Only publication metadata is rewritten; architectural text stays intact.
+    items=[scene.items[i] for i in indices]
+    if any(it.kind!='text' for it in items):
+        raise ValueError('Le cartouche date du BAT contient des éléments non textuels non pris en charge.')
+    value=''.join(it.text for it in sorted(items,key=lambda it:(-round(it.bounds[1]/8),it.bounds[0])))
+    match=re.fullmatch(r'\s*(Mise\s+à\s+jour\s+n[°º]\s*\d+\s*-\s*Date\s+et\s+n[°º]\s*du\s+plan\s*:\s*)\d{2}-\d{2}-\d{4}\s*-\s*(.+)-\d+\s*',value)
+    if not match:raise ValueError('Date et référence du plan non reconnues dans le cartouche du BAT.')
+    reference=f'{match[2].strip()}-{number}'
+    return f'{match[1]}{generated_on:%d-%m-%Y} - {reference}',reference
 
 
 def template_scene(pdf):
@@ -113,7 +134,7 @@ def make_group(pdf,forms,indices,page_box,transforms=None,clip=None):
     return group
 
 
-def build_plan(source, scene, symbols, markers, visible, marker, template_path, output, levels=None):
+def build_plan(source, scene, symbols, markers, visible, marker, template_path, output, levels=None, generated_on=None):
     source_page=source.pages[0];source_box=tuple(map(float,source_page.mediabox))
     with open_pdf(template_path) as template:
         ts,ab,zone,template_ids=template_scene(template)
@@ -191,12 +212,27 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
         # Header stays in the free band under the template banner.
         block(groups['header'],(useful[0],zone[3]+16,useful[2],ab[3]-96))
         block(groups['level'],(useful[0],placed[1]-30,useful[2],placed[1]-8))
-        block(groups['footer'],(useful[0],zone[1]-8,useful[2],zone[1]+2))
+        footer,reference=footer_label(scene,groups['footer'],marker.index,generated_on or batch_date())
         selfont=out.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Font,Subtype=pikepdf.Name.Type1,BaseFont=pikepdf.Name.Helvetica,Encoding=pikepdf.Name.WinAnsiEncoding))
         page.Resources.Font=pikepdf.Dictionary(Legend=selfont)
         def text(value,x,y,size):
             writer.ops.extend([instruction('q'),instruction('g',[0]),instruction('BT'),instruction('Tf',[pikepdf.Name.Legend,size]),
               instruction('Tm',[1,0,0,1,x,y]),instruction('Tj',[pikepdf.String(value.encode('cp1252',errors='replace'))]),instruction('ET'),instruction('Q')])
+        footer_bounds=None
+        if footer:
+            # Standard PDF font covers all date/sequence digits, unlike the
+            # source subset, which may not contain tomorrow's digits.
+            widths=CORE_FONT_METRICS['Helvetica'].character_widths
+            width=sum(widths.get(c,widths['default']) for c in footer)/1000
+            size=min(5.5,(ab[2]-ab[0]-40)/width)
+            x=(ab[0]+ab[2]-width*size)/2;y=ab[1]+8
+            text(footer,x,y,size)
+            footer_bounds=[x,y-size*.25,x+width*size,y+size]
+        legend_frame=[legend_slot[0]-8,legend_slot[1]-8,legend_slot[2]+8,legend_slot[3]+8]
+        legend_color=(1,0,1,0) if marker.kind=='PE' else (0,.99,.97,0)
+        writer.ops.extend([instruction('q'),instruction('K',legend_color),instruction('w',[1]),
+                           instruction('re',[legend_frame[0],legend_frame[1],legend_frame[2]-legend_frame[0],legend_frame[3]-legend_frame[1]]),
+                           instruction('S'),instruction('Q')])
         text('LÉGENDE',legend_slot[0],legend_slot[3]-9,8)
         col_width=(legend_slot[2]-legend_slot[0])/columns
         for n,symbol in enumerate(unique):
@@ -211,7 +247,7 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
                 else:lines[-1]=(lines[-1]+' '+word).strip()
             for k,line in enumerate(lines):text(line,x+22,y+10-k*7,6)
         if groups['logo']:
-            slot=(ab[2]-12-(ab[2]-ab[0])*.30,ab[1]+12,ab[2]-12,ab[1]+12+(ab[3]-ab[1])*.12)
+            slot=(ab[2]-12-(ab[2]-ab[0])*.30,ab[1]+22,ab[2]-12,ab[1]+12+(ab[3]-ab[1])*.12)
             # Existing prevention objects set the bottom of the available space.
             bands=[ts.items[i] for i in template_ids if ts.items[i].fill is not None and len(ts.items[i].fill)==4
                    and ts.items[i].fill[0]<.4 and ts.items[i].fill[1]<.4 and ts.items[i].fill[2]>.5 and ts.items[i].fill[3]<.4
@@ -222,7 +258,7 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
                 band=bands[0].bounds
                 obstacles=[ts.items[i].bounds for i in template_ids if ts.items[i].bounds[2]>band[0] and ts.items[i].bounds[0]<band[2]
                            and ts.items[i].bounds[3]<band[1] and ts.items[i].bounds[1]>ab[1]+12]
-                slot=(band[0],ab[1]+12,band[2],min((b[1] for b in obstacles),default=band[1])-8)
+                slot=(band[0],ab[1]+22,band[2],min((b[1] for b in obstacles),default=band[1])-8)
             block(groups['logo'],slot,marker.kind=='PE','center' if marker.kind=='PE' else 'bottom-right')
         writer.finish();out.docinfo['/Title']='DOEMO Studio — PDF de test — VEI '+str(marker.index)
         out.docinfo['/Subject']='Généré sur Linux depuis le BAT ; contrôle visuel requis.'
@@ -238,7 +274,7 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
                     found.add(digest(obj.read_bytes()))
                     for child in obj.get('/Resources',{}).get('/XObject',{}).values():visit(child)
             for obj in checked.pages[0].Resources.XObject.values():visit(obj)
-            expected={before[i] for i in plan+groups['header']+groups['level']+groups['footer']+groups['logo']}
+            expected={before[i] for i in plan+groups['header']+groups['level']+groups['logo']}
             if not expected<=found:raise ValueError('Fragment source modifié pendant la génération.')
             # Fonts/images shared by all source fragments must survive unchanged.
             first=checked.pages[0].Resources.XObject
@@ -249,14 +285,16 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
         if abs(direction[0])>1e-7 or direction[1]<=0:raise ValueError('VEI mal orienté.')
         return {'vei':marker.index,'id':marker.id,'type':marker.kind,'file':Path(output).name,'sha256':file_hash(output),
           'angle':angle,'scale':fit[0],'direction_after':list(direction),'active_vei_count':1,'hidden_vei_count':len(markers)-1,
-          'level':level_id,'layout':{'zone':list(zone),'plan_bounds':list(placed)},'source_fragments_unchanged':True,
+          'level':level_id,'plan_reference':reference,'footer_text':footer,
+          'layout':{'zone':list(zone),'plan_bounds':list(placed),'legend_frame':legend_frame,'legend_color_cmyk':legend_color,'footer_bounds':footer_bounds},
+          'source_fragments_unchanged':True,'publication_metadata_rewritten':bool(footer),
           'embedded_resources_unchanged':True,'production_ready':False,'status':'test_pdf_generated'}
 
 
 def generate_batch(source, destination, client='doemo', levels=None, basename=None):
     destination=Path(destination)
     if destination.exists():raise ValueError('Refus d’écraser un lot existant.')
-    initial=file_hash(source);directory=templates_dir(client);templates=template_index(directory)
+    initial=file_hash(source);directory=templates_dir(client);templates=template_index(directory);generated_on=batch_date()
     if levels is not None:levels=validate_document(source,levels)['document']
     destination.parent.mkdir(parents=True,exist_ok=True)
     temporary=Path(tempfile.mkdtemp(prefix='.lot-',dir=destination.parent))
@@ -274,11 +312,11 @@ def generate_batch(source, destination, client='doemo', levels=None, basename=No
                 if len(found)!=1:raise ValueError('Trame '+ '-'.join(key)+' absente ou ambiguë dans le dossier client.')
                 template=found[0];template_hashes[str(template)]=check_template(template,key)
                 name=f'{stem}-VEI-{marker.index:02d}-'+ '-'.join(key)+'.pdf'
-                result=build_plan(pdf,scene,symbols,markers,visible,marker,template,temporary/name,levels)
+                result=build_plan(pdf,scene,symbols,markers,visible,marker,template,temporary/name,levels,generated_on)
                 result['template']=f'{client}/{template.relative_to(directory).as_posix()}';results.append(result)
                 if sum(p.stat().st_size for p in temporary.iterdir())>256*1024*1024:raise ValueError('Lot supérieur à 256 Mio.')
         if file_hash(source)!=initial or any(file_hash(p)!=h for p,h in template_hashes.items()):raise ValueError('Une source a changé pendant la génération.')
-        report={'schema_version':1,'engine_version':'0.3.0','status':'test_batch_complete','production_ready':False,'source_sha256':initial,
+        report={'schema_version':1,'engine_version':'0.3.1','generation_date':generated_on.isoformat(),'status':'test_batch_complete','production_ready':False,'source_sha256':initial,
                 'source_unchanged':True,'client':client,'count':len(results),'results':results,
                 'warnings':['Contrôler visuellement les PDF avant utilisation.',
                 'Les zones de trames sont détectées automatiquement ; ce profil prend en charge les BAT Illustrator AI24 à une page.',

@@ -16,11 +16,14 @@ from doemo_pdf.bindings import bind, outlines_match
 from doemo_pdf.generate import generate_batch, inspect_generation
 from doemo_pdf.scene import Scene, multiply, instruction
 from doemo_pdf.pdf import file_hash
+from fontTools.agl import UV2AGL
+from datetime import date
+from pypdf import PdfReader
 
 
 def font(pdf):
-    chars=' PEVI'; names=['.notdef','space','P','E','V','I'];fb=FontBuilder(1000,isTTF=True)
-    fb.setupGlyphOrder(names);fb.setupCharacterMap({ord(c):'space' if c==' ' else c for c in chars})
+    chars=''.join(chr(c) for c in range(32,127))+'à°';names=['.notdef',*(UV2AGL[ord(c)] for c in chars)];fb=FontBuilder(1000,isTTF=True)
+    fb.setupGlyphOrder(names);fb.setupCharacterMap({ord(c):UV2AGL[ord(c)] for c in chars})
     glyphs={}
     for name in names:
         pen=TTGlyphPen(None)
@@ -31,18 +34,19 @@ def font(pdf):
     fb.setupOS2(sTypoAscender=800,sTypoDescender=-200,usWinAscent=800,usWinDescent=200);fb.setupPost();fb.setupMaxp()
     buf=BytesIO();fb.save(buf);stream=pdf.make_stream(buf.getvalue());stream.Length1=len(buf.getvalue())
     descriptor=pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.FontDescriptor,FontName=pikepdf.Name.Fixture,Flags=32,FontBBox=[0,-200,500,800],ItalicAngle=0,Ascent=800,Descent=-200,CapHeight=700,StemV=80,FontFile2=stream))
-    return pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Font,Subtype=pikepdf.Name.TrueType,BaseFont=pikepdf.Name.Fixture,FirstChar=32,LastChar=86,Widths=[500]*55,Encoding=pikepdf.Name.WinAnsiEncoding,FontDescriptor=descriptor))
+    return pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Font,Subtype=pikepdf.Name.TrueType,BaseFont=pikepdf.Name.Fixture,FirstChar=32,LastChar=255,Widths=[500]*224,Encoding=pikepdf.Name.WinAnsiEncoding,FontDescriptor=descriptor))
 
 
 def layer(name,body=''):
     return f'%AI5_BeginLayer\n1 1 1 1 0 0 1 16 0 0 136 0 50 0 Lb\n({name}) Ln\n{body}\nLB\n%AI5_EndLayer--\n'
 
 
-def bat(path, mismatch=False):
+def bat(path, mismatch=False, footer=None):
     pdf=pikepdf.Pdf.new();pg=pdf.add_blank_page(page_size=(300,500));disc=pdf.make_stream(b'0.9 0.7 0 0 k -5 -5 10 10 re f')
     disc.Type=pikepdf.Name.XObject;disc.Subtype=pikepdf.Name.Form;disc.BBox=[-5,-5,5,5];disc.Resources=pikepdf.Dictionary()
     props=pikepdf.Dictionary()
     for key,name in [('A','Relevé'),('P','Pictos')]:props['/'+key]=pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.OCG,Name=name))
+    if footer:props['/D']=pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.OCG,Name='Date et N° de conception'))
     pg.Resources=pikepdf.Dictionary(Properties=props,Font=pikepdf.Dictionary(F0=font(pdf)),XObject=pikepdf.Dictionary(Disc=disc))
     pdf.Root.OCProperties=pikepdf.Dictionary(OCGs=list(props.values()),D=pikepdf.Dictionary(BaseState=pikepdf.Name.ON))
     ops=['/OC /A BDC 0 G 2 w 40 90 200 360 re S EMC /OC /P BDC'];native=[]
@@ -52,10 +56,12 @@ def bat(path, mismatch=False):
         ops.append(f'0.9 0.7 0.01 0 k 105 {y} m 115 {y-3} l 115 {y+3} l h f')
         ops.append(f'BT /F0 8 Tf 1 0 0 1 70 {y-24} Tm ({"PIV" if i==2 else "PEV"}) Tj ET')
         native.append(f'/SymbolInstance :\n(Nouveau symbole VEI) /SymbolRef ,\n1 0 0 -1 80 {y-500} /RTransformMatrix\n;\n')
-    ops.append('EMC');pg.Contents=pdf.make_stream('\n'.join(ops).encode())
+    ops.append('EMC')
+    if footer:ops.append(f'/OC /D BDC BT /F0 5 Tf 1 0 0 1 10 20 Tm ({footer}) Tj ET EMC')
+    pg.Contents=pdf.make_stream('\n'.join(ops).encode('cp1252'))
     size=6 if mismatch else 5
     definition=f'%AI14_BeginSymbol\n(Nouveau symbole VEI)\n-{size} -5 m\n5 -5 L\n5 5 L\n-5 5 L\n-{size} -5 L\nf\n%AI10_EndSymbol\n'
-    data=('%!PS-Adobe-3.0\n%AI3_Cropmarks: 0 -500 300 0\n'+definition+layer('Relevé')+layer('Pictos',''.join(native))).encode()
+    data=('%!PS-Adobe-3.0\n%AI3_Cropmarks: 0 -500 300 0\n'+definition+layer('Relevé')+layer('Pictos',''.join(native))+(layer('Date et N° de conception') if footer else '')).encode()
     pg.obj.PieceInfo=pikepdf.Dictionary(Illustrator=pikepdf.Dictionary(Private=pikepdf.Dictionary(AIPrivateData1=pdf.make_stream(PREFIX+zstandard.ZstdCompressor().compress(data)))))
     pdf.save(path)
 
@@ -201,3 +207,37 @@ def test_clip_cannot_silently_hide_active_vei(project,tmp_path):
                     'contours':[{'id':'small','role':'include','fill_rule':'nonzero','nodes':[{'x':x,'y':y} for x,y in [(20,20),(30,20),(30,30),(20,30)]]}]}]
     with pytest.raises(ValueError,match='zone occupée par le VEI'):generate_batch(source,tmp_path/'bad-clip',levels=doc)
     assert not (tmp_path/'bad-clip').exists()
+
+
+def test_legend_frames_and_bottom_footer_date_and_sequence(project,tmp_path,monkeypatch):
+    source,_=project
+    bat(source,footer='Mise à jour n° 1 - Date et n° du plan : 27-10-2026 - CO26100364-1')
+    # Date must be captured once per lot, not individually for each PDF.
+    dates=iter([date(2026,10,28)])
+    monkeypatch.setattr('doemo_pdf.generate.batch_date',lambda:next(dates))
+    destination=tmp_path/'dated';report=generate_batch(source,destination)
+    assert report['generation_date']=='2026-10-28'
+    for n,row in enumerate(report['results'],1):
+        expected=f'Mise à jour n° 1 - Date et n° du plan : 28-10-2026 - CO26100364-{n}'
+        assert row['footer_text']==expected and row['plan_reference']==f'CO26100364-{n}'
+        text=PdfReader(destination/row['file']).pages[0].extract_text()
+        assert text.count(expected)==1 and '27-10-2026' not in text
+        assert 0<row['layout']['footer_bounds'][1]<row['layout']['footer_bounds'][3]<16
+        with pikepdf.open(destination/row['file']) as pdf:
+            ops=pikepdf.parse_content_stream(pdf.pages[0])
+            # Check actual page operators: one closed, stroked coloured frame.
+            colours=[tuple(map(float,ins.operands)) for ins in ops if str(ins.operator)=='K']
+            assert colours==[(1.,0.,1.,0.) if row['type']=='PE' else (0.,.99,.97,0.)]
+            rects=[tuple(map(float,ins.operands)) for ins in ops if str(ins.operator)=='re']
+            x0,y0,x1,y1=row['layout']['legend_frame']
+            assert rects==[pytest.approx((x0,y0,x1-x0,y1-y0))]
+            assert y0>row['layout']['zone'][1]
+
+
+def test_footer_keeps_revision_and_handles_double_digit_plan_numbers():
+    from types import SimpleNamespace
+    from doemo_pdf.generate import footer_label
+    scene=SimpleNamespace(items=[SimpleNamespace(kind='text',text='Mise à jour n° 4 - Date et n° du plan : 31-12-2025 - CLIENT-A-9',bounds=(0,0,10,10))])
+    text,reference=footer_label(scene,[0],12,date(2027,1,1))
+    assert text=='Mise à jour n° 4 - Date et n° du plan : 01-01-2027 - CLIENT-A-12'
+    assert reference=='CLIENT-A-12'
