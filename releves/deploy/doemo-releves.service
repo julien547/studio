@@ -1,0 +1,27 @@
+[Unit]
+Description=API privee DOEMO Releves
+Requires=doemo-releves.socket
+After=network-online.target doemo-releves.socket
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=doemo-studio
+Group=doemo-studio
+WorkingDirectory=/opt/doemo-studio/src
+EnvironmentFile=/etc/doemo-studio/releves.env
+EnvironmentFile=-/etc/doemo-studio/runpod/runpod-ovh.env
+Sockets=doemo-releves.socket
+ExecStart=/opt/doemo-studio-venv/bin/python -m uvicorn doemo_releves.api:app_factory --factory --fd 3 --workers 1 --no-access-log
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=600
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/doemo-studio/releves
+
+[Install]
+WantedBy=multi-user.target

@@ -1,5 +1,7 @@
 # DOEMO Studio (studio.doemo.fr)
 
+**Déploiement et reprise par une autre session : [procédure complète](releves/docs/PASSATION-PRODUCTION.md).**
+
 Le MVP d’édition des relevés est développé dans `releves/` :
 [démarrer l’atelier](releves/docs/mvp-demarrage.md),
 [consulter l’audit et les vérifications](releves/docs/mvp-audit.md).

@@ -1,0 +1,31 @@
+# FRAGMENT a integrer au vhost HTTPS existant, apres inspection.
+# Ne remplace pas le VirtualHost, les certificats ou les routes /app existantes.
+# Pour mod_php. Avec PHP-FPM, transmettre les deux variables via le pool dedie.
+SetEnv DOEMO_RELEVES_SOCKET /run/doemo-studio/backend.sock
+SetEnv DOEMO_RELEVES_DIST /opt/doemo-studio/src/releves/dist
+
+<Directory /var/www/studio/releves>
+    Options -Indexes
+    DirectoryIndex index.php
+    Require all granted
+</Directory>
+
+# Autoriser le fond importe et les exports blob uniquement sur le nouvel atelier.
+<Location /releves/>
+    Header always set Content-Security-Policy "default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"
+</Location>
+
+# Permet notamment l'import de l'archive SAI (178 Mo).
+<Location /api/releves.php>
+    LimitRequestBody 566231040
+</Location>
+<IfModule mod_php.c>
+    <Directory /var/www/studio/api>
+        <Files releves.php>
+            php_value upload_max_filesize 520M
+            php_value post_max_size 535M
+            php_value memory_limit 768M
+            php_value max_execution_time 240
+        </Files>
+    </Directory>
+</IfModule>

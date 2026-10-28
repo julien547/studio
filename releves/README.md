@@ -1,5 +1,7 @@
 # Reconnaissance et pose des pictogrammes — phase 1
 
+**Déploiement et reprise par une autre session : [procédure complète](docs/PASSATION-PRODUCTION.md).**
+
 ## Nouvel atelier Studio — MVP du 28 octobre 2026
 
 Le module comprend maintenant un tableau de bord, une connexion autonome optionnelle,

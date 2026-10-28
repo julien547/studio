@@ -1,0 +1,25 @@
+[Unit]
+Description=Controleur RunPod REST v2 DOEMO Studio
+After=network-online.target doemo-releves.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=doemo-studio
+Group=doemo-studio
+WorkingDirectory=/opt/doemo-studio/src
+EnvironmentFile=/etc/doemo-studio/releves.env
+EnvironmentFile=-/etc/doemo-studio/runpod/runpod-ovh.env
+ExecStart=/opt/doemo-studio-venv/bin/python -m doemo_releves.gpu
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/doemo-studio/releves
+
+[Install]
+WantedBy=multi-user.target
