@@ -67,34 +67,23 @@ L’import réutilise les routes existantes. Enregistrement, validation autoris�
 rejet, gel/export et référentiel Qwen fonctionnent sans GPU. Aucun poids ni prompt
 de production n’est modifié. Les données SQLite restent sur OVH, jamais sur FUSE.
 
-## RTMDet : recette GPU à réaliser
+## RTMDet : raccordement livré, recette GPU à réaliser
+
+La [procédure RTMDet](ENTRAINEMENT-RTMDET.md) décrit les fichiers, la migration
+`004`, le nouveau worker OVH et le profil accepté. La file est raccordée au
+navigateur et au gateway : demandes idempotentes, consentement, attente GPU,
+pause à la fin d’une époque pour l’inférence, reprise et annulation.
 
 `rtmdet_pipeline.py` appelle réellement `MMEngine Runner.train()` puis `Runner.test()`
-avec MMDetection 3.3.0 : classes DOEMO, paramètres conservateurs, checkpoints par
-époque, métriques, événements d’itération/perte et copies vérifiées sur `/workspace`.
-**Il n’a pas été exécuté sur GPU ici.** Les validations CPU ne prouvent pas la
-compatibilité du profil réel ; la capacité d’entraînement web reste désactivée.
+avec MMDetection 3.3.0. **Il n’a pas été exécuté sur GPU ici.** La capacité reste
+inactive sans recette réelle de `accept_training.py`, qui teste deux époques avec
+pause/inférence/reprise et une annulation séparée. Cette recette nécessite une
+maintenance et un coût GPU autorisés, organisés uniquement par la session de
+déploiement. Aucun script ne stoppe le vLLM préexistant ou un service tiers.
 
-Le pilote exige une autorisation explicite et un verrou excluant le gateway actif
-ou un autre pilote. C’est un outil de recette en **maintenance autorisée**, pas
-un entraînement concurrent des dossiers clients. Il ne stoppe aucun service.
-Le contrôleur OVH refuse l’arrêt automatique sans santé fraîche du gateway.
-
-Après audit et autorisation de l’essai court :
-
-```sh
-/opt/doemo-rtmdet-venv/bin/python rtmdet_pipeline.py \
-  --dataset /workspace/doemo-studio/imports/dataset-autorise.zip \
-  --config "$DOEMO_RTMDET_CONFIG" --weights "$DOEMO_RTMDET_WEIGHTS" \
-  --epochs 1 --batch-size 1 --learning-rate 0.0001 \
-  --authorize-gpu-training
-```
-
-Ne pas exécuter cette commande sans organiser la maintenance et obtenir
-l’autorisation du coût GPU. Le dataset doit avoir trois groupes indépendants,
-avec toutes les classes représentées dans train. Les copies sans manifeste complet
-ne constituent pas un modèle enregistré. Préemption, reprise et comparaison à la
-version précédente restent à implémenter/tester avant le raccordement web.
+Le simple essai d’une époque du pilote ne suffit plus à activer la capacité :
+utiliser la recette complète décrite dans la procédure. Les métriques produites
+sont celles du lot test ; elles ne valent pas comparaison à la production.
 
 ## PaddleOCR, Qwen, architecture
 
@@ -126,22 +115,21 @@ poids persistants et des inférences sur GPU. Enregistrer son digest après rece
 
 Les routes de promotion refusent l’activation tant que les adaptateurs réels ne
 sont pas raccordés. Ne pas contourner les contrôles en changeant les statuts SQL.
-Il reste à implémenter et tester ensemble : ordonnanceur avec inférence prioritaire,
-idempotence, annulation/checkpoints/reprise, tâches persistantes prises en compte
-par l’arrêt automatique, évaluation comparative indépendante, ingestion vérifiée
-des poids, approbation administrative, pointeurs de production transactionnels par
-moteur, version figée par inférence et rollback.
+Le raccordement RTMDet, la priorité, les reprises et les artefacts sont maintenant
+implémentés et testés localement. Restent la recette GPU complète, les pilotes
+Qwen/PaddleOCR, l’évaluation comparative indépendante, l’approbation administrative,
+les pointeurs de production transactionnels par moteur, la version figée par
+inférence et le rollback. Aucun candidat n’est automatiquement mis en production.
 
-Validation du 28 octobre 2026 : **98 tests backend réussis**, dont 18 nouveaux cas
-d’apprentissage/artefacts. Tests effectués : API CPU, persistance après réouverture, consentement/révocation,
-conflits, murs/ouvertures, groupes de splits, images/transcriptions exportées,
-artefacts/hash, référentiel Qwen et refus des opérations GPU indisponibles.
+Validation locale du 28 octobre 2026 : **118 tests backend réussis**. Tests CPU
+sur API, persistance, consentement/révocation, corrections et splits, puis protocole
+asynchrone, déduplication, réponses perdues, annulation, checkpoints et exclusion.
 Aucun entraînement réel, arrêt/redémarrage Pod, build Docker ni promotion d’un modèle
 n’a été exécuté dans cette session.
 
 La page React `/entrainement` est maintenant raccordée aux API : import,
 corrections, validation/rejet, datasets, exports, référentiel Qwen, analyses
 existantes et supervision GPU. Validation locale complémentaire : build TypeScript,
-8 tests de géométrie, 5 parcours Playwright avec vrai backend temporaire (dont
+8 tests de géométrie, 6 parcours Playwright avec vrai backend temporaire (dont
 redémarrage du processus, conflit de révision, restriction administrateur, murs,
 implantations distinctes et résultats RTMDet rejoués sans appel GPU).

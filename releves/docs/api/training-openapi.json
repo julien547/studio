@@ -1410,6 +1410,73 @@
         }
       }
     },
+    "/projects/training/runs/{ident}/resume": {
+      "post": {
+        "summary": "Resume",
+        "operationId": "resume_projects_training_runs__ident__resume_post",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Confirm"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/projects/training/audit": {
       "get": {
         "summary": "Journal",
@@ -2875,6 +2942,23 @@
             "exclusiveMinimum": 0.0,
             "title": "Learning Rate",
             "default": 0.0001
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "default": false
+          },
+          "request_key": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_-]{16,80}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Request Key"
           }
         },
         "additionalProperties": false,

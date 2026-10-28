@@ -206,6 +206,26 @@ def test_transient_inference_retries_are_bounded(managed,monkeypatch):
     assert gpu.pending(managed)==0
 
 
+def test_checkpoint_wait_keeps_same_inference_without_consuming_transport_retries(managed,monkeypatch):
+    ident=job(managed)
+    image=managed.root/'documents'/'source'/'page-1.png';image.parent.mkdir(parents=True)
+    Image.new('RGB',(16,16)).save(image)
+    with managed.connect() as db:
+        db.execute('UPDATE jobs SET payload=? WHERE id=?',(json.dumps({'engine':'qwen','document_id':'source','page':1}),ident))
+    received=[]
+    def checkpoint(url,**kwargs):
+        received.append(kwargs['headers']['X-Doemo-Job'])
+        return httpx.Response(409,json={'detail':{'code':'training_preempting'}},request=httpx.Request('POST',url))
+    monkeypatch.setattr(httpx,'post',checkpoint)
+    for _ in range(7):
+        ready_state(managed,now=time.time());gpu.update(managed,gateway_url='https://fixture.invalid')
+        with managed.connect() as db:db.execute('UPDATE jobs SET retry_at=0 WHERE id=?',(ident,))
+        assert process_one(managed)
+        with managed.connect() as db:row=dict(db.execute('SELECT * FROM jobs WHERE id=?',(ident,)).fetchone())
+        assert row['status']=='retry_gpu' and row['attempts']==0
+    assert received==[ident]*7 and gpu.pending(managed)==1
+
+
 def test_private_configuration_separates_provider_key_and_gateway_token(tmp_path):
     path=Path(__file__).parents[2]/'scripts/configure-runpod.py'
     spec=importlib.util.spec_from_file_location('configure_runpod',path)
@@ -242,6 +262,7 @@ def load_module(name):
 
 
 def test_persistent_results_retry_and_quiescence(tmp_path,monkeypatch):
+    monkeypatch.syspath_prepend(str(Path(__file__).parents[2]/'services/runpod'))
     gateway=load_module('gateway');monkeypatch.setenv('DOEMO_RUNPOD_TOKEN','g'*40);monkeypatch.setenv('DOEMO_PERSISTENT_ROOT',str(tmp_path/'volume'))
     gateway.status.update(ready=True,restoring=False,engines={e:True for e in gateway.ENGINES})
     count=[]

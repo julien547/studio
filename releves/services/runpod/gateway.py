@@ -1,7 +1,7 @@
 """Authenticated, persistent GPU service; launch exactly one uvicorn worker.
 
 Provider RUNPOD_API_KEY is never needed here. The separate gateway token only
-permits inference, readiness and quiescence, never provider administration.
+permits inference, accepted training jobs, readiness and quiescence, never provider administration.
 """
 import asyncio
 import contextlib
@@ -16,8 +16,10 @@ import tempfile
 import time
 import uuid
 from pathlib import Path
-from fastapi import FastAPI,Header,HTTPException,UploadFile,Depends
+from fastapi import FastAPI,Header,HTTPException,UploadFile,Depends,Form
 from PIL import Image
+from compute import exclusive
+from training_service import Manager
 
 lock=asyncio.Lock()
 ENGINES={'qwen':'/opt/doemo-qwen-venv/bin/python','paddleocr':'/opt/doemo-ocr-venv/bin/python','rtmdet':'/opt/doemo-rtmdet-venv/bin/python'}
@@ -27,6 +29,8 @@ BOOT_ID=uuid.uuid4().hex
 status={'ready':False,'restoring':True,'engines':{e:False for e in ENGINES},'public_error':None}
 draining=False
 last_activity=time.monotonic()
+training=None
+training_admissions=0
 
 
 def persistent_root():return Path(os.environ.get('DOEMO_PERSISTENT_ROOT','/workspace/doemo-studio'))
@@ -44,7 +48,7 @@ def engine_env():
 
 
 async def execute(python,script,args,log,timeout):
-    with log.open('wb') as output:
+    with exclusive(), log.open('wb') as output:
         proc=await asyncio.create_subprocess_exec(python,str(script),*map(str,args),stdout=output,stderr=output,env=engine_env(),start_new_session=True)
         try:await asyncio.wait_for(proc.wait(),timeout=timeout)
         except (asyncio.TimeoutError,asyncio.CancelledError):
@@ -79,14 +83,23 @@ async def warm_models():
 
 @contextlib.asynccontextmanager
 async def lifespan(app):
+    global training
     # fcntl is only used in /tmp, never on geesefs. Reject multiple gateway processes.
     import fcntl
     handle=open(os.environ.get('DOEMO_GATEWAY_LOCK','/tmp/doemo-gateway.lock'),'a')
     fcntl.flock(handle.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
+    def activity():
+        global last_activity
+        last_activity=time.monotonic()
+    training=Manager(persistent_root(),lock,lambda:status['ready'],lambda:draining,activity,engine_env)
+    await training.initialize()
     task=asyncio.create_task(warm_models())
+    trainer=asyncio.create_task(training.loop())
     try:yield
     finally:
         task.cancel()
+        trainer.cancel()
+        with contextlib.suppress(asyncio.CancelledError):await trainer
         with contextlib.suppress(asyncio.CancelledError):await task
         handle.close()
 
@@ -101,7 +114,8 @@ def authorize(authorization:str=Header(default='')):
 
 @app.get('/health',dependencies=[Depends(authorize)])
 async def health():
-    return dict(status,boot_id=BOOT_ID,busy=lock.locked(),active_jobs=int(lock.locked()),draining=draining,
+    return dict(status,boot_id=BOOT_ID,busy=lock.locked() or bool(training_admissions),active_jobs=int(lock.locked())+training_admissions,draining=draining,
+                training_pending=training.store.pending() if training else 0,
                 idle_seconds=max(0,time.monotonic()-last_activity),model_inference_verified=status['ready'],automatic_start=False)
 
 
@@ -109,7 +123,7 @@ async def health():
 async def quiesce():
     global draining
     # No await between testing the lock and setting the admission flag.
-    if lock.locked() or status['restoring']:return {'quiesced':False,'boot_id':BOOT_ID}
+    if lock.locked() or training_admissions or status['restoring'] or (training and training.store.pending()):return {'quiesced':False,'boot_id':BOOT_ID}
     draining=True
     return {'quiesced':True,'boot_id':BOOT_ID}
 
@@ -134,6 +148,9 @@ async def infer(engine:str,file:UploadFile,x_doemo_job:str=Header(default='')):
     global last_activity
     if engine not in ENGINES:raise HTTPException(404,'Moteur inconnu')
     if not status['ready']:raise HTTPException(503,'Les trois moteurs ne sont pas prêts')
+    if training:
+        await training.infer_priority()
+        if training.active:raise HTTPException(409,{'code':'training_preempting','message':'Checkpoint en cours avant priorité à l’inférence'})
     if draining or lock.locked():raise HTTPException(409,'GPU occupé ou en arrêt contrôlé')
     job_id=x_doemo_job or uuid.uuid4().hex
     if not re.fullmatch('[a-f0-9]{32}',job_id):raise HTTPException(422,'Identifiant invalide')
@@ -175,3 +192,51 @@ async def infer(engine:str,file:UploadFile,x_doemo_job:str=Header(default='')):
                     if isinstance(exc,asyncio.CancelledError):raise
                     raise HTTPException(502,'Moteur interrompu ; journaux conservés sur le volume persistant')
         finally:last_activity=time.monotonic()
+
+
+@app.get('/training/capabilities',dependencies=[Depends(authorize)])
+async def training_capabilities():
+    return {'engine':'rtmdet','training':bool(training and training.profile),'profile_id':training.profile['public']['id'] if training and training.profile else None}
+
+
+@app.post('/training/jobs/{ident}',dependencies=[Depends(authorize)])
+async def training_submit(ident:str,file:UploadFile,spec:str=Form(...)):
+    global training_admissions,last_activity
+    if not training or not training.profile or not status['ready'] or draining:raise HTTPException(503,'Admission entraînement indisponible')
+    if len(spec)>16384:raise HTTPException(413,'Demande excessive')
+    training_admissions+=1
+    last_activity=time.monotonic()
+    try:
+        with tempfile.TemporaryDirectory(prefix='doemo-training-upload-',dir='/tmp') as tmp:
+            archive=Path(tmp)/'dataset.zip';count=0
+            with archive.open('wb') as output:
+                while chunk:=await file.read(1024**2):
+                    count+=len(chunk)
+                    if count>256*1024**2:raise HTTPException(413,'Dataset excessif')
+                    output.write(chunk)
+            # The admission counter prevents quiescence during the verified copy;
+            # accepting another queued job must not wait for a long GPU epoch.
+            if draining:raise HTTPException(409,'Arrêt contrôlé en cours')
+            return await asyncio.to_thread(training.store.admit,ident,json.loads(spec),archive,training.profile)
+    except (ValueError,KeyError,TypeError,OSError):raise HTTPException(422,'Demande, dataset ou profil incompatible')
+    finally:
+        training_admissions-=1
+        last_activity=time.monotonic()
+
+
+@app.get('/training/jobs/{ident}',dependencies=[Depends(authorize)])
+async def training_status(ident:str):
+    if not training:raise HTTPException(503,'Service en préparation')
+    try:value=await asyncio.to_thread(training.store.public,ident)
+    except (ValueError,OSError,KeyError):raise HTTPException(409,'État persistant à contrôler')
+    if value is None:raise HTTPException(404,'Tâche absente')
+    return value
+
+
+@app.post('/training/jobs/{ident}/{action}',dependencies=[Depends(authorize)])
+async def training_control(ident:str,action:str):
+    if not training:raise HTTPException(503,'Service en préparation')
+    if action not in ('pause','resume','cancel'):raise HTTPException(404,'Action inconnue')
+    try:return await training.control(ident,action)
+    except LookupError:raise HTTPException(404,'Tâche absente')
+    except (ValueError,OSError,KeyError):raise HTTPException(409,'Transition refusée ; contrôler le checkpoint et la disponibilité')

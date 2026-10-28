@@ -1,8 +1,8 @@
 """Admin learning workspace. Examples, immutable datasets and versions are distinct.
 
-No GPU training/evaluation/deployment adapter is installed in this release. Those
-operations fail closed, independently per engine, without reserving the production
-GPU. Qwen reference snapshots and reference-only evaluation run on OVH.
+RTMDet training requires an operator-accepted profile and the durable OVH/GPU
+workers. Comparative evaluation and model deployment remain unavailable.
+Qwen reference snapshots and reference-only evaluation run on OVH.
 """
 import hashlib
 import io
@@ -101,6 +101,8 @@ class Run(Model):
  epochs: int=Field(default=10,ge=1,le=100)
  batch_size: int=Field(default=1,ge=1,le=16)
  learning_rate: float=Field(default=0.0001,gt=0,le=0.01)
+ confirmed: bool=False
+ request_key: str|None=Field(default=None,pattern=r'^[a-zA-Z0-9_-]{16,80}$')
 
 
 class Version(Model):
@@ -212,6 +214,27 @@ def coco(snapshot):
  return dict(images=images,annotations=annotations,categories=categories,info={'format':'doemo.training-coco/1','walls':'See examples.json centerlines; no invented segmentation masks'})
 
 
+def dataset_bundle(snapshot,engine,resolve_image):
+ # A complete bundle, with real source rasters, OCR crops and all geometry.
+ output=io.BytesIO();total=0;seen=set();coco_data=coco(snapshot);ocr=[];qwen=[]
+ with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as bundle:
+  bundle.writestr('examples.json',encoded(snapshot));bundle.writestr('coco.json',encoded(coco_data))
+  for e in snapshot['examples']:
+   d=e['data'];source=e['source'];path=resolve_image(e);total+=path.stat().st_size
+   if total>256*1024**2:raise ValueError('Dataset trop volumineux pour cet export ; créer plusieurs versions plus petites')
+   image=next(i for i in coco_data['images'] if i['document_sha256']==source['sha256'] and i['page']==e['page'])
+   if image['id'] not in seen:bundle.write(path,image['file_name']);seen.add(image['id'])
+   if engine=='qwen':qwen.append({'image':image['file_name'],'split':e['split'],'messages':[{'role':'user','content':d['convention'] or 'Interpréter ce relevé.'},{'role':'assistant','content':d['interpretation']}]})
+   if engine=='paddleocr':
+    with Image.open(path) as im:
+     for a in d['labels']:
+      b=a['bbox'];crop=im.crop((max(0,math.floor(b['x']*im.width)),max(0,math.floor(b['y']*im.height)),min(im.width,math.ceil((b['x']+b['w'])*im.width)),min(im.height,math.ceil((b['y']+b['h'])*im.height))))
+      data=io.BytesIO();crop.save(data,'PNG');filename=f"ocr/{e['id']}-{a['id']}.png";bundle.writestr(filename,data.getvalue());ocr.append({'image':filename,'text':a['text'],'split':e['split'],'bbox':b,'example_id':e['id']})
+  if ocr:bundle.writestr('ocr.jsonl','\n'.join(encoded(x) for x in ocr))
+  if qwen:bundle.writestr('qwen.jsonl','\n'.join(encoded(x) for x in qwen))
+ return output.getvalue()
+
+
 def attach_training(app,store,admin,get,doc):
  def cats(c):return {r['code']:dict(r) for r in c.execute('SELECT * FROM training_categories ORDER BY code')}
  def save_revision(c,value,who,action):
@@ -225,7 +248,8 @@ def attach_training(app,store,admin,get,doc):
 
  @app.get(PREFIX+'/capabilities')
  def capabilities(who=Depends(admin)):
-  return {'engines':{k:dict(v,inference_adapter=k!='architecture',training=False,evaluation=False,deployment=False,reference_versions=k=='qwen',driver_status='implemented_gpu_acceptance_pending' if k=='rtmdet' else 'not_implemented',reason='Entraînement non disponible : aucun pipeline GPU compatible validé et raccordé.',minimum_recommended_examples=100) for k,v in ENGINES.items()},'contract':'doemo.training/1'}
+  from .training_jobs import capability
+  return {'engines':{k:dict(v,inference_adapter=k!='architecture',evaluation=False,deployment=False,reference_versions=k=='qwen',minimum_recommended_examples=100,**capability(k)) for k,v in ENGINES.items()},'contract':'doemo.training/1'}
 
  @app.get(PREFIX+'/categories')
  def categories(who=Depends(admin)):
@@ -321,25 +345,11 @@ def attach_training(app,store,admin,get,doc):
  def dataset_export(ident:str,who=Depends(admin)):
   with store.connect() as c:
    value=row_dataset(c,ident);snapshot=value['snapshot'];audit(c,who.login,'dataset.export',ident)
-  # A complete bundle, with real source rasters, OCR crops and all geometry.
-  output=io.BytesIO();total=0;seen=set();coco_data=coco(snapshot);ocr=[];qwen=[]
-  with zipfile.ZipFile(output,'w',zipfile.ZIP_DEFLATED) as bundle:
-   bundle.writestr('examples.json',encoded(snapshot));bundle.writestr('coco.json',encoded(coco_data))
-   for e in snapshot['examples']:
-    d=e['data'];source=e['source'];_,directory=doc(e['project_id'],e['document_id'],who,e['page'])
-    path=directory/f"page-{e['page']}.png";total+=path.stat().st_size
-    if total>256*1024**2:raise ValueError('Dataset trop volumineux pour cet export ; créer plusieurs versions plus petites')
-    image=next(i for i in coco_data['images'] if i['document_sha256']==source['sha256'] and i['page']==e['page'])
-    if image['id'] not in seen:bundle.write(path,image['file_name']);seen.add(image['id'])
-    if value['engine']=='qwen':qwen.append({'image':image['file_name'],'split':e['split'],'messages':[{'role':'user','content':d['convention'] or 'Interpréter ce relevé.'},{'role':'assistant','content':d['interpretation']}]})
-    if value['engine']=='paddleocr':
-     with Image.open(path) as im:
-      for a in d['labels']:
-       b=a['bbox'];crop=im.crop((max(0,math.floor(b['x']*im.width)),max(0,math.floor(b['y']*im.height)),min(im.width,math.ceil((b['x']+b['w'])*im.width)),min(im.height,math.ceil((b['y']+b['h'])*im.height))))
-       data=io.BytesIO();crop.save(data,'PNG');filename=f"ocr/{e['id']}-{a['id']}.png";bundle.writestr(filename,data.getvalue());ocr.append({'image':filename,'text':a['text'],'split':e['split'],'bbox':b,'example_id':e['id']})
-   if ocr:bundle.writestr('ocr.jsonl','\n'.join(encoded(x) for x in ocr))
-   if qwen:bundle.writestr('qwen.jsonl','\n'.join(encoded(x) for x in qwen))
-  return Response(output.getvalue(),media_type='application/zip',headers={'Content-Disposition':f'attachment; filename="DOEMO-dataset-{ident}.zip"','Cache-Control':'private, no-store'})
+  def resolve_image(e):
+   _,directory=doc(e['project_id'],e['document_id'],who,e['page'])
+   return directory/f"page-{e['page']}.png"
+  output=dataset_bundle(snapshot,value['engine'],resolve_image)
+  return Response(output,media_type='application/zip',headers={'Content-Disposition':f'attachment; filename="DOEMO-dataset-{ident}.zip"','Cache-Control':'private, no-store'})
 
  @app.get(PREFIX+'/models')
  def models(engine:Engine,who=Depends(admin)):
@@ -357,8 +367,14 @@ def attach_training(app,store,admin,get,doc):
    if data.run_id:
     run=c.execute('SELECT * FROM training_runs WHERE id=? AND engine=?',(data.run_id,engine)).fetchone()
     if not run or run['status']!='completed' or run['dataset_id']!=data.dataset_id:raise ValueError('Un entraînement réellement terminé avec ce dataset est requis')
-    # A trusted GPU artifact/evaluation ingestion adapter must be installed first.
-    raise HTTPException(503,'Enregistrement de poids non disponible : vérification des artefacts GPU non raccordée')
+    result=json.loads(run['result'] or 'null')
+    if not result:raise ValueError('Artefacts GPU vérifiés absents')
+    prior=c.execute('SELECT id FROM training_versions WHERE run_id=?',(data.run_id,)).fetchone()
+    if prior:return {'id':prior[0],'status':'candidate','method':'weights','weights_trained':True}
+    ident=uuid.uuid4().hex
+    c.execute('INSERT INTO training_versions(id,engine,name,method,dataset_id,run_id,status,manifest,author) VALUES(?,?,?,?,?,?,?,?,?)',(ident,engine,data.name,'weights',data.dataset_id,data.run_id,'candidate',encoded(result),who.login))
+    audit(c,who.login,'version.save_weights',ident,{'run_id':data.run_id})
+    return {'id':ident,'status':'candidate','method':'weights','weights_trained':True}
    if engine!='qwen':raise ValueError('Un entraînement terminé est requis pour enregistrer des poids')
    rules={}
    for e in dataset['snapshot']['examples']:
@@ -413,15 +429,14 @@ def attach_training(app,store,admin,get,doc):
 
  @app.get(PREFIX+'/runs')
  def runs(engine:Engine,who=Depends(admin)):
-  with store.connect() as c:return [dict(r) for r in c.execute('SELECT * FROM training_runs WHERE engine=? ORDER BY created DESC',(engine,))]
+  from .training_jobs import decode
+  with store.connect() as c:return [decode(r) for r in c.execute('SELECT * FROM training_runs WHERE engine=? ORDER BY created DESC',(engine,))]
 
  @app.get(PREFIX+'/runs/{ident}')
  def run_status(ident:str,who=Depends(admin)):
+  from .training_jobs import record
   with store.connect() as c:
-   row=c.execute('SELECT * FROM training_runs WHERE id=?',(ident,)).fetchone()
-   if not row:raise LookupError()
-   result=dict(row);result['parameters']=json.loads(result['parameters']);result['result']=json.loads(result['result']) if result['result'] else None
-   return result
+   return record(c,ident)
 
  @app.get(PREFIX+'/runs/{ident}/logs')
  def run_logs(ident:str,who=Depends(admin)):
@@ -431,20 +446,21 @@ def attach_training(app,store,admin,get,doc):
 
  @app.post(PREFIX+'/runs')
  def launch(data:Run,who=Depends(admin)):
-  with store.connect() as c:
-   dataset=row_dataset(c,data.dataset_id)
-   if dataset['engine']!=data.engine:raise ValueError('Dataset incompatible')
-   audit(c,who.login,'training.launch.refused',data.dataset_id,{'reason':'pipeline_unavailable','engine':data.engine})
-  raise HTTPException(503,'Entraînement non disponible : aucun pipeline GPU compatible validé et raccordé. Aucun GPU démarré ni coût engagé.')
+  from .training_jobs import launch
+  # Preserve the capability refusal for clients predating explicit job admission.
+  from .training_jobs import capability
+  if not data.request_key and not capability(data.engine)['training']:raise HTTPException(503,capability(data.engine)['reason'])
+  return launch(store,who.login,data)
 
  @app.post(PREFIX+'/runs/{ident}/cancel')
  def cancel(ident:str,who=Depends(admin)):
-  with store.connect() as c:
-   row=c.execute('SELECT status FROM training_runs WHERE id=?',(ident,)).fetchone()
-   if not row:raise LookupError()
-   if row['status'] in ('completed','failed','cancelled'):raise Conflict('Tâche déjà terminée')
-   audit(c,who.login,'training.cancel.refused',ident,{'reason':'pipeline_unavailable'})
-  raise HTTPException(503,'Arrêt GPU non raccordé ; aucune interruption simulée')
+  from .training_jobs import cancel
+  return cancel(store,who.login,ident)
+
+ @app.post(PREFIX+'/runs/{ident}/resume')
+ def resume(ident:str,data:Confirm,who=Depends(admin)):
+  from .training_jobs import retry
+  return retry(store,who.login,ident,data.confirmed)
 
  @app.get(PREFIX+'/audit')
  def journal(who=Depends(admin)):

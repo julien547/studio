@@ -9,6 +9,7 @@ const python =
 const root = mkdtempSync(tmpdir() + "/doemo-training-e2e-"),
   origin = "http://127.0.0.1:18083";
 let server: ChildProcess;
+let acceptedTrainingFixture = false;
 function start() {
   return spawn(
     python,
@@ -29,9 +30,18 @@ function start() {
         DOEMO_RELEVES_DATA: root,
         DOEMO_PUBLIC_ORIGIN: origin,
         DOEMO_RELEVES_DIST: resolve("../dist"),
-        DOEMO_RUNPOD_MANAGED: "0",
+        DOEMO_RUNPOD_MANAGED: acceptedTrainingFixture ? "1" : "0",
         DOEMO_RUNPOD_ENDPOINT: "",
-        DOEMO_RUNPOD_TOKEN: "",
+        DOEMO_RUNPOD_TOKEN: acceptedTrainingFixture
+          ? "fixture-token-only-0000000000000000"
+          : "",
+        RUNPOD_API_KEY: acceptedTrainingFixture
+          ? "fixture-provider-key-only"
+          : "",
+        DOEMO_RUNPOD_POD_ID: "fixture-pod-never-contacted",
+        DOEMO_TRAINING_PROFILE: acceptedTrainingFixture
+          ? root + "/fixture-profile.json"
+          : "",
       },
       stdio: "pipe",
     },
@@ -453,4 +463,96 @@ with s.connect() as c:c.execute("UPDATE jobs SET status='completed',stage='Termi
       ).json()
     ).state.annotations,
   ).toEqual([]);
+});
+
+test("confirmed training admission persists and can be cancelled without a GPU worker", async ({
+  page,
+}) => {
+  // An explicitly fake acceptance profile exercises real local API admission.
+  // No lifecycle/training worker is started and no external request is made.
+  await stop();
+  const data = JSON.parse(
+    execFileSync(
+      python,
+      [
+        "-c",
+        `
+import json,sys
+from pathlib import Path
+sys.path.insert(0,${JSON.stringify(resolve("../backend/tests"))})
+from test_training import source,example,label,validate,dataset
+from fastapi.testclient import TestClient
+from doemo_releves.api import create_app
+root=Path(${JSON.stringify(root)})
+profile={'engine':'rtmdet','driver_sha256':'a'*64,'runtime_sha256':'b'*64,'config_sha256':'c'*64,'weights_sha256':'d'*64,'acceptance':{'training_completed':True,'resume_verified':True,'inference_preemption_verified':True,'cancel_verified':True,'report_sha256':'e'*64}}
+(root/'fixture-profile.json').write_text(json.dumps(profile))
+c=TestClient(create_app(root),headers={'X-Doemo-User':'admin','X-Doemo-Role':'admin'})
+examples=[]
+for color in ('red','green','blue'):
+ p=source(c,color);_,e=example(c,'rtmdet',p,[label('FIRE',anchor={'x':.5,'y':.5})]);examples.append(validate(c,p,e))
+print(json.dumps(dataset(c,'rtmdet',examples)))
+`,
+      ],
+      { encoding: "utf8" },
+    ),
+  );
+  acceptedTrainingFixture = true;
+  server = start();
+  await ready();
+  await login(page);
+  await page
+    .getByRole("button", { name: "RTMDet Détecter les équipements" })
+    .click();
+  await page
+    .getByRole("button", { name: "Entraînements", exact: true })
+    .click();
+  await page.getByLabel("Version du dataset").selectOption(data.id);
+  await page.getByLabel("Époques", { exact: true }).fill("2");
+  await expect(
+    page.getByRole("button", { name: "Lancer l’entraînement", exact: true }),
+  ).toBeEnabled();
+  page.on("dialog", (dialog) => dialog.accept());
+  const admission = page.waitForRequest(
+    (request) =>
+      request.method() === "POST" && request.url().endsWith("/training/runs"),
+  );
+  await page
+    .getByRole("button", { name: "Lancer l’entraînement", exact: true })
+    .click();
+  const sent = (await admission).postDataJSON();
+  expect(sent.confirmed).toBe(true);
+  expect(sent.request_key).toMatch(/^[a-z0-9-]{36}$/);
+  await expect(
+    page.getByText("Entraînement demandé.", { exact: true }),
+  ).toBeVisible();
+  const url = origin + "/api/projects/training/runs?engine=rtmdet";
+  const runs = await (await page.request.get(url)).json();
+  expect(runs).toHaveLength(1);
+  expect(runs[0].status).toBe("queued");
+  expect(runs[0].parameters.epochs).toBe(2);
+  expect(runs[0].dispatched).toBe(0);
+  await stop();
+  server = start();
+  await ready();
+  await page.reload();
+  await page
+    .getByRole("button", { name: "RTMDet Détecter les équipements" })
+    .click();
+  await page
+    .getByRole("button", { name: "Entraînements", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", {
+      name: "En attente · " + runs[0].id.slice(0, 8),
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Interrompre proprement", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Annulé · " + runs[0].id.slice(0, 8) }),
+  ).toBeVisible();
+  expect((await (await page.request.get(url)).json())[0].status).toBe(
+    "cancelled",
+  );
 });

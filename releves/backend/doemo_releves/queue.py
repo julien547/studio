@@ -131,6 +131,17 @@ def process_one(store):
         update('completed','Résultat prêt à vérifier',result)
     except (httpx.HTTPError,KeyError) as exc:
         if gpu.enabled() and engine!='local':
+            # A training checkpoint is not a failed inference attempt. Keep the
+            # same request until the compute slot is released, without burning
+            # the five transport retries or launching a duplicate GPU inference.
+            if isinstance(exc,httpx.HTTPStatusError) and exc.response.status_code==409:
+                try:preempting=exc.response.json().get('detail',{}).get('code')=='training_preempting'
+                except (ValueError,AttributeError):preempting=False
+                if preempting:
+                    update('retry_gpu','Attente du checkpoint d’entraînement')
+                    with gpu.lifecycle_lock(store),store.connect() as c:
+                        c.execute('UPDATE jobs SET attempts=max(0,attempts-1),retry_at=? WHERE id=?',(time.time()+3,job['id']))
+                    return True
             if job['attempts']>=4:
                 update('failed','Échec après cinq tentatives',error='Le GPU ou le moteur reste indisponible. Vérifier le journal puis relancer manuellement.')
                 return True

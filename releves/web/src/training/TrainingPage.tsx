@@ -783,6 +783,7 @@ function Runs({
     [batch, setBatch] = useState(1),
     [rate, setRate] = useState(0.0001),
     [logs, setLogs] = useState<unknown>(null);
+  const request = useRef<{ fingerprint: string; key: string } | null>(null);
   const count = dataset?.snapshot?.examples.length || 0,
     splitReady = ["train", "validation", "test"].every((s) =>
       dataset?.snapshot?.examples.some((e) => e.split === s),
@@ -812,14 +813,23 @@ function Runs({
           )
             return;
           void perform(async () => {
-            await api(prefix + "/runs", "POST", {
+            const parameters = {
               engine,
               dataset_id: dataset.id,
               epochs,
               batch_size: batch,
               learning_rate: rate,
+            };
+            const fingerprint = JSON.stringify(parameters);
+            if (request.current?.fingerprint !== fingerprint)
+              request.current = { fingerprint, key: crypto.randomUUID() };
+            await api(prefix + "/runs", "POST", {
+              ...parameters,
+              confirmed: true,
+              request_key: request.current!.key,
             });
             await refresh();
+            request.current = null;
           }, "Entraînement demandé.");
         }}
       >
@@ -866,7 +876,7 @@ function Runs({
             <input
               type="number"
               min="1"
-              max="16"
+              max={capability.batch_size_max || 4}
               value={batch}
               onChange={(e) => setBatch(Number(e.target.value))}
             />
@@ -876,7 +886,7 @@ function Runs({
             <input
               type="number"
               min="0.000001"
-              max="0.01"
+              max={capability.learning_rate_max || 0.001}
               step="0.000001"
               value={rate}
               onChange={(e) => setRate(Number(e.target.value))}
@@ -921,10 +931,7 @@ function Runs({
             Voir les journaux
           </button>
           <button
-            disabled={
-              !capability.training ||
-              ["completed", "failed", "cancelled"].includes(r.status)
-            }
+            disabled={["completed", "failed", "cancelled"].includes(r.status)}
             onClick={() => {
               if (
                 window.confirm("Demander l’interruption de cet entraînement ?")
@@ -937,6 +944,26 @@ function Runs({
           >
             Interrompre proprement
           </button>
+          {r.status === "interrupted" && (
+            <button
+              disabled={!capability.training}
+              onClick={() => {
+                if (
+                  window.confirm(
+                    "Reprendre depuis le dernier checkpoint vérifié ? Le GPU peut être facturé.",
+                  )
+                )
+                  void perform(async () => {
+                    await api(`${prefix}/runs/${r.id}/resume`, "POST", {
+                      confirmed: true,
+                    });
+                    await refresh();
+                  });
+              }}
+            >
+              Reprendre depuis le checkpoint
+            </button>
+          )}
           {!!r.result && (
             <pre>
               {typeof r.result === "string"
@@ -1064,7 +1091,9 @@ function Models({
           disabled={
             !dataset ||
             !name.trim() ||
-            (run ? !capability.training : !capability.reference_versions)
+            (run
+              ? !capability.register_weights
+              : !capability.reference_versions)
           }
         >
           {run || engine !== "qwen"

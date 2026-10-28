@@ -154,3 +154,7 @@ Page administrative `/entrainement` avec quatre moteurs et quatre onglets,
 raccordée au backend existant. [Livraison et installation](docs/PAGE-ENTRAINEMENT.md).
 Les capacités GPU indisponibles restent explicites ; la sauvegarde des corrections
 et les datasets fonctionnent sans GPU.
+
+Le [raccordement asynchrone RTMDet](docs/ENTRAINEMENT-RTMDET.md) ajoute la file OVH,
+les contrôles du gateway et la migration `004`. Activation uniquement après recette
+GPU réelle par la session de déploiement ; aucune activation de poids en production.

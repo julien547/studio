@@ -73,6 +73,9 @@ export type Capability = {
   reference_versions: boolean;
   reason: string;
   minimum_recommended_examples: number;
+  register_weights?: boolean;
+  batch_size_max?: number;
+  learning_rate_max?: number;
 };
 export type Version = {
   id: string;
@@ -113,6 +116,7 @@ export const statusNames: Record<string, string> = {
   archived: "Archivé",
   queued: "En attente",
   waiting_gpu: "Attente du GPU",
+  dispatching: "Envoi au GPU",
   running: "En cours",
   checkpointing: "Sauvegarde",
   paused: "En pause",

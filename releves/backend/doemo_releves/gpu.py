@@ -54,8 +54,10 @@ def log(store,actor,action,outcome,detail=None):
 
 def pending(store,gpu_only=False):
     with store.connect() as c:
-        return c.execute("SELECT count(*) FROM jobs WHERE status IN ('queued','running','waiting_gpu','retry_gpu','interrupted')"+
+        analyses=c.execute("SELECT count(*) FROM jobs WHERE status IN ('queued','running','waiting_gpu','retry_gpu','interrupted')"+
                          (" AND json_extract(payload,'$.engine') IN ('qwen','paddleocr','rtmdet')" if gpu_only else '')).fetchone()[0]
+        training=c.execute("SELECT count(*) FROM training_runs WHERE status NOT IN ('completed','failed','cancelled')").fetchone()[0]
+        return analyses+training
 
 
 def activity(store,now=None):update(store,last_activity=time.time() if now is None else now)

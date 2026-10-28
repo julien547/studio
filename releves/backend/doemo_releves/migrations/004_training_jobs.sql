@@ -1,0 +1,14 @@
+ALTER TABLE training_runs ADD COLUMN request_key TEXT;
+ALTER TABLE training_runs ADD COLUMN request_sha256 TEXT;
+ALTER TABLE training_runs ADD COLUMN profile TEXT;
+ALTER TABLE training_runs ADD COLUMN pod_id TEXT;
+ALTER TABLE training_runs ADD COLUMN dispatched INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE training_runs ADD COLUMN cancel_requested INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE training_runs ADD COLUMN remote_revision INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE training_runs ADD COLUMN retry_at REAL NOT NULL DEFAULT 0;
+ALTER TABLE training_runs ADD COLUMN updated TEXT;
+CREATE UNIQUE INDEX training_request_unique ON training_runs(author,request_key);
+CREATE INDEX training_runs_pending ON training_runs(status,retry_at);
+CREATE UNIQUE INDEX training_weight_version_once ON training_versions(run_id) WHERE run_id IS NOT NULL;
+ALTER TABLE training_runs ADD COLUMN archive_sha256 TEXT;
+ALTER TABLE training_runs ADD COLUMN resume_requested INTEGER NOT NULL DEFAULT 0;

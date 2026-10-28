@@ -20,8 +20,9 @@ les routes publiques, les tests et les limites des services GPU.
 | PaddleOCR : images recadrées/transcriptions, conversion des labels, calcul CER/WER | Implémenté et testé sur fixtures ; aucun fine-tuning effectué |
 | RTMDet : préparation COCO, pilote de formation MMDetection 3.3.0, checkpoints vérifiés | Pilote écrit ; tests CPU des données/artefacts ; exécution GPU NON réalisée |
 | Registre des versions, états, séparation par moteur | Persistant ; versions de référentiel enregistrables |
-| Entraînement asynchrone depuis le navigateur | Non disponible : ordonnanceur GPU et recette à raccorder |
-| Enregistrement de poids, évaluation comparative réelle, approbation, publication, rollback | Routes protégées et validations présentes ; opérations refusées tant que les adaptateurs réels ne sont pas raccordés |
+| Entraînement asynchrone depuis le navigateur | RTMDet raccordé à la file OVH/gateway ; activation conditionnée à la recette GPU réelle |
+| Enregistrement de poids | Candidat RTMDet après tâche terminée et artefacts vérifiés, un par tâche |
+| Évaluation comparative réelle, approbation, publication, rollback | Opérations refusées : adaptateurs non raccordés |
 | Qwen LoRA/QLoRA et entraînement PaddleOCR | À implémenter après audit des modèles/configurations réellement installés |
 | IA architecturale | Contrat géométrique uniquement, aucun réseau installé annoncé |
 | Image Docker permanente | Recette fournie ; ni construite ni publiée ni testée sur GPU |
@@ -72,9 +73,10 @@ administrateurs via `/projects/training/openapi`.
 | `/models/{engine}/{id}/approve` | POST | Refus si comparaison réelle et artefacts vérifiés absents |
 | `/models/{engine}/{id}/publish` | POST | Confirmation et approbation requises ; activation GPU non raccordée |
 | `/models/{engine}/{id}/rollback` | POST | Même contrôle d’autorisation ; aucun changement simulé |
-| `/runs` | POST | Validation de demande puis 503 tant que le pipeline est indisponible |
+| `/runs` | POST | Admission RTMDet confirmée et idempotente après recette ; 503 sans capacité |
 | `/runs?engine=...`, `/runs/{id}`, `/runs/{id}/logs` | GET | État enregistré et journal, jamais progression inventée |
-| `/runs/{id}/cancel` | POST | Refuse les tâches terminées ; aucun arrêt GPU simulé |
+| `/runs/{id}/cancel` | POST | Annulation immédiate avant envoi, sinon attente de l’accusé GPU |
+| `/runs/{id}/resume` | POST | Reprise explicite d’une interruption depuis checkpoint vérifié |
 | `/audit` | GET | 200 dernières actions et décisions |
 
 Erreurs JSON : `{"detail":"motif"}`. 401/session expirée au relais, 403/droits,
@@ -160,35 +162,32 @@ référentiel de production s’il existe. Il indique `model_inference_tested=fa
 lexicale peut alimenter un futur prompt versionné, mais les analyses clients actuelles
 ne sont pas modifiées par cette livraison.
 
-## Raccordement des prochains workers GPU
+## Workers GPU et prochaines étapes
 
-La session GPU devra ajouter un adaptateur fiable avant d’activer une capacité :
+Le [raccordement RTMDet](ENTRAINEMENT-RTMDET.md) implémente la file persistante,
+l’idempotence, les ZIP de soumission persistants, le profil de départ figé,
+la priorité aux inférences, les checkpoints/reprises et la protection contre
+l’arrêt automatique. La progression vient du framework, jamais d’un minuteur.
+Les sous-processus et les copies d’artefacts sont testés sur CPU ; leur recette
+sur le vrai GPU reste indispensable avant activation de la capacité.
 
-1. Audit et inférences complètes des trois environnements ; vérifier les modèles locaux.
-2. File persistante asynchrone, avec idempotence et version de départ figée.
-3. Inférence prioritaire, un entraînement lourd à la fois, préemption/reprise ou
-   fenêtre de maintenance explicitement acceptée ; pas de concurrence VRAM improvisée.
-4. Checkpoints copiés depuis `/tmp` vers `/workspace`, hash vérifié, manifeste écrit
-   en dernier. Les copies sans manifeste complet ne sont pas des versions.
-5. Prise en compte des tâches training/evaluation actives ET en attente dans le
-   contrôleur d’inactivité OVH et dans `/health` et `/quiesce` du gateway.
-6. Ingestion authentifiée des résultats réels, vérification des artefacts, métriques,
-   correspondance de classes et dataset avant enregistrement d’un candidat.
-7. Évaluation du candidat et de la version active sur les mêmes documents réservés,
-   sans fuite depuis leurs datasets train. Approbation humaine journalisée.
-8. Promotion transactionnelle **sur OVH**, conservation du pointeur précédent,
-   version figée à l’admission des nouvelles inférences ; ne pas réaffecter les
-   travaux en cours lors d’un déploiement/rollback.
-
-États prévus : `queued`, `waiting_gpu`, `running`, `checkpointing`, `paused`,
+`POST /runs` exige `confirmed=true` et `request_key` stable (16–80 caractères
+alphanumériques, tiret ou underscore), moteur, dataset et paramètres. États :
+`queued`, `waiting_gpu`, `dispatching`, `running`, `checkpointing`, `paused`,
 `cancel_requested`, `cancelled`, `failed`, `completed`, `interrupted`.
-Les états de ces tâches ne sont pas simulés dans cette première intégration.
-`training_runs` est réservé à ce raccordement, distinct des analyses existantes.
-Les versions `candidate`, `approved`, `production`, `archived` existent dans le
-schéma ; aucune transition vers la production n’est encore activée.
+Le GET renvoie la demande, son profil/Pod figés, état, progression, erreur contrôlée
+et manifeste de résultat lorsqu’il est vérifié. Le journal contient les observations
+d’itération, perte et époque ; les logs détaillés restent sur le volume privé du Pod.
 
-Un résultat GPU devra au minimum référencer `job_id`, `engine`, `base_version`,
-`dataset_id`/SHA-256, paramètres, durée, checkpoints, artefacts avec taille/SHA-256,
-classes, métriques et portée d’évaluation, logs et code de sortie. La progression
-doit venir du framework (`iteration`, `total_iterations`, `epoch`, `loss`), jamais
-être calculée à partir du temps écoulé. Un moteur architectural absent reste indisponible.
+Une interruption après redémarrage ne relance pas automatiquement un calcul déjà
+commencé. `/runs/{id}/resume` exige `confirmed=true` et un checkpoint vérifié sur le
+même profil/Pod. Une pause demandée pour laisser passer les inférences peut reprendre
+automatiquement une fois celles-ci terminées. Toute tâche non terminale protège le
+GPU contre l’arrêt, même en cas de panne réseau.
+
+Il reste à développer l’évaluation comparative sur des documents indépendants,
+l’approbation humaine journalisée, puis la promotion transactionnelle **sur OVH**,
+le pointeur précédent, la version figée à l’admission des inférences et le rollback.
+Les statuts `approved`, `production`, `archived` existent mais leurs transitions
+ne sont pas activées. Qwen/PaddleOCR nécessitent leurs propres pilotes validés ;
+un moteur architectural absent reste indisponible.

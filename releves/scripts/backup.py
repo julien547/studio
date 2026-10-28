@@ -1,5 +1,6 @@
 """Consistent SQLite backup + immutable documents/libraries. Destination must be new.
-Run while imports/library approvals are paused. Never copy a live database file.
+Run while imports, library approvals and training workers/admissions are paused.
+Never copy a live database file. Keep outbox bytes for idempotent GPU retries.
 """
 import argparse
 import os
@@ -11,6 +12,6 @@ root=Path(os.environ.get('DOEMO_RELEVES_DATA','/var/lib/doemo-studio/releves'))
 destination=Path(args.destination);destination.mkdir(mode=0o700)
 with sqlite3.connect(root/'releves.sqlite3') as source,sqlite3.connect(destination/'releves.sqlite3') as target:
     source.backup(target)
-for name in ('documents','libraries'):
+for name in ('documents','libraries','training-outbox'):
     if (root/name).exists():shutil.copytree(root/name,destination/name)
 print('Sauvegarde créée. Protéger et chiffrer ce dossier avant transfert.')
