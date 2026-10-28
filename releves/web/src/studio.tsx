@@ -186,7 +186,6 @@ function Studio({
   const [busy, setBusy] = useState(""),
     [error, setError] = useState(""),
     [notice, setNotice] = useState(""),
-    [showCreate, setShowCreate] = useState(false),
     [showCatalogue, setShowCatalogue] = useState(false),
     [tab, setTab] = useState<"properties" | "analyses" | "history">(
       "properties",
@@ -253,9 +252,17 @@ function Studio({
     setLibraries(ls);
     setCatalogue(cs);
     setGpu(gs.status);
+    return ps;
   }
+  // Pas de tableau de bord : on arrive directement sur l'import d'un relevé,
+  // dans le dernier projet de l'utilisateur ou, à défaut, un projet créé ici.
   useEffect(() => {
-    void run("Ouverture…", refresh);
+    void run("Ouverture…", async () => {
+      const ps = await refresh();
+      const mine = ps.find((x) => x.owner === user.login);
+      if (mine) await open(mine.id);
+      else await createProject();
+    });
   }, []);
   useEffect(() => {
     if (!p) return;
@@ -304,6 +311,19 @@ function Studio({
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   });
+  // Création directe, sans fenêtre : le nom par défaut est la date du jour.
+  async function createProject() {
+    await editor.save();
+    const project = await api<Project>("/projects", "POST", {
+      name: `Relevé du ${new Date().toLocaleDateString("fr-FR")}`,
+      responsible: user.login,
+    });
+    await refresh();
+    editor.install(project);
+    setDocument("");
+    setFloor("");
+    setSelected([]);
+  }
   async function open(id: string) {
     await editor.save();
     const project = await api<Project>(`/projects/${id}`);
@@ -552,7 +572,9 @@ function Studio({
             </option>
           ))}
         </select>
-        <button onClick={() => setShowCreate(true)}>＋ Nouveau projet</button>
+        <button onClick={() => void run("Création du projet…", createProject)}>
+          ＋ Nouveau projet
+        </button>
         {p && (
           <>
             <label className="file-button">
@@ -638,7 +660,10 @@ function Studio({
                 plans Illustrator dans un même atelier.
               </p>
             </div>
-            <button className="primary" onClick={() => setShowCreate(true)}>
+            <button
+              className="primary"
+              onClick={() => void run("Création du projet…", createProject)}
+            >
               Créer un projet →
             </button>
           </div>
@@ -1552,69 +1577,6 @@ function Studio({
             )}
           </aside>
         </main>
-      )}
-      {showCreate && (
-        <div className="studio-modal-backdrop">
-          <form
-            className="studio-modal"
-            aria-label="Nouveau projet"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const fields = Object.fromEntries(new FormData(e.currentTarget));
-              void run("Création du projet…", async () => {
-                await editor.save();
-                const project = await api<Project>("/projects", "POST", fields);
-                await refresh();
-                editor.install(project);
-                setDocument("");
-                setFloor("");
-                setSelected([]);
-                setShowCreate(false);
-              });
-            }}
-          >
-            <div className="modal-title">
-              <h2>Nouveau projet</h2>
-              <button type="button" onClick={() => setShowCreate(false)}>
-                ×
-              </button>
-            </div>
-            <p>
-              Un dossier pour vos relevés, annotations et plans de sécurité.
-            </p>
-            <label>
-              Bâtiment / nom du projet
-              <input name="name" required placeholder="Animalis · Grenelle" />
-            </label>
-            <div className="form-pair">
-              <label>
-                Référence
-                <input name="reference" />
-              </label>
-              <label>
-                Client
-                <input name="client" />
-              </label>
-            </div>
-            <label>
-              Adresse
-              <input name="address" />
-            </label>
-            <div className="form-pair">
-              <label>
-                Type d’établissement
-                <input name="building_type" />
-              </label>
-              <label>
-                Dessinateur responsable
-                <input name="responsible" defaultValue={user.login} />
-              </label>
-            </div>
-            <button className="primary full-width" disabled={!!busy}>
-              Créer le projet
-            </button>
-          </form>
-        </div>
       )}
       {showCatalogue && (
         <div className="studio-modal-backdrop">
