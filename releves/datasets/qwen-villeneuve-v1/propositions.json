@@ -1,0 +1,199 @@
+{
+  "schema": "doemo.qwen-source-proposals/1",
+  "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+  "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+  "sources": {
+    "MAIRIE DE VLB GAUCHE.pdf": {
+      "git_path": "entrainement/MAIRIE DE VLB GAUCHE.pdf",
+      "sha256": "a6cb480b0587884cea4d9fbe2bc9dd6828cbaf99011c7eb3ef81a279e4a9b32d"
+    },
+    "MAIRIE DE VLB PLAN DROITE.pdf": {
+      "git_path": "entrainement/MAIRIE DE VLB PLAN DROITE.pdf",
+      "sha256": "55c574bcbfe90157f0c617d2e7f4d47f1b60ca1c53b3b18399868df92d1ea182"
+    },
+    "MAIRIE DE VLB PLAN.jpg": {
+      "git_path": "entrainement/MAIRIE DE VLB PLAN.jpg",
+      "sha256": "7f7e6db78cb34406a77367c535fa61b40c392a18a802433604dd2be791101e0f"
+    },
+    "villeneuve.pdf": {
+      "git_path": "entrainement/villeneuve.pdf",
+      "sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1"
+    }
+  },
+  "reference_validated_by_user": true,
+  "reference_status": "user_confirmed",
+  "examples": [
+    {
+      "id": "villeneuve-vei-rdc-hall",
+      "file": "MAIRIE DE VLB GAUCHE.pdf",
+      "page": 1,
+      "center": [
+        0.05,
+        0.555
+      ],
+      "equipment_type": "VEI",
+      "observed": "PE",
+      "reference_evidence": "Repère PE manuscrit dans le hall ; pastille VOUS ETES ICI sur le plan mis au propre.",
+      "floor": "0",
+      "hint": "la note PE rouge à gauche"
+    },
+    {
+      "id": "villeneuve-vei-rdc-est",
+      "file": "MAIRIE DE VLB GAUCHE.pdf",
+      "page": 1,
+      "center": [
+        0.636,
+        0.478
+      ],
+      "equipment_type": "VEI",
+      "observed": "PE",
+      "reference_evidence": "Repère PE manuscrit côté médiathèque ; pastille VOUS ETES ICI sur le plan mis au propre.",
+      "floor": "0",
+      "hint": "la note PE rouge"
+    },
+    {
+      "id": "villeneuve-vei-niveau2",
+      "file": "MAIRIE DE VLB PLAN DROITE.pdf",
+      "page": 1,
+      "center": [
+        0.317,
+        0.058
+      ],
+      "equipment_type": "VEI",
+      "observed": "PE",
+      "reference_evidence": "PE près de l’ascenseur de l’étage 2 ; pastille VOUS ETES ICI sur le plan mis au propre.",
+      "floor": "2",
+      "hint": "la note PE rouge en haut"
+    },
+    {
+      "id": "villeneuve-ext-rdc-asc",
+      "file": "MAIRIE DE VLB GAUCHE.pdf",
+      "page": 1,
+      "center": [
+        0.105,
+        0.51
+      ],
+      "equipment_type": "EXT_PORTATIF",
+      "observed": "Triangle rouge",
+      "reference_evidence": "Triangle près de l’ascenseur ; le plan corrigé porte un extincteur portatif à cet emplacement. La légende ancienne seule dit emplacement éventuel.",
+      "floor": "0",
+      "hint": "le triangle rouge à côté de l’ascenseur"
+    },
+    {
+      "id": "villeneuve-ext-rdc-rgt",
+      "file": "MAIRIE DE VLB GAUCHE.pdf",
+      "page": 1,
+      "center": [
+        0.502,
+        0.133
+      ],
+      "equipment_type": "EXT_PORTATIF",
+      "observed": "Triangle rouge",
+      "reference_evidence": "Triangle dans le rangement ; extincteur portatif dans RGT sur le plan mis au propre.",
+      "floor": "0",
+      "hint": "le triangle rouge dans le rangement"
+    },
+    {
+      "id": "villeneuve-ext-niveau2-archives",
+      "file": "MAIRIE DE VLB PLAN DROITE.pdf",
+      "page": 1,
+      "center": [
+        0.483,
+        0.214
+      ],
+      "equipment_type": "EXT_PORTATIF",
+      "observed": "Triangle rouge",
+      "reference_evidence": "Triangle dans les archives ; extincteur portatif dans ARCHIVES du niveau 2 sur le plan mis au propre.",
+      "floor": "2",
+      "hint": "le triangle rouge des archives"
+    },
+    {
+      "id": "villeneuve-df-niveau3-asc",
+      "file": "MAIRIE DE VLB PLAN DROITE.pdf",
+      "page": 1,
+      "center": [
+        0.782,
+        0.047
+      ],
+      "equipment_type": "Commande de désenfumage",
+      "observed": "Symbole jaune",
+      "reference_evidence": "Légende du relevé : symbole jaune = commande de désenfumage. DF sur le plan corrigé du niveau 3.",
+      "floor": "3",
+      "hint": "le symbole jaune immédiatement à droite de l’ascenseur"
+    },
+    {
+      "id": "villeneuve-df-niveau3-centre",
+      "file": "MAIRIE DE VLB PLAN DROITE.pdf",
+      "page": 1,
+      "center": [
+        0.839,
+        0.126
+      ],
+      "equipment_type": "Commande de désenfumage",
+      "observed": "Symbole jaune",
+      "reference_evidence": "Légende du relevé : symbole jaune = commande de désenfumage. Deuxième repère DF près de l’escalier sur le niveau 3 corrigé.",
+      "floor": "3",
+      "hint": "le symbole jaune à droite de l’hexagone gris"
+    },
+    {
+      "id": "villeneuve-dm-rdc-hall",
+      "file": "MAIRIE DE VLB GAUCHE.pdf",
+      "page": 1,
+      "center": [
+        0.268,
+        0.592
+      ],
+      "equipment_type": "Déclencheur manuel d’alarme incendie",
+      "observed": "Carré rouge avec Y",
+      "reference_evidence": "Légende source : alarme incendie ; légende du plan corrigé : déclencheur manuel d’alarme incendie.",
+      "floor": "0",
+      "hint": "le carré rouge contenant un Y, à droite de l’hexagone"
+    },
+    {
+      "id": "villeneuve-ssi-rdc",
+      "file": "MAIRIE DE VLB GAUCHE.pdf",
+      "page": 1,
+      "center": [
+        0.285,
+        0.703
+      ],
+      "equipment_type": "Système de sécurité incendie",
+      "observed": "SSI",
+      "reference_evidence": "SSI près du hall ; repère SSI repris sur le plan corrigé au niveau 0.",
+      "floor": "0",
+      "hint": "le texte SSI imprimé"
+    },
+    {
+      "id": "villeneuve-asc-rdc",
+      "file": "MAIRIE DE VLB GAUCHE.pdf",
+      "page": 1,
+      "center": [
+        0.118,
+        0.476
+      ],
+      "equipment_type": "Ascenseur",
+      "observed": "ASC",
+      "reference_evidence": "ASC dans la cage ; ASC repris sur le plan mis au propre.",
+      "floor": "0",
+      "hint": "le texte ASC imprimé"
+    },
+    {
+      "id": "villeneuve-au-niveau3",
+      "file": "MAIRIE DE VLB PLAN DROITE.pdf",
+      "page": 1,
+      "center": [
+        0.829,
+        0.126
+      ],
+      "equipment_type": "Arrêt d’urgence électrique",
+      "observed": "Hexagone gris",
+      "reference_evidence": "Légende source : arrêt d’urgence ; légende corrigée : arrêt d’urgence électrique ; AU sur le niveau 3.",
+      "floor": "3",
+      "hint": "l’hexagone gris avec un centre sombre"
+    }
+  ],
+  "reference_validation_evidence": {
+    "answer": "Oui, référence validée",
+    "scope": "villeneuve.pdf comme référence ; les réponses et recadrages proposés restent à relire"
+  }
+}

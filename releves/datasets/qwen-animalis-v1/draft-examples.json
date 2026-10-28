@@ -641,7 +641,7 @@
   ],
   "blockers": [
     "Relecture des détails et réponses avant validation dans DOEMO.",
-    "Deux autres groupes de bâtiments indépendants corrigés et validés.",
+    "Réunir les groupes indépendants et vérifier les lots du dataset final.",
     "Autorisation du projet enregistrée dans DOEMO avant export."
   ]
 }

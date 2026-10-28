@@ -32,8 +32,8 @@ la désignation et conservent `anchor=null`, `quantity=null`.
 
 Les bâtiments A et B et leurs niveaux restent dans **un seul groupe**, puisqu’ils
 partagent le site et les mêmes PDF. Ils ne servent pas à remplir artificiellement
-les trois lots. Avec Animalis, on dispose de **deux groupes** ; il manque encore un
-troisième site corrigé et validé pour le test.
+les trois lots. Avec Animalis et le dossier mairie de Villeneuve-lès-Béziers,
+on dispose désormais de **trois groupes**, dont les exemples restent à relire.
 
 La réservation de ce dossier à la validation est une proposition. L’export actuel
 DOEMO attribue les groupes selon son ordre déterministe : contrôler les lots réellement

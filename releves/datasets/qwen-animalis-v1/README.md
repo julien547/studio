@@ -2,7 +2,8 @@
 
 **11 exemples préparés, à relire. Ce dossier n’est pas un dataset prêt à lancer.**
 Il contient un seul bâtiment : Animalis, 70 boulevard de Grenelle, Paris.
-Les autres plans annoncés par Julien permettront de compléter validation et test.
+Les dossiers Cotonnière et Villeneuve-lès-Béziers fournissent les deux autres
+groupes indépendants ; leurs propositions restent aussi à relire.
 
 ## Ce qui est fourni
 

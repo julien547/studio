@@ -4,11 +4,11 @@
 | --- | --- | ---: | --- | --- |
 | [Animalis](qwen-animalis-v1/README.md) | RELEVEDEUX.pdf et corrections du dessinateur | 11 | Entraînement | Recadrages/réponses à relire |
 | [Cotonnière](qwen-cotonniere-v1/README.md) | 333333.pdf + CO26100349-1.pdf | 12 | Validation | Référence confirmée par Julien ; réponses à relire |
-| Troisième site | À fournir | 0 | Test | Manquant |
+| [Villeneuve-lès-Béziers](qwen-villeneuve-v1/README.md) | Dossier GitHub `entrainement` ; mairie/médiathèque | 12 | Test | Référence confirmée par Julien ; réponses à relire |
 
-**23 propositions, 2 groupes de sites, aucun dataset encore prêt pour la recette GPU.**
+**35 propositions, 3 groupes de sites, aucun dataset encore prêt pour la recette GPU.**
 Les pages, niveaux et recadrages d’un site restent ensemble. Aucun exemple synthétique
-ni validation humaine fictive ne remplit les lots manquants. L’export actuel attribue
+ni validation humaine fictive ne remplace la revue des exemples. L’export actuel attribue
 les groupes de façon déterministe : les affectations ci-dessus sont provisoires et
 la composition réelle doit être vérifiée avant entraînement.
 

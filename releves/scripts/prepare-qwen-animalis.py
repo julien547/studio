@@ -73,7 +73,7 @@ def main():
                    original_document_sha256=corrections['source_pdf_sha256'],
                    source_image_sha256=sha(source), examples=examples,
                    blockers=['Relecture des détails et réponses avant validation dans DOEMO.',
-                             'Deux autres groupes de bâtiments indépendants corrigés et validés.',
+                             'Réunir les groupes indépendants et vérifier les lots du dataset final.',
                              'Autorisation du projet enregistrée dans DOEMO avant export.'])
     (ROOT / 'draft-examples.json').write_text(json.dumps(payload, ensure_ascii=False, indent=2) + '\n')
     (ROOT / 'qwen-draft.jsonl').write_text('\n'.join(encoded(c) for c in conversations) + '\n')

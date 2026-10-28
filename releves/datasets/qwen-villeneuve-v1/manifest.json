@@ -1,0 +1,111 @@
+{
+  "schema": "doemo.qwen-draft-manifest/1",
+  "ready_for_training": false,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "bca2254934fc9fcba7b039d47d7d9c741cb5a186c4b149e513db9db7a9c12d81",
+      "size": 3575
+    },
+    {
+      "path": "draft-examples.json",
+      "sha256": "60287f9a445429b83078adbd3cd2919c9114e130f9dc05f22411201dcd1a2294",
+      "size": 29862
+    },
+    {
+      "path": "images/source-1-page-1.png",
+      "sha256": "a57352ff447797a4a67904e47a2d68e5d0a3c0fcdb3e0319556a1c84e356e239",
+      "size": 984303
+    },
+    {
+      "path": "images/source-2-page-1.png",
+      "sha256": "1f32178e3691eccefe9608d18d8b0ab6e25efcfd2cc0e869827e4125cc335b5b",
+      "size": 1137425
+    },
+    {
+      "path": "images/source-2-page-2.png",
+      "sha256": "3ee320e62c5844cd69a452e43b9396c02d30f3c042b4eb0602a084451e79fb27",
+      "size": 922796
+    },
+    {
+      "path": "images/source-3-page-1.png",
+      "sha256": "595d48d419ebb68d2dd007bc9673cda1dd66d8ef256194373c08d3211bae6ad4",
+      "size": 562959
+    },
+    {
+      "path": "images/villeneuve-asc-rdc.png",
+      "sha256": "7778c0fb7af7c417171f92a9a003bdc285b4a9cdb660bfb1f556331f9e44771a",
+      "size": 54015
+    },
+    {
+      "path": "images/villeneuve-au-niveau3.png",
+      "sha256": "9431a76f6673275edfda94ebf11d9aca37df8b22b8448647124cb6a76fc3332f",
+      "size": 54586
+    },
+    {
+      "path": "images/villeneuve-df-niveau3-asc.png",
+      "sha256": "4cbbd99aa6a8a347b0d874c39bfde00fa84dc3b93f4dabede7c5e7999f6aa791",
+      "size": 52220
+    },
+    {
+      "path": "images/villeneuve-df-niveau3-centre.png",
+      "sha256": "842699907e8836c03b8a56495dc06f5fca1f1b9a96b14f0a5bb77dad9e8fb65f",
+      "size": 52929
+    },
+    {
+      "path": "images/villeneuve-dm-rdc-hall.png",
+      "sha256": "78811026f3767abe481629e2d77ae2f21b2007eee18f7bf5b88cbb0e145634cc",
+      "size": 34148
+    },
+    {
+      "path": "images/villeneuve-ext-niveau2-archives.png",
+      "sha256": "e7d8f6382983a61374581d216a37e372a99b19fc48b774b95ad2cede7b395060",
+      "size": 56948
+    },
+    {
+      "path": "images/villeneuve-ext-rdc-asc.png",
+      "sha256": "b45976374f3a6aa31fed438d919127d5ff6c781d3aa0ef9dd2cc8caa13d8b95a",
+      "size": 55342
+    },
+    {
+      "path": "images/villeneuve-ext-rdc-rgt.png",
+      "sha256": "bf4f7d886b122d738d6e8d2bfce272f4f47201d884d56b3cdfacf96c3f21107d",
+      "size": 17353
+    },
+    {
+      "path": "images/villeneuve-ssi-rdc.png",
+      "sha256": "50d722b70db47816849c30033ae0e33911f8bce59f303e02ea71a5de451b86fb",
+      "size": 26742
+    },
+    {
+      "path": "images/villeneuve-vei-niveau2.png",
+      "sha256": "9d7f53ba3456e29712ed0862a7ead7a0284e9011d8a73eaede9e40e34af838da",
+      "size": 26262
+    },
+    {
+      "path": "images/villeneuve-vei-rdc-est.png",
+      "sha256": "3f639ee0dc195a62c33ee719f804a47a5ca622a89a0d7d109884f6124d9f649b",
+      "size": 27244
+    },
+    {
+      "path": "images/villeneuve-vei-rdc-hall.png",
+      "sha256": "28721853aa27aa12222d1fc55249d25ec4b9d7009b29c097603827812fae850e",
+      "size": 34483
+    },
+    {
+      "path": "propositions.json",
+      "sha256": "526b4fd5005671d2206b1ac15e4fc0220c25c41cf175186e2560fe9a762496c8",
+      "size": 6585
+    },
+    {
+      "path": "qwen-draft.jsonl",
+      "sha256": "5056d2553c69ce71502186a252a84ea5f2deba628cfc84f6a1aacca05f3203e3",
+      "size": 5286
+    },
+    {
+      "path": "revue.html",
+      "sha256": "63f7779f76079057024fbe1ade9c248217bb282d38bb6cc58352fc2c39b96ed9",
+      "size": 9086
+    }
+  ]
+}

@@ -4,13 +4,13 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "731439eea81ce8e81f50ad3fc58f9b1f836668ecbfa6af1fc4a528b7fc8f3fc3",
-      "size": 3607
+      "sha256": "672232d193d453367dbb68c1fec182dab3739217dcb91c0c7ba742483ce74ad6",
+      "size": 3634
     },
     {
       "path": "draft-examples.json",
-      "sha256": "142436c0c47d1e1872584915107ef365152db49bddc21a7e03aa6c0895ca2622",
-      "size": 27543
+      "sha256": "5032825d6bb81f167bc33a9a13b6d2861cbbe2ae2df13178953c3eadc0256f0a",
+      "size": 27547
     },
     {
       "path": "images/cotonniere-bt-r1-b.png",

@@ -1,0 +1,690 @@
+{
+  "schema": "doemo.qwen-draft-pack/1",
+  "engine": "qwen",
+  "ready_for_training": false,
+  "building_groups": 1,
+  "split_counts": {
+    "train": 0,
+    "validation": 0,
+    "test": 12
+  },
+  "reference_validated_by_user": true,
+  "examples": [
+    {
+      "id": "villeneuve-vei-rdc-hall",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "test",
+      "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+      "source_git_path": "entrainement/MAIRIE DE VLB GAUCHE.pdf",
+      "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+      "original_document_sha256": "a6cb480b0587884cea4d9fbe2bc9dd6828cbaf99011c7eb3ef81a279e4a9b32d",
+      "source_page": 1,
+      "source_render": "images/source-1-page-1.png",
+      "crop_pixels": [
+        0,
+        586,
+        240,
+        826
+      ],
+      "crop_source_size": [
+        1800,
+        1273
+      ],
+      "image": "images/villeneuve-vei-rdc-hall.png",
+      "image_sha256": "28721853aa27aa12222d1fc55249d25ec4b9d7009b29c097603827812fae850e",
+      "image_size": [
+        240,
+        240
+      ],
+      "reference_pdf_sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1",
+      "reference_evidence": "Repère PE manuscrit dans le hall ; pastille VOUS ETES ICI sur le plan mis au propre.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "observed": "PE",
+        "convention": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter la note PE rouge à gauche. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null.",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}",
+        "notes": "Source MAIRIE DE VLB GAUCHE.pdf page 1 ; villeneuve-vei-rdc-hall ; désignation à relire."
+      },
+      "conversation": {
+        "image": "images/villeneuve-vei-rdc-hall.png",
+        "split": "test",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter la note PE rouge à gauche. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "villeneuve-vei-rdc-est",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "test",
+      "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+      "source_git_path": "entrainement/MAIRIE DE VLB GAUCHE.pdf",
+      "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+      "original_document_sha256": "a6cb480b0587884cea4d9fbe2bc9dd6828cbaf99011c7eb3ef81a279e4a9b32d",
+      "source_page": 1,
+      "source_render": "images/source-1-page-1.png",
+      "crop_pixels": [
+        1024,
+        488,
+        1264,
+        728
+      ],
+      "crop_source_size": [
+        1800,
+        1273
+      ],
+      "image": "images/villeneuve-vei-rdc-est.png",
+      "image_sha256": "3f639ee0dc195a62c33ee719f804a47a5ca622a89a0d7d109884f6124d9f649b",
+      "image_size": [
+        240,
+        240
+      ],
+      "reference_pdf_sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1",
+      "reference_evidence": "Repère PE manuscrit côté médiathèque ; pastille VOUS ETES ICI sur le plan mis au propre.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "observed": "PE",
+        "convention": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter la note PE rouge. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null.",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}",
+        "notes": "Source MAIRIE DE VLB GAUCHE.pdf page 1 ; villeneuve-vei-rdc-est ; désignation à relire."
+      },
+      "conversation": {
+        "image": "images/villeneuve-vei-rdc-est.png",
+        "split": "test",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter la note PE rouge. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "villeneuve-vei-niveau2",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "test",
+      "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+      "source_git_path": "entrainement/MAIRIE DE VLB PLAN DROITE.pdf",
+      "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+      "original_document_sha256": "55c574bcbfe90157f0c617d2e7f4d47f1b60ca1c53b3b18399868df92d1ea182",
+      "source_page": 1,
+      "source_render": "images/source-2-page-1.png",
+      "crop_pixels": [
+        450,
+        0,
+        690,
+        240
+      ],
+      "crop_source_size": [
+        1800,
+        1273
+      ],
+      "image": "images/villeneuve-vei-niveau2.png",
+      "image_sha256": "9d7f53ba3456e29712ed0862a7ead7a0284e9011d8a73eaede9e40e34af838da",
+      "image_size": [
+        240,
+        240
+      ],
+      "reference_pdf_sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1",
+      "reference_evidence": "PE près de l’ascenseur de l’étage 2 ; pastille VOUS ETES ICI sur le plan mis au propre.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "observed": "PE",
+        "convention": "Mairie de Villeneuve-lès-Béziers, niveau 2. Interpréter la note PE rouge en haut. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null.",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}",
+        "notes": "Source MAIRIE DE VLB PLAN DROITE.pdf page 1 ; villeneuve-vei-niveau2 ; désignation à relire."
+      },
+      "conversation": {
+        "image": "images/villeneuve-vei-niveau2.png",
+        "split": "test",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mairie de Villeneuve-lès-Béziers, niveau 2. Interpréter la note PE rouge en haut. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "villeneuve-ext-rdc-asc",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "test",
+      "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+      "source_git_path": "entrainement/MAIRIE DE VLB GAUCHE.pdf",
+      "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+      "original_document_sha256": "a6cb480b0587884cea4d9fbe2bc9dd6828cbaf99011c7eb3ef81a279e4a9b32d",
+      "source_page": 1,
+      "source_render": "images/source-1-page-1.png",
+      "crop_pixels": [
+        69,
+        529,
+        309,
+        769
+      ],
+      "crop_source_size": [
+        1800,
+        1273
+      ],
+      "image": "images/villeneuve-ext-rdc-asc.png",
+      "image_sha256": "b45976374f3a6aa31fed438d919127d5ff6c781d3aa0ef9dd2cc8caa13d8b95a",
+      "image_size": [
+        240,
+        240
+      ],
+      "reference_pdf_sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1",
+      "reference_evidence": "Triangle près de l’ascenseur ; le plan corrigé porte un extincteur portatif à cet emplacement. La légende ancienne seule dit emplacement éventuel.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "observed": "Triangle rouge",
+        "convention": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter le triangle rouge à côté de l’ascenseur. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null.",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"EXT_PORTATIF\",\"quantity\":null}",
+        "notes": "Source MAIRIE DE VLB GAUCHE.pdf page 1 ; villeneuve-ext-rdc-asc ; désignation à relire."
+      },
+      "conversation": {
+        "image": "images/villeneuve-ext-rdc-asc.png",
+        "split": "test",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter le triangle rouge à côté de l’ascenseur. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"EXT_PORTATIF\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "villeneuve-ext-rdc-rgt",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "test",
+      "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+      "source_git_path": "entrainement/MAIRIE DE VLB GAUCHE.pdf",
+      "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+      "original_document_sha256": "a6cb480b0587884cea4d9fbe2bc9dd6828cbaf99011c7eb3ef81a279e4a9b32d",
+      "source_page": 1,
+      "source_render": "images/source-1-page-1.png",
+      "crop_pixels": [
+        783,
+        49,
+        1023,
+        289
+      ],
+      "crop_source_size": [
+        1800,
+        1273
+      ],
+      "image": "images/villeneuve-ext-rdc-rgt.png",
+      "image_sha256": "bf4f7d886b122d738d6e8d2bfce272f4f47201d884d56b3cdfacf96c3f21107d",
+      "image_size": [
+        240,
+        240
+      ],
+      "reference_pdf_sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1",
+      "reference_evidence": "Triangle dans le rangement ; extincteur portatif dans RGT sur le plan mis au propre.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "observed": "Triangle rouge",
+        "convention": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter le triangle rouge dans le rangement. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null.",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"EXT_PORTATIF\",\"quantity\":null}",
+        "notes": "Source MAIRIE DE VLB GAUCHE.pdf page 1 ; villeneuve-ext-rdc-rgt ; désignation à relire."
+      },
+      "conversation": {
+        "image": "images/villeneuve-ext-rdc-rgt.png",
+        "split": "test",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter le triangle rouge dans le rangement. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"EXT_PORTATIF\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "villeneuve-ext-niveau2-archives",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "test",
+      "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+      "source_git_path": "entrainement/MAIRIE DE VLB PLAN DROITE.pdf",
+      "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+      "original_document_sha256": "55c574bcbfe90157f0c617d2e7f4d47f1b60ca1c53b3b18399868df92d1ea182",
+      "source_page": 1,
+      "source_render": "images/source-2-page-1.png",
+      "crop_pixels": [
+        749,
+        152,
+        989,
+        392
+      ],
+      "crop_source_size": [
+        1800,
+        1273
+      ],
+      "image": "images/villeneuve-ext-niveau2-archives.png",
+      "image_sha256": "e7d8f6382983a61374581d216a37e372a99b19fc48b774b95ad2cede7b395060",
+      "image_size": [
+        240,
+        240
+      ],
+      "reference_pdf_sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1",
+      "reference_evidence": "Triangle dans les archives ; extincteur portatif dans ARCHIVES du niveau 2 sur le plan mis au propre.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "observed": "Triangle rouge",
+        "convention": "Mairie de Villeneuve-lès-Béziers, niveau 2. Interpréter le triangle rouge des archives. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null.",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"EXT_PORTATIF\",\"quantity\":null}",
+        "notes": "Source MAIRIE DE VLB PLAN DROITE.pdf page 1 ; villeneuve-ext-niveau2-archives ; désignation à relire."
+      },
+      "conversation": {
+        "image": "images/villeneuve-ext-niveau2-archives.png",
+        "split": "test",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mairie de Villeneuve-lès-Béziers, niveau 2. Interpréter le triangle rouge des archives. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"EXT_PORTATIF\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "villeneuve-df-niveau3-asc",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "test",
+      "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+      "source_git_path": "entrainement/MAIRIE DE VLB PLAN DROITE.pdf",
+      "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+      "original_document_sha256": "55c574bcbfe90157f0c617d2e7f4d47f1b60ca1c53b3b18399868df92d1ea182",
+      "source_page": 1,
+      "source_render": "images/source-2-page-1.png",
+      "crop_pixels": [
+        1287,
+        0,
+        1527,
+        240
+      ],
+      "crop_source_size": [
+        1800,
+        1273
+      ],
+      "image": "images/villeneuve-df-niveau3-asc.png",
+      "image_sha256": "4cbbd99aa6a8a347b0d874c39bfde00fa84dc3b93f4dabede7c5e7999f6aa791",
+      "image_size": [
+        240,
+        240
+      ],
+      "reference_pdf_sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1",
+      "reference_evidence": "Légende du relevé : symbole jaune = commande de désenfumage. DF sur le plan corrigé du niveau 3.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "observed": "Symbole jaune",
+        "convention": "Mairie de Villeneuve-lès-Béziers, niveau 3. Interpréter le symbole jaune immédiatement à droite de l’ascenseur. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null.",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Commande de désenfumage\",\"quantity\":null}",
+        "notes": "Source MAIRIE DE VLB PLAN DROITE.pdf page 1 ; villeneuve-df-niveau3-asc ; désignation à relire."
+      },
+      "conversation": {
+        "image": "images/villeneuve-df-niveau3-asc.png",
+        "split": "test",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mairie de Villeneuve-lès-Béziers, niveau 3. Interpréter le symbole jaune immédiatement à droite de l’ascenseur. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Commande de désenfumage\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "villeneuve-df-niveau3-centre",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "test",
+      "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+      "source_git_path": "entrainement/MAIRIE DE VLB PLAN DROITE.pdf",
+      "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+      "original_document_sha256": "55c574bcbfe90157f0c617d2e7f4d47f1b60ca1c53b3b18399868df92d1ea182",
+      "source_page": 1,
+      "source_render": "images/source-2-page-1.png",
+      "crop_pixels": [
+        1390,
+        40,
+        1630,
+        280
+      ],
+      "crop_source_size": [
+        1800,
+        1273
+      ],
+      "image": "images/villeneuve-df-niveau3-centre.png",
+      "image_sha256": "842699907e8836c03b8a56495dc06f5fca1f1b9a96b14f0a5bb77dad9e8fb65f",
+      "image_size": [
+        240,
+        240
+      ],
+      "reference_pdf_sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1",
+      "reference_evidence": "Légende du relevé : symbole jaune = commande de désenfumage. Deuxième repère DF près de l’escalier sur le niveau 3 corrigé.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "observed": "Symbole jaune",
+        "convention": "Mairie de Villeneuve-lès-Béziers, niveau 3. Interpréter le symbole jaune à droite de l’hexagone gris. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null.",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Commande de désenfumage\",\"quantity\":null}",
+        "notes": "Source MAIRIE DE VLB PLAN DROITE.pdf page 1 ; villeneuve-df-niveau3-centre ; désignation à relire."
+      },
+      "conversation": {
+        "image": "images/villeneuve-df-niveau3-centre.png",
+        "split": "test",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mairie de Villeneuve-lès-Béziers, niveau 3. Interpréter le symbole jaune à droite de l’hexagone gris. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Commande de désenfumage\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "villeneuve-dm-rdc-hall",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "test",
+      "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+      "source_git_path": "entrainement/MAIRIE DE VLB GAUCHE.pdf",
+      "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+      "original_document_sha256": "a6cb480b0587884cea4d9fbe2bc9dd6828cbaf99011c7eb3ef81a279e4a9b32d",
+      "source_page": 1,
+      "source_render": "images/source-1-page-1.png",
+      "crop_pixels": [
+        362,
+        633,
+        602,
+        873
+      ],
+      "crop_source_size": [
+        1800,
+        1273
+      ],
+      "image": "images/villeneuve-dm-rdc-hall.png",
+      "image_sha256": "78811026f3767abe481629e2d77ae2f21b2007eee18f7bf5b88cbb0e145634cc",
+      "image_size": [
+        240,
+        240
+      ],
+      "reference_pdf_sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1",
+      "reference_evidence": "Légende source : alarme incendie ; légende du plan corrigé : déclencheur manuel d’alarme incendie.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "observed": "Carré rouge avec Y",
+        "convention": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter le carré rouge contenant un Y, à droite de l’hexagone. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null.",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Déclencheur manuel d’alarme incendie\",\"quantity\":null}",
+        "notes": "Source MAIRIE DE VLB GAUCHE.pdf page 1 ; villeneuve-dm-rdc-hall ; désignation à relire."
+      },
+      "conversation": {
+        "image": "images/villeneuve-dm-rdc-hall.png",
+        "split": "test",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter le carré rouge contenant un Y, à droite de l’hexagone. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Déclencheur manuel d’alarme incendie\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "villeneuve-ssi-rdc",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "test",
+      "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+      "source_git_path": "entrainement/MAIRIE DE VLB GAUCHE.pdf",
+      "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+      "original_document_sha256": "a6cb480b0587884cea4d9fbe2bc9dd6828cbaf99011c7eb3ef81a279e4a9b32d",
+      "source_page": 1,
+      "source_render": "images/source-1-page-1.png",
+      "crop_pixels": [
+        393,
+        774,
+        633,
+        1014
+      ],
+      "crop_source_size": [
+        1800,
+        1273
+      ],
+      "image": "images/villeneuve-ssi-rdc.png",
+      "image_sha256": "50d722b70db47816849c30033ae0e33911f8bce59f303e02ea71a5de451b86fb",
+      "image_size": [
+        240,
+        240
+      ],
+      "reference_pdf_sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1",
+      "reference_evidence": "SSI près du hall ; repère SSI repris sur le plan corrigé au niveau 0.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "observed": "SSI",
+        "convention": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter le texte SSI imprimé. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null.",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Système de sécurité incendie\",\"quantity\":null}",
+        "notes": "Source MAIRIE DE VLB GAUCHE.pdf page 1 ; villeneuve-ssi-rdc ; désignation à relire."
+      },
+      "conversation": {
+        "image": "images/villeneuve-ssi-rdc.png",
+        "split": "test",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter le texte SSI imprimé. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Système de sécurité incendie\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "villeneuve-asc-rdc",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "test",
+      "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+      "source_git_path": "entrainement/MAIRIE DE VLB GAUCHE.pdf",
+      "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+      "original_document_sha256": "a6cb480b0587884cea4d9fbe2bc9dd6828cbaf99011c7eb3ef81a279e4a9b32d",
+      "source_page": 1,
+      "source_render": "images/source-1-page-1.png",
+      "crop_pixels": [
+        92,
+        485,
+        332,
+        725
+      ],
+      "crop_source_size": [
+        1800,
+        1273
+      ],
+      "image": "images/villeneuve-asc-rdc.png",
+      "image_sha256": "7778c0fb7af7c417171f92a9a003bdc285b4a9cdb660bfb1f556331f9e44771a",
+      "image_size": [
+        240,
+        240
+      ],
+      "reference_pdf_sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1",
+      "reference_evidence": "ASC dans la cage ; ASC repris sur le plan mis au propre.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "observed": "ASC",
+        "convention": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter le texte ASC imprimé. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null.",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Ascenseur\",\"quantity\":null}",
+        "notes": "Source MAIRIE DE VLB GAUCHE.pdf page 1 ; villeneuve-asc-rdc ; désignation à relire."
+      },
+      "conversation": {
+        "image": "images/villeneuve-asc-rdc.png",
+        "split": "test",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mairie de Villeneuve-lès-Béziers, niveau 0. Interpréter le texte ASC imprimé. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Ascenseur\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "villeneuve-au-niveau3",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "test",
+      "building_key": "mairie-place-michel-solans-34420-villeneuve-les-beziers",
+      "source_git_path": "entrainement/MAIRIE DE VLB PLAN DROITE.pdf",
+      "source_commit": "11c28cb61681f2f5d6a26ab232f1b9c3b570d6a3",
+      "original_document_sha256": "55c574bcbfe90157f0c617d2e7f4d47f1b60ca1c53b3b18399868df92d1ea182",
+      "source_page": 1,
+      "source_render": "images/source-2-page-1.png",
+      "crop_pixels": [
+        1372,
+        40,
+        1612,
+        280
+      ],
+      "crop_source_size": [
+        1800,
+        1273
+      ],
+      "image": "images/villeneuve-au-niveau3.png",
+      "image_sha256": "9431a76f6673275edfda94ebf11d9aca37df8b22b8448647124cb6a76fc3332f",
+      "image_size": [
+        240,
+        240
+      ],
+      "reference_pdf_sha256": "5d98f7f65e21c0a574cd81d0d37fe7627a9d6903a341537220d14b8b30eb3fa1",
+      "reference_evidence": "Légende source : arrêt d’urgence ; légende corrigée : arrêt d’urgence électrique ; AU sur le niveau 3.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "human_review_required": true,
+      "geometry_reviewed": false,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "observed": "Hexagone gris",
+        "convention": "Mairie de Villeneuve-lès-Béziers, niveau 3. Interpréter l’hexagone gris avec un centre sombre. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null.",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Arrêt d’urgence électrique\",\"quantity\":null}",
+        "notes": "Source MAIRIE DE VLB PLAN DROITE.pdf page 1 ; villeneuve-au-niveau3 ; désignation à relire."
+      },
+      "conversation": {
+        "image": "images/villeneuve-au-niveau3.png",
+        "split": "test",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Mairie de Villeneuve-lès-Béziers, niveau 3. Interpréter l’hexagone gris avec un centre sombre. JSON : equipment_type, decision, quantity, anchor. Désignation seulement ; anchor=null et quantity=null."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Arrêt d’urgence électrique\",\"quantity\":null}"
+          }
+        ]
+      }
+    }
+  ],
+  "blockers": [
+    "Relire et valider les réponses dans DOEMO.",
+    "Enregistrer les autorisations des projets et figer le dataset via DOEMO."
+  ]
+}

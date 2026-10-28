@@ -4,8 +4,8 @@
   "files": [
     {
       "path": "README.md",
-      "sha256": "be04249f2122a176c420c7df41b3fe185a0c41f0ca8817985bce7373e362d60e",
-      "size": 4847
+      "sha256": "de3c67e64527c037260dac286893ab545bec2cbe8ed1764fa0a322aac442b039",
+      "size": 4912
     },
     {
       "path": "corrections.json",
@@ -14,8 +14,8 @@
     },
     {
       "path": "draft-examples.json",
-      "sha256": "671cf1d4098fca09ed734de3ae66d671fb7f6021763c6f1e8b8c025cf81da2ec",
-      "size": 26374
+      "sha256": "a16d20d644d211420e078dda9d29337e442a14513c41fa25a65375c325786ad2",
+      "size": 26377
     },
     {
       "path": "images/animalis-02.png",

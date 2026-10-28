@@ -72,7 +72,7 @@ def main():
                    reference_validated_by_user=proposals['reference_validated_by_user'],examples=examples,
                    blockers=([] if proposals['reference_validated_by_user'] else ['Confirmation du plan de référence marqué SPÉCIMEN.']) +
                             ['Relecture et validation des propositions dans DOEMO.',
-                             'Autorisation du projet enregistrée et troisième site indépendant pour le test.'])
+                             'Enregistrer les autorisations des projets et réunir les trois groupes indépendants.'])
     (ROOT / 'draft-examples.json').write_text(json.dumps(payload,ensure_ascii=False,indent=2)+'\n')
     (ROOT / 'qwen-draft.jsonl').write_text('\n'.join(encoded(e['conversation']) for e in examples)+'\n')
     (ROOT / 'revue.html').write_text('<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width">'
