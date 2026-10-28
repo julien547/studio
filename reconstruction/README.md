@@ -1,4 +1,9 @@
-# DOEMO Reconstruction architecturale 0.3.2
+# DOEMO Reconstruction architecturale 0.3.3
+
+**Installation et raccordement des trois IA : [procédure complète](../INSTALLATION-CONNEXION-IA.md).**
+Lire l’[avertissement de production](../AVERTISSEMENT-MODIFICATIONS-STUDIO.md) avant
+tout déploiement. Le redessin reste dans l’iframe sous le menu actuel, sans bandeau.
+Cette livraison ne remplace ni `/app/` ni `/releves/`.
 
 Prototype local ajouté à DOEMO Studio. Le modèle indépendant contient des axes, épaisseurs et ouvertures de murs ; les SVG contiennent des axes noirs ouverts, sans remplissage, groupés par mur et interrompus aux ouvertures. Toutes les détections sont des propositions à valider. Il ne s’agit pas encore du module complet de production.
 

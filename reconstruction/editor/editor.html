@@ -75,8 +75,10 @@ function fields(){
  }
 }
 function render(){if(!doc)return;const l=level(),svg=$('canvas');svg.replaceChildren();
+ const ai=Object.values(l.ai_evidence||{}).at(-1)||{},observations=[...(l.observations||[]),...(ai.zones||[])];
  if($('reference').checked&&typeof l.reference==='string'&&l.reference.startsWith('data:image/png;base64,'))element('image',{href:l.reference,x:0,y:0,width:l.width,height:l.height,opacity:.65});
- if($('zones').checked)for(const z of l.observations||[]){const b=z.bbox,r=element('rect',{x:b[0],y:b[1],width:b[2]-b[0],height:b[3]-b[1],fill:'#b55eea','fill-opacity':.08,stroke:'#9f4ac8','stroke-width':.6,'stroke-dasharray':'3 2','pointer-events':'none'});element('title',{},r).textContent=z.reason}
+ if($('zones').checked)for(const z of observations){const b=z.bbox,r=element('rect',{x:b[0],y:b[1],width:b[2]-b[0],height:b[3]-b[1],fill:'#b55eea','fill-opacity':.08,stroke:'#9f4ac8','stroke-width':.6,'stroke-dasharray':'3 2','pointer-events':'none'});element('title',{},r).textContent=z.reason}
+ if($('zones').checked)for(const t of ai.texts||[]){const b=t.bbox,r=element('rect',{x:b[0],y:b[1],width:b[2]-b[0],height:b[3]-b[1],fill:'#29a0ae','fill-opacity':.07,stroke:'#137f8d','stroke-width':.5,'pointer-events':'none'});element('title',{},r).textContent='OCR à contrôler : '+t.text}
  for(const w of l.walls){if(w.status==='rejected'||(w.status!=='approved'&&!$('candidates').checked))continue;
   const g=element('g',{'data-id':w.id}),width=l.stroke_width??1;element('title',{},g).textContent=`${w.id} · ${w.status} · épaisseur détectée : ${w.thickness??'inconnue'}`;
   for(const [lo,hi]of intervals(w)){
@@ -90,7 +92,7 @@ function render(){if(!doc)return;const l=level(),svg=$('canvas');svg.replaceChil
  const approved=l.walls.filter(w=>w.status==='approved').length;
  $('summary').textContent=`${l.walls.length} murs · ${approved} validés · ${l.walls.length-approved} à contrôler. Échelle : ${l.scale?l.scale.mm_per_unit.toFixed(3)+' mm/unité':'non validée'}.`;
  $('floor').checked=!!l.floor_validated;$('undo').disabled=!undo.length;$('redo').disabled=!redo.length;
- $('observations').replaceChildren();for(const z of l.observations||[]){const e=document.createElement('div');e.textContent=z.reason;$('observations').append(e)}fields();
+ $('observations').replaceChildren();for(const z of observations){const e=document.createElement('div');e.textContent=z.reason;$('observations').append(e)}for(const t of ai.texts||[]){const e=document.createElement('div');e.textContent='OCR à contrôler : '+t.text;$('observations').append(e)}fields();
 }
 function load(d){doc=check(d);index=0;selected=null;undo=[];redo=[];$('level').replaceChildren();for(const [i,l]of doc.levels.entries()){const o=document.createElement('option');o.value=i;o.textContent=l.name;$('level').append(o)}focus();render();say('Projet chargé. Les propositions exigent une validation humaine.')}
 function xy(e){const p=$('canvas').createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform($('canvas').getScreenCTM().inverse());return [q.x,q.y]}

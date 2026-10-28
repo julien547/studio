@@ -1,6 +1,6 @@
-# Vérification de la livraison OVH 0.3.2
+# Vérification de la livraison OVH 0.3.3
 
-Le 28 octobre 2026, 88 tests Python passent. Ils couvrent les axes noirs, les
+Le 28 octobre 2026, 96 tests Python passent. Ils couvrent les axes noirs, les
 ouvertures, la validation humaine, les contrats d’inférence, l’authentification
 du worker, les reprises après interruption, l’isolation des projets par utilisateur
 et la détection des sauvegardes concurrentes. Les tests d’IA utilisent des doubles ;
@@ -50,3 +50,16 @@ Chromium de cette commande passe avec annuler/refaire, conservation des extrémi
 restantes et protection des ouvertures. Le nouvel essai page 1 produit 381
 propositions non validées. Les 327 propositions décrites plus haut concernent
 le parcours complet de la livraison initiale ; aucun taux de qualité n’est déduit.
+
+La livraison 0.3.3 ajoute la configuration idempotente OVH : création ou réutilisation
+de la paire de signature, sauvegarde hors du web, refus des URL incomplètes et
+absence de rotation implicite. Le lanceur RunPod et un fragment pour le superviseur
+de l’image existante sont fournis, sans réinstallation des trois moteurs.
+
+Un parcours navigateur dans une iframe, avec menu parent visible, session PHP,
+socket Unix, stockage SQLite et vrai transport HTTP signé vers le code du worker,
+vérifie les trois adaptateurs simulés, l’affichage OCR/zones et la conservation des
+murs. Une erreur d’aller-retour JSON du pont PHP a été corrigée : les objets vides
+restent des objets, au lieu de devenir des tableaux qui bloquaient la sauvegarde.
+Les bandeaux sont absents du wrapper et de l’éditeur intégré. Aucun GPU réel n’a
+été appelé ; la recette RunPod reste à exécuter par la session de déploiement.

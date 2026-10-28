@@ -57,6 +57,10 @@ Paquet 0.2.2 : lanceur du service d’inférence sans restauration, configuratio
 
 Le module de test web est publié dans [studio PR 1](https://github.com/julien547/studio/pull/1). Il ajoute l’import d’une page, la file de traitement locale, l’éditeur d’axes, la sauvegarde privée par utilisateur et l’export SVG validé, derrière la session DOEMO. Le lien du menu React est livré dans [doemo-app PR 2](https://github.com/julien547/doemo-app/pull/2).
 
+**Mise à jour production : la PR doemo-app 2 est obsolète et ne doit pas être
+déployée.** Le menu actuel et l’iframe proviennent de `doemo-app/feat/studio-host`.
+Respecter [l’avertissement de production](../AVERTISSEMENT-MODIFICATIONS-STUDIO.md).
+
 La [procédure OVH](../reconstruction/ovh/DEPLOIEMENT_OVH.md) décrit l’installation isolée, le service systemd, le pont PHP sur socket Unix, la connexion RunPod facultative, la recette et le retour arrière. Le propriétaire a confié le déploiement réel à une autre session. Les branches ne sont pas fusionnées et le VPS n’a pas été modifié depuis ce fil.
 
 50 tests Python passent. Un parcours Chromium avec PHP, socket Python et stockage réels en local valide l’import de la page 1, la correction, la sauvegarde et le SVG. L’extraction de cette livraison produit 327 propositions de revue ; ce comptage n’est pas une précision mesurée. La segmentation spécialisée, les inférences réelles RunPod et la recette Adobe restent à qualifier.
@@ -84,3 +88,19 @@ candidats ne sont pas tous résolus automatiquement : aucune qualité architectu
 n’est déduite du nombre de propositions. Voir la
 [recette et les limites](../reconstruction/ovh/CORRECTION_AXES.md). La segmentation
 spécialisée et les inférences réelles sur RunPod restent à qualifier séparément.
+
+## Connexion applicative 0.3.3
+
+La priorité est le raccordement des trois moteurs déjà présents sur RunPod.
+La [procédure d’installation complète](../INSTALLATION-CONNEXION-IA.md) livre la
+configuration OVH, les clés de service, le lancement automatique du worker dans
+l’image existante, le transport privé et la recette dans l’application cadrée.
+Le navigateur vérifie les moteurs à l’ouverture et affiche les textes et zones
+reçus après analyse. Le prototype de segmentation par tuiles est conservé hors de
+cette livraison et n’est pas publié comme fonction opérationnelle.
+
+96 tests Python passent. Le parcours PHP → socket → worker HTTP signé est vérifié
+avec des moteurs simulés, sous un menu dans une iframe, sans bandeau. Aucun
+déploiement ni inférence réelle RunPod effectués dans cette session. La règle
+reste un seul trait noir plein médian par mur ; les doubles propositions doivent
+être corrigées avant validation et la segmentation spécialisée reste à développer.

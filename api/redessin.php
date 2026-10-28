@@ -48,6 +48,6 @@ curl_setopt_array($ch, [CURLOPT_UNIX_SOCKET_PATH => getenv('DOEMO_REDESSIN_SOCKE
 if ($body !== null) curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
 $response = curl_exec($ch); $status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE); curl_close($ch);
 if ($response === false || $status < 100) studio_json(503, ['error' => 'Service de redessin indisponible.']);
-$decoded = json_decode($response, true);
+$decoded = json_decode($response); // Preserve {} vs [] across the PHP bridge.
 if ($decoded === null) studio_json(502, ['error' => 'Réponse de service invalide.']);
 studio_json($status, $decoded);

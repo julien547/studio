@@ -7,7 +7,19 @@
 </Directory>
 # Keep the existing session and CSP. All scripts are external and same-origin.
 # Existing CSP must allow style-src 'self' 'unsafe-inline' and img-src 'self' data:,
-# as in the repository vhost. No frame, external script, eval or inline script is required.
+# as in the repository vhost. No external script, eval or inline script is required.
+# The current production app embeds /redessin/ under its menu. Preserve the active
+# doemo-redessin.conf: X-Frame-Options SAMEORIGIN + frame-ancestors 'self' ONLY here.
+# Do not restore DENY on /redessin/, and do not change the rest of the site.
+# For a fresh setup, adapt ONLY this scoped block after inspecting the existing CSP:
+# <LocationMatch "^/redessin(?:/|$)">
+#     Header onsuccess unset X-Frame-Options
+#     Header always set X-Frame-Options "SAMEORIGIN"
+#     Header onsuccess edit Content-Security-Policy "frame-ancestors[[:space:]]+[^;]+" "frame-ancestors 'self'"
+#     Header always edit Content-Security-Policy "frame-ancestors[[:space:]]+[^;]+" "frame-ancestors 'self'"
+# </LocationMatch>
+# Verify that the existing CSP contains a frame-ancestors directive; add a scoped
+# policy if it is absent. Keep all its other directives and test the effective headers.
 # In the existing PHP configuration/pool for Studio (not all hosted applications):
 # upload_max_filesize = 20M
 # post_max_size = 32M

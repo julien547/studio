@@ -296,7 +296,7 @@ def create_app(workbench, start_worker=True):
 
     @app.get('/health')
     def health(user=Depends(actor)):
-        return {'ready': True, 'version': '0.3.2', 'runpod_configured': bool(workbench.remote_url and workbench.key_path),
+        return {'ready': True, 'version': '0.3.3', 'runpod_configured': bool(workbench.remote_url and workbench.key_path),
                 'runpod_inference_verified': False, 'specialized_segmentation': 'not_qualified', 'user': user}
 
     @app.get('/runpod/status')

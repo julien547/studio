@@ -1,0 +1,22 @@
+# OPTIONAL: use only when the infrastructure has not already provided a tunnel.
+# The existing RunPod controller maintains /etc/doemo-redessin/runpod-ssh.conf
+# and the host alias doemo-runpod-active when a Pod migrates.
+[Unit]
+Description=DOEMO private SSH tunnel to current RunPod inference worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=doemo-redessin
+Group=www-data
+ExecStart=/usr/bin/ssh -F /etc/doemo-redessin/runpod-ssh.conf -NT -o BatchMode=yes -o ExitOnForwardFailure=yes -o StrictHostKeyChecking=yes -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -L 127.0.0.1:8009:127.0.0.1:8009 doemo-runpod-active
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

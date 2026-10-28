@@ -1,5 +1,9 @@
 # Déployer le module de test du redessin sur OVH
 
+Lire [l’avertissement de production](../../AVERTISSEMENT-MODIFICATIONS-STUDIO.md)
+avant installation. Pour brancher effectivement les trois IA, suivre le
+[guide d’installation OVH + RunPod](../../INSTALLATION-CONNEXION-IA.md).
+
 La session chargée du VPS déploie cette livraison. Le code est destiné à
 **studio.doemo.fr**, dans l’application existante : aucune modification de
 `plans.doemo.fr`, de l’API de connexion DOEMO ou des trois environnements IA.
@@ -12,10 +16,10 @@ Un administrateur ou dessinateur connecté peut importer un PDF, PNG ou JPEG,
 sélectionner une page, obtenir des axes proposés, les corriger, enregistrer le
 projet sur OVH et télécharger les murs validés en SVG. Chaque utilisateur accède
 uniquement à ses projets. Les fichiers sources restent hors du répertoire web.
-La page est autonome par rapport au build React : ce premier essai ne nécessite
-pas de remplacer le dossier `/app/`. Le lien de menu React est livré séparément
-dans [doemo-app PR 2](https://github.com/julien547/doemo-app/pull/2), avec sa
-[procédure de build](https://github.com/julien547/doemo-app/blob/feat/redessin-ovh-navigation/docs/studio-plans/DEPLOIEMENT_REDESSIN_OVH.md).
+La page reste dans l’iframe de **Structure bâtiment → Redessin des murs**, sous le
+menu de production. Ne pas remplacer `/app/`, ne pas rétablir de redirection plein
+écran et ne pas déployer l’ancienne PR doemo-app 2. Le menu actuel vient de
+`doemo-app/feat/studio-host` avec `StructureBatiment.jsx` et `FramedApp.jsx`.
 
 Les PDF vectoriels sont analysés en priorité. Pour les scans, cette version utilise
 un traitement géométrique expérimental. **Le modèle de segmentation architecturale
@@ -103,11 +107,15 @@ réserve `/var/lib/doemo-redessin` à ses données privées et utilise exclusive
 le socket `/run/doemo-redessin/api.sock` entre PHP et Python. Il n’active pas le service.
 La liste exacte des dépendances résolues est conservée dans `installed-requirements.txt`.
 
-Adapter puis insérer l’extrait `apache-redessin.conf.example` dans le vhost existant,
+Conserver la configuration Apache de cadrage déjà en production. Pour une première
+installation seulement, adapter l’extrait `apache-redessin.conf.example` au vhost,
 sans remplacer son contenu. `DirectoryIndex index.php` doit s’appliquer au seul
 dossier `redessin`. Conserver les protections et la connexion existantes. Le
 frontend utilise des scripts externes compatibles avec `script-src 'self'` ; aucun
 assouplissement pour du JavaScript inline ou `eval` n’est requis.
+`X-Frame-Options SAMEORIGIN` et `frame-ancestors 'self'` s’appliquent à `/redessin/`
+uniquement ; les restrictions du reste du site restent inchangées. Les sauvegardes
+du script sont sous `/var/backups/doemo-studio/redessin/`, hors du web.
 
 Vérifier dans la configuration PHP **de Studio** : `upload_max_filesize=20M`,
 `post_max_size=32M`, `memory_limit=256M` et un délai d’exécution d’au moins 35 secondes.
@@ -169,7 +177,7 @@ Rendre la clé lisible par le compte `doemo-redessin`, protégée des autres com
 puis redémarrer le seul service du redessin lorsqu’aucune tâche n’est en cours.
 Exécuter `ovh/check-connection.py` comme décrit dans la procédure commune, puis
 cliquer **Vérifier la connexion aux IA**. Ce contrôle ne transmet pas de plan.
-Le bouton **Tester les trois IA sur cette page** revérifie la disponibilité et sauvegarde les corrections,
+Le bouton **Analyser la page avec les trois IA** revérifie la disponibilité et sauvegarde les corrections,
 puis attend les réponses avec versions et provenance vérifiées. Les observations
 sont attachées au dernier dessin sauvegardé ; elles n’approuvent aucun mur.
 

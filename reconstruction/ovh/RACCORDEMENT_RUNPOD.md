@@ -1,7 +1,9 @@
 # Raccorder réellement les trois IA à l’éditeur OVH
 
 Transmission à la session qui déploie OVH et à celle qui prépare l’image RunPod.
-Livraison 0.3.1, branche `feat/redessin-ovh-tests`, [PR Studio 1](https://github.com/julien547/studio/pull/1).
+Livraison 0.3.3, branche `feat/redessin-ovh-tests`, [PR Studio 1](https://github.com/julien547/studio/pull/1).
+Commencer par [INSTALLATION-CONNEXION-IA.md](../../INSTALLATION-CONNEXION-IA.md) :
+configuration OVH, clés, lancement automatique RunPod et préservation du menu actuel.
 **Le raccordement réel n’a pas été exécuté depuis cette session.** Les chemins
 d’environnements restaurés sont ceux confirmés par le propriétaire. Les valeurs
 d’exemple ne sont pas des coordonnées de connexion opérationnelles.
@@ -9,7 +11,7 @@ d’exemple ne sont pas des coordonnées de connexion opérationnelles.
 ## Résultat à obtenir
 
 Depuis `https://studio.doemo.fr/redessin/`, « Vérifier la connexion aux IA » doit
-confirmer les trois moteurs, puis « Tester les trois IA sur cette page » doit
+confirmer les trois moteurs, puis « Analyser la page avec les trois IA » doit
 produire les réponses de PaddleOCR, Qwen et RTMDet pour **la page 1 de `2(2).pdf`**.
 La présence d’une URL, une réponse HTTP 200 ou le succès des tests locaux ne
 suffisent pas. Le contrôle de disponibilité ne transmet aucun plan et ne lance
@@ -78,7 +80,7 @@ des résultats non sauvegardés avant toute décision d’arrêt.
 
 ## 3. Vérifier le service actif depuis OVH
 
-Après installation de la version 0.3.1 selon [DEPLOIEMENT_OVH.md](DEPLOIEMENT_OVH.md) :
+Après installation de la version 0.3.3 selon [DEPLOIEMENT_OVH.md](DEPLOIEMENT_OVH.md) :
 
 ```bash
 sudo -u doemo-redessin /opt/doemo-redessin/venv/bin/python \
@@ -106,7 +108,7 @@ signale un problème de contrôle du service OVH. Aucun test n’installe de mod
 
 1. Vérifier que l’accès au worker sans signature est refusé.
 2. Se connecter à Studio avec le rôle dessinateur et ouvrir le projet de la page 1.
-3. Cliquer « Vérifier la connexion aux IA », puis « Tester les trois IA sur cette page ».
+3. Cliquer « Vérifier la connexion aux IA », puis « Analyser la page avec les trois IA ».
 4. Attendre l’état terminé et contrôler les observations reçues, les versions et
    les trois résultats dans la tâche privée. Conserver son UUID et l’identité du
    worker dans le compte rendu interne ; aucun contenu client dans GitHub.

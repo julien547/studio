@@ -6,6 +6,8 @@ from pathlib import Path
 root = Path(__file__).resolve().parents[2]
 template = (root / 'reconstruction/editor/editor.html').read_text()
 markup = template[template.index('<style>'):template.index('<script id="project-data"')]
+# Embedded under the current studio-host menu: no second application banner.
+markup = markup[:markup.index('<header>')] + markup[markup.index('</header>')+len('</header>'):]
 markup = markup.replace(':root{', ':host{').replace('height:calc(100vh - 68px)', 'height:782px')
 markup = markup.replace('</style>', '[hidden]{display:none!important}main{grid-template-rows:minmax(0,1fr)}#stage,#viewport{min-height:0}</style>')
 code = template.split('<script>\n', 1)[1].rsplit('</script>', 1)[0]

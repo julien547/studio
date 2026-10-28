@@ -26,6 +26,7 @@
     clearTimeout(readinessTimer);
     remoteReadyUntil = 0; controls();
     byId('aiStatus').textContent = 'Vérification du service RunPod…';
+    byId('engineStatus').replaceChildren();
     try {
       const status = await api('/runpod/status');
       const labels = {
@@ -37,9 +38,15 @@
         starting: 'RunPod répond ; les tests de démarrage des trois moteurs ne sont pas tous confirmés.',
         not_ready: 'RunPod répond mais demande une intervention avant toute analyse.',
         busy: 'RunPod répond mais ne peut pas accepter une nouvelle analyse pour le moment.',
-        ready: 'RunPod répond ; les trois moteurs ont réussi leur test de démarrage. Vous pouvez lancer le test sur cette page.',
+        ready: 'Connexion aux trois IA disponible. Vous pouvez analyser cette page ; les résultats resteront à contrôler.',
       };
       byId('aiStatus').textContent = labels[status.state] || 'État RunPod non reconnu.';
+      const names = {qwen: 'Qwen — lecture des zones', paddleocr: 'PaddleOCR — textes', rtmdet: 'RTMDet — diagnostic d’objets'};
+      for (const engine of status.engines || []) {
+        const item = document.createElement('li');
+        item.textContent = (names[engine.id] || engine.id) + ' : ' + (engine.startup_inference_verified ? 'test de démarrage réussi' : 'test de démarrage non confirmé');
+        byId('engineStatus').append(item);
+      }
       if (status.state === 'ready' && status.can_analyze === true) {
         remoteReadyUntil = Date.now() + 60000;
         readinessTimer = setTimeout(() => {
@@ -74,8 +81,13 @@
     await window.doemoEditor.mount(byId('editorHost'), data.document, user, edited);
     byId('editorHost').hidden = false; dirty = false; controls();
     const records = Object.values(data.document.levels[0].ai_evidence || {});
-    byId('evidence').hidden = !records.length;
+    byId('evidenceDetails').hidden = !records.length;
+    byId('evidenceSummary').hidden = !records.length;
     byId('evidence').textContent = records.length ? JSON.stringify(records.at(-1), null, 2) : '';
+    if (records.length) {
+      const evidence = records.at(-1);
+      byId('evidenceSummary').textContent = `Dernière analyse : ${evidence.texts.length} texte(s) OCR, ${evidence.zones.length} zone(s) commentée(s), ${evidence.rtmdet_diagnostic_count ?? 0} objet(s) RTMDet de diagnostic. Ces résultats ne valident aucun mur.`;
+    }
     message('Projet chargé. Enregistrez sur OVH après vos corrections.');
   }
   async function poll(id) {
@@ -134,9 +146,8 @@
   addEventListener('beforeunload', event => { if (dirty) { event.preventDefault(); event.returnValue = ''; } });
   api('/health').then(async health => {
     user = health.user;
-    byId('aiStatus').textContent = health.runpod_configured
-      ? 'Configuration RunPod présente. Cliquez sur « Vérifier la connexion aux IA » avant le test.'
-      : 'IA non raccordées : configuration OVH–RunPod à terminer. Import et correction locale disponibles.';
+    byId('aiStatus').textContent = 'IA non raccordées : configuration OVH–RunPod à terminer. Import et correction locale disponibles.';
     await listing(); controls(); message('Prêt à importer une page.');
+    if (health.runpod_configured) await action(checkConnection);
   }).catch(error => message(error.message));
 })();

@@ -30,5 +30,9 @@ def attach_evidence(document,level_id,evidence,request):
     # Idempotent evidence attachment; reviewed walls and prior user history are untouched.
     level.setdefault('ai_evidence',{})[evidence['job_id']]={'texts':ocr,'zones':zones,
         'model_versions':evidence['model_versions'],'image_to_document':[sx,0,0,sy,0,0],
+        'execution':{'job_id':evidence['job_id'],'worker':evidence.get('executed_on'),
+                     'engines_returned':sorted(evidence.get('engines',{})),
+                     'source_sha256':evidence['source_sha256'],'image_sha256':evidence['image_sha256']},
+        'rtmdet_diagnostic_count':len(evidence.get('engines',{}).get('rtmdet',{}).get('detections',[])),
         'rtmdet_usage':'diagnostic_only_never_walls'}
     return validate(out)

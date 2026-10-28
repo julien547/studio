@@ -11,6 +11,12 @@ web_root=$(realpath "$2")
   echo 'Sources ou racine Studio non confirmées ; aucun fichier publié.' >&2; exit 2;
 }
 [[ -f "$source_root/redessin/editor.js" ]] || { echo 'Construire editor.js avant installation.' >&2; exit 2; }
+python3 - "$source_root/redessin/index.php" <<'PY'
+from pathlib import Path
+import re, sys
+if re.search(r'<header(?:\s|>)', Path(sys.argv[1]).read_text(), re.I):
+    raise SystemExit('Bandeau interdit dans redessin/index.php : lire AVERTISSEMENT-MODIFICATIONS-STUDIO.md')
+PY
 if systemctl is-active --quiet doemo-redessin.service; then
   echo 'Service actif : terminer les tâches et le stopper avant de préparer une mise à jour.' >&2
   exit 2
@@ -23,7 +29,7 @@ release_id=$(git -C "$source_root" rev-parse HEAD)
 release_dir="/opt/doemo-redessin/releases/$release_id"
 [[ ! -e "$release_dir" ]] || { echo 'Cette version est déjà préparée ; inspecter son état avant de relancer.' >&2; exit 2; }
 install -d -m 0755 /opt/doemo-redessin/releases
-install -d -m 0700 /var/backups/doemo-redessin
+install -d -m 0700 /var/backups/doemo-studio /var/backups/doemo-studio/redessin
 install -d -m 0750 -o root -g www-data /etc/doemo-redessin
 install -d -m 0700 -o doemo-redessin -g www-data /var/lib/doemo-redessin
 mkdir "$release_dir"
@@ -34,7 +40,7 @@ python3 -m venv "$release_dir/venv"
 "$release_dir/venv/bin/pip" freeze > "$release_dir/installed-requirements.txt"
 # Source snapshot and runtime stay root-owned, readable by the service account.
 chmod -R u=rwX,go=rX "$release_dir"
-backup="/var/backups/doemo-redessin/$(date -u +%Y%m%dT%H%M%SZ)-$release_id"
+backup="/var/backups/doemo-studio/redessin/$(date -u +%Y%m%dT%H%M%SZ)-$release_id"
 mkdir -m 0700 "$backup"
 [[ ! -e "$web_root/redessin" ]] || cp -a "$web_root/redessin" "$backup/"
 [[ ! -e "$web_root/api/redessin.php" ]] || cp -a "$web_root/api/redessin.php" "$backup/redessin.php"
