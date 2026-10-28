@@ -1,4 +1,4 @@
-# Génération Linux 0.3.1 — lots de test
+# Génération Linux 0.3.2 — lots de test
 
 Le bouton **Générer tous les plans** produit maintenant les PDF puis un ZIP,
 sans Illustrator, pour le profil de BAT pris en charge. Il devient disponible
@@ -47,6 +47,9 @@ client choisi. Une trame manquante ou ambiguë bloque le lot complet.
 - Construit la légende depuis les symboles vectoriels identifiés. Ses libellés
   viennent des noms natifs ; sa présentation diffère de la bibliothèque Illustrator.
   Un cadre vectoriel vert entoure la légende des PE, rouge celle des PI.
+  Le titre gras et coloré est placé au-dessus du cadre. Les libellés sont en
+  capitales grasses ; les colonnes sont dimensionnées selon leur contenu avec
+  un intervalle de 12 pt, dans un bloc compact centré sous le dessin.
 - Place la ligne « Mise à jour… » tout en bas de la page, sous les consignes,
   avec un espace réservé sous le logo. L'indice de mise à jour du BAT est conservé.
   La date du jour est calculée une seule fois au démarrage du lot, en heure de
@@ -110,7 +113,7 @@ Ce fonctionnement est synchrone ; il n'y a pas encore de file persistante de wor
 
 ```text
 /opt/doemo-studio/src/engine/                 code moteur
-/opt/doemo-studio/venv-pdf/                   environnement Python 0.3.1
+/opt/doemo-studio/venv-pdf/                   environnement Python 0.3.2
 /var/www/studio/api/                         PHP, dont les deux routeurs internes
 /var/www/studio/app/                         build doemo-app, branche feat/studio-host
 /var/lib/doemo-studio/templates/doemo/        trames DOEMO

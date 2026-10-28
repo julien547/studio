@@ -214,9 +214,10 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
         block(groups['level'],(useful[0],placed[1]-30,useful[2],placed[1]-8))
         footer,reference=footer_label(scene,groups['footer'],marker.index,generated_on or batch_date())
         selfont=out.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Font,Subtype=pikepdf.Name.Type1,BaseFont=pikepdf.Name.Helvetica,Encoding=pikepdf.Name.WinAnsiEncoding))
-        page.Resources.Font=pikepdf.Dictionary(Legend=selfont)
-        def text(value,x,y,size):
-            writer.ops.extend([instruction('q'),instruction('g',[0]),instruction('BT'),instruction('Tf',[pikepdf.Name.Legend,size]),
+        boldfont=out.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Font,Subtype=pikepdf.Name.Type1,BaseFont=pikepdf.Name('/Helvetica-Bold'),Encoding=pikepdf.Name.WinAnsiEncoding))
+        page.Resources.Font=pikepdf.Dictionary(Legend=selfont,LegendBold=boldfont)
+        def text(value,x,y,size,bold=False,color=None):
+            writer.ops.extend([instruction('q'),instruction('k',color) if color else instruction('g',[0]),instruction('BT'),instruction('Tf',[pikepdf.Name.LegendBold if bold else pikepdf.Name.Legend,size]),
               instruction('Tm',[1,0,0,1,x,y]),instruction('Tj',[pikepdf.String(value.encode('cp1252',errors='replace'))]),instruction('ET'),instruction('Q')])
         footer_bounds=None
         if footer:
@@ -228,24 +229,41 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
             x=(ab[0]+ab[2]-width*size)/2;y=ab[1]+8
             text(footer,x,y,size)
             footer_bounds=[x,y-size*.25,x+width*size,y+size]
-        legend_frame=[legend_slot[0]-8,legend_slot[1]-8,legend_slot[2]+8,legend_slot[3]+8]
+        # Size columns to their labels, not to the full available page width.
+        # The title sits outside the border, as in the client's legend samples.
+        label_size=6.5;label_widths=CORE_FONT_METRICS['Helvetica-Bold'].character_widths
+        def label_width(value):return sum(label_widths.get(c,label_widths['default']) for c in value)*label_size/1000
+        labels=[]
+        for symbol in unique:
+            lines=['']
+            for word in symbol.name.upper().split():
+                candidate=(lines[-1]+' '+word).strip()
+                if lines[-1] and label_width(candidate)>150:lines.append(word)
+                else:lines[-1]=candidate
+            labels.append(lines)
+        active_columns=min(columns,max(1,len(unique)))
+        widths=[24+max((label_width(line) for n,lines in enumerate(labels) if n//rows==col for line in lines),default=60)
+                for col in range(active_columns)]
+        gap=12;padding=4
+        compact_width=sum(widths)+gap*(active_columns-1)+padding*2
+        available=legend_slot[2]-legend_slot[0]
+        legend_scale=min(1,available/compact_width)
+        x0=(legend_slot[0]+legend_slot[2]-compact_width*legend_scale)/2
+        top=legend_slot[3]-13
+        row_height=max(21,max((len(lines)*8 for lines in labels),default=0))
+        legend_frame=[x0,top-(max(rows,1)*row_height+padding*2)*legend_scale,x0+compact_width*legend_scale,top]
         legend_color=(1,0,1,0) if marker.kind=='PE' else (0,.99,.97,0)
-        writer.ops.extend([instruction('q'),instruction('K',legend_color),instruction('w',[1]),
+        writer.ops.extend([instruction('q'),instruction('K',legend_color),instruction('w',[1.5 if marker.kind=='PE' else .75]),
                            instruction('re',[legend_frame[0],legend_frame[1],legend_frame[2]-legend_frame[0],legend_frame[3]-legend_frame[1]]),
                            instruction('S'),instruction('Q')])
-        text('LÉGENDE',legend_slot[0],legend_slot[3]-9,8)
-        col_width=(legend_slot[2]-legend_slot[0])/columns
+        text('LEGENDE',legend_frame[0],legend_frame[3]+3,11,True,legend_color)
         for n,symbol in enumerate(unique):
-            col,row=divmod(n,rows);x=legend_slot[0]+col*col_width;y=legend_slot[3]-30-row*21
+            col,row=divmod(n,rows)
+            x=x0+(padding+sum(widths[:col])+gap*col)*legend_scale
+            y=top-(padding+16+row*row_height)*legend_scale
             symbol_group=make_group(out,sf,symbol.items,source_box)
-            writer.place(symbol_group,fit_box(symbol.bounds,(x,y,x+16,y+16)))
-            label=symbol.name
-            # Wrap legend labels only. Source plan text is never rewritten.
-            words=label.split();lines=['']
-            for word in words:
-                if len(lines[-1]+' '+word)>42:lines.append(word)
-                else:lines[-1]=(lines[-1]+' '+word).strip()
-            for k,line in enumerate(lines):text(line,x+22,y+10-k*7,6)
+            writer.place(symbol_group,fit_box(symbol.bounds,(x,y,x+16*legend_scale,y+16*legend_scale)))
+            for k,line in enumerate(labels[n]):text(line,x+24*legend_scale,y+(5-k*8)*legend_scale,label_size*legend_scale,True)
         if groups['logo']:
             slot=(ab[2]-12-(ab[2]-ab[0])*.30,ab[1]+22,ab[2]-12,ab[1]+12+(ab[3]-ab[1])*.12)
             # Existing prevention objects set the bottom of the available space.
@@ -316,7 +334,7 @@ def generate_batch(source, destination, client='doemo', levels=None, basename=No
                 result['template']=f'{client}/{template.relative_to(directory).as_posix()}';results.append(result)
                 if sum(p.stat().st_size for p in temporary.iterdir())>256*1024*1024:raise ValueError('Lot supérieur à 256 Mio.')
         if file_hash(source)!=initial or any(file_hash(p)!=h for p,h in template_hashes.items()):raise ValueError('Une source a changé pendant la génération.')
-        report={'schema_version':1,'engine_version':'0.3.1','generation_date':generated_on.isoformat(),'status':'test_batch_complete','production_ready':False,'source_sha256':initial,
+        report={'schema_version':1,'engine_version':'0.3.2','generation_date':generated_on.isoformat(),'status':'test_batch_complete','production_ready':False,'source_sha256':initial,
                 'source_unchanged':True,'client':client,'count':len(results),'results':results,
                 'warnings':['Contrôler visuellement les PDF avant utilisation.',
                 'Les zones de trames sont détectées automatiquement ; ce profil prend en charge les BAT Illustrator AI24 à une page.',
