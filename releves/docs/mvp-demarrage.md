@@ -89,7 +89,7 @@ toute future superposition RTMDet. Ne pas remplacer la hauteur par un maximum ca
 ## RunPod : gestion automatique
 
 Le module de cycle de vie remplace la préparation manuelle initiale.
-Suivre le [guide RunPod](runpod-lifecycle.md) pour le Pod **41m7oy6qjaj2ji** :
+Suivre le [guide RunPod](runpod-lifecycle.md) pour le Pod courant (`DOEMO_RUNPOD_POD_ID`, voir le guide) :
 clé fournisseur sur OVH uniquement, gateway authentifié, vérification des trois
 moteurs et archives de restauration sur le volume persistant.
 

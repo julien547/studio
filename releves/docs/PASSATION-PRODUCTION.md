@@ -14,7 +14,7 @@ pendant la préparation.** La publication GitHub est distincte de la mise en pro
 L’adresse et les accès SSH OVH, l’état réel des services, les secrets et les versions
 CUDA doivent être vérifiés par la session qui dispose de ces accès.
 
-Pod cible : **`41m7oy6qjaj2ji`**, nom attendu **`DOEMO-STUDIO-IA`**.
+Pod cible : celui de `DOEMO_RUNPOD_POD_ID` (au 28/10/2026 : **`az0kw33jcicnyu`**, nom attendu **`DOEMO-STUDIO-IA-3`**).
 Ne pas reprendre un ancien ID. Ne jamais supprimer le Pod ou son volume réseau.
 La clé fournisseur `RUNPOD_API_KEY` reste exclusivement sur le backend OVH.
 
@@ -191,7 +191,7 @@ Suivre intégralement [runpod-lifecycle.md](runpod-lifecycle.md) :
 1. Sur **OVH**, exécuter `scripts/configure-runpod.py --output-dir /etc/doemo-studio/runpod --pod-id ID_ACTUEL_VERIFIE`
    dans un terminal, avec les droits nécessaires. Saisir la clé sans l’afficher.
 2. Ne transmettre au Pod que le jeton gateway, jamais `runpod-ovh.env`.
-3. Vérifier le Pod `41m7oy6qjaj2ji`, son nom et le volume persistant `/workspace`.
+3. Vérifier le Pod courant (`DOEMO_RUNPOD_POD_ID`), son nom et le volume persistant `/workspace`.
 4. Copier le code gateway dans `/workspace/doemo-studio/services/runpod`, vérifier
    les trois environnements ML existants et les chemins de modèles locaux.
 5. Exécuter les trois sondes réelles ; capturer les quatre environnements validés
@@ -259,8 +259,8 @@ services, résultats de recette, état GPU et procédure exacte de rollback.
 > Déploie DOEMO Studio depuis `julien547/studio`, branche `codex/studio-mvp-editor`.
 > Commence par `releves/docs/PASSATION-PRODUCTION.md` et `releves/docs/runpod-lifecycle.md`.
 > Vérifie l’existant OVH, sauvegarde et préserve les autres applications et sessions PHP.
-> Installe le module CPU avant d’activer RunPod. Pod : `41m7oy6qjaj2ji`, nom :
-> `DOEMO-STUDIO-IA`. Clé RunPod exclusivement sur OVH, jamais dans le chat ni Git.
+> Installe le module CPU avant d’activer RunPod. Pod : celui de `DOEMO_RUNPOD_POD_ID` (au 28/10/2026 `az0kw33jcicnyu`), nom :
+> `DOEMO-STUDIO-IA-3`. Clé RunPod exclusivement sur OVH, jamais dans le chat ni Git.
 > Prépare et vérifie le bootstrap et les modèles réels avant l’automatisation.
 > Ne supprime ni Pod ni volume. Effectue la recette et fournis le SHA déployé et
 > les preuves de fonctionnement. Les essais cloud précédents ne sont pas une

@@ -1,7 +1,9 @@
 # Gestion automatique du GPU RunPod
 
-Le dernier Pod communiqué était **`41m7oy6qjaj2ji`**, nommé **`DOEMO-STUDIO-IA`**.
-Vérifier l’identifiant actuel avant configuration ; aucun défaut opérationnel ne reprend cet ancien ID.
+Le Pod courant est celui de `DOEMO_RUNPOD_POD_ID` dans `/etc/doemo-studio/runpod/runpod-ovh.env` (sur OVH).
+Au 28/10/2026 : **`az0kw33jcicnyu`**, nommé **`DOEMO-STUDIO-IA-3`**. L’identifiant change à chaque migration GPU :
+toujours le relire avant d’agir. Les anciens Pods sont arrêtés : ne pas les redémarrer ni les supprimer.
+Aucun défaut opérationnel ne reprend d’ID.
 Le module est développé localement ; il n’a pas été déployé sur OVH ni exécuté
 contre ce Pod. La clé API réelle n’a pas été fournie à cet environnement.
 
@@ -58,7 +60,7 @@ Le fichier commence avec `DOEMO_RUNPOD_MANAGED="0"`. Passer à `"1"` seulement a
 la préparation du Pod ci-dessous, puis redémarrer les trois services OVH.
 L’ID saisi, le nom et le port HTTP 8000 sont renseignés. Remplacer
 `ID_ACTUEL_VERIFIE` par l’identifiant lu sur le compte RunPod. Aucun endpoint manuel n’est
-nécessaire : le proxy est `https://41m7oy6qjaj2ji-8000.proxy.runpod.net`.
+nécessaire : le proxy est `https://<ID_DU_POD>-8000.proxy.runpod.net` (`<ID_DU_POD>` = valeur de `DOEMO_RUNPOD_POD_ID`).
 `DOEMO_RUNPOD_ENDPOINT` peut le remplacer pour un accès HTTPS privé.
 Le pare-feu OVH doit autoriser l’API RunPod et le proxy HTTPS du Pod.
 
