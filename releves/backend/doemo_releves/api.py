@@ -114,6 +114,8 @@ def create_app(root=None):
     attach_queue(app, store, actor, get, doc)
     from .gpu import attach_gpu
     attach_gpu(app, store, actor, admin)
+    from .training import attach_training
+    attach_training(app, store, admin, get, doc)
 
     @app.get("/health")
     def health():

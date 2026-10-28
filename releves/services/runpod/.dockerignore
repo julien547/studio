@@ -1,0 +1,6 @@
+**
+!Dockerfile
+!*.py
+!restore/
+!restore/manifest.json
+!restore/*.tar.gz

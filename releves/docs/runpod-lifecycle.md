@@ -1,6 +1,7 @@
 # Gestion automatique du GPU RunPod
 
-Le Pod configuré est **`41m7oy6qjaj2ji`**, nommé **`DOEMO-STUDIO-IA`**.
+Le dernier Pod communiqué était **`41m7oy6qjaj2ji`**, nommé **`DOEMO-STUDIO-IA`**.
+Vérifier l’identifiant actuel avant configuration ; aucun défaut opérationnel ne reprend cet ancien ID.
 Le module est développé localement ; il n’a pas été déployé sur OVH ni exécuté
 contre ce Pod. La clé API réelle n’a pas été fournie à cet environnement.
 
@@ -36,7 +37,7 @@ Depuis le dépôt installé **sur le serveur OVH**, créer la configuration dans
 dossier privé hors du dépôt et hors de la racine web :
 
 ```sh
-sudo python3 releves/scripts/configure-runpod.py --output-dir /etc/doemo-studio/runpod
+sudo python3 releves/scripts/configure-runpod.py --output-dir /etc/doemo-studio/runpod --pod-id ID_ACTUEL_VERIFIE
 ```
 
 Le terminal demande la clé en saisie masquée, crée deux fichiers en mode `0600`
@@ -55,7 +56,8 @@ Ne pas placer la clé dans une commande shell, un fichier `VITE_*` ou le chat.
 
 Le fichier commence avec `DOEMO_RUNPOD_MANAGED="0"`. Passer à `"1"` seulement après
 la préparation du Pod ci-dessous, puis redémarrer les trois services OVH.
-L’ID, le nom et le port HTTP 8000 sont déjà renseignés. Aucun endpoint manuel n’est
+L’ID saisi, le nom et le port HTTP 8000 sont renseignés. Remplacer
+`ID_ACTUEL_VERIFIE` par l’identifiant lu sur le compte RunPod. Aucun endpoint manuel n’est
 nécessaire : le proxy est `https://41m7oy6qjaj2ji-8000.proxy.runpod.net`.
 `DOEMO_RUNPOD_ENDPOINT` peut le remplacer pour un accès HTTPS privé.
 Le pare-feu OVH doit autoriser l’API RunPod et le proxy HTTPS du Pod.

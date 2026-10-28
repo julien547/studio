@@ -187,7 +187,7 @@ des traces locales, pas des liens de téléchargement utilisables depuis OVH.
 
 Suivre intégralement [runpod-lifecycle.md](runpod-lifecycle.md) :
 
-1. Sur **OVH**, exécuter `scripts/configure-runpod.py --output-dir /etc/doemo-studio/runpod`
+1. Sur **OVH**, exécuter `scripts/configure-runpod.py --output-dir /etc/doemo-studio/runpod --pod-id ID_ACTUEL_VERIFIE`
    dans un terminal, avec les droits nécessaires. Saisir la clé sans l’afficher.
 2. Ne transmettre au Pod que le jeton gateway, jamais `runpod-ovh.env`.
 3. Vérifier le Pod `41m7oy6qjaj2ji`, son nom et le volume persistant `/workspace`.

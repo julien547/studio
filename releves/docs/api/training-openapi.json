@@ -1,0 +1,2962 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DOEMO Training API — backend OVH privé",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/projects/training/openapi": {
+      "get": {
+        "summary": "Openapi",
+        "operationId": "openapi_projects_training_openapi_get",
+        "parameters": [
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/capabilities": {
+      "get": {
+        "summary": "Capabilities",
+        "operationId": "capabilities_projects_training_capabilities_get",
+        "parameters": [
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/categories": {
+      "get": {
+        "summary": "Categories",
+        "operationId": "categories_projects_training_categories_get",
+        "parameters": [
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/categories/{code}": {
+      "put": {
+        "summary": "Category",
+        "operationId": "category_projects_training_categories__code__put",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Code"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Category"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/examples": {
+      "get": {
+        "summary": "Examples",
+        "operationId": "examples_projects_training_examples_get",
+        "parameters": [
+          {
+            "name": "engine",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "qwen",
+                "paddleocr",
+                "rtmdet",
+                "architecture"
+              ],
+              "type": "string",
+              "title": "Engine"
+            }
+          },
+          {
+            "name": "project_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Project Id"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Category"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Status"
+            }
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Since"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Example",
+        "operationId": "create_example_projects_training_examples_post",
+        "parameters": [
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Example"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/examples/{ident}": {
+      "put": {
+        "summary": "Save Example",
+        "operationId": "save_example_projects_training_examples__ident__put",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Example"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/examples/{ident}/decision": {
+      "post": {
+        "summary": "Decision",
+        "operationId": "decision_projects_training_examples__ident__decision_post",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Decision"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/datasets": {
+      "get": {
+        "summary": "Datasets",
+        "operationId": "datasets_projects_training_datasets_get",
+        "parameters": [
+          {
+            "name": "engine",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "qwen",
+                "paddleocr",
+                "rtmdet",
+                "architecture"
+              ],
+              "type": "string",
+              "title": "Engine"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Dataset",
+        "operationId": "create_dataset_projects_training_datasets_post",
+        "parameters": [
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Dataset"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/datasets/{ident}": {
+      "get": {
+        "summary": "Dataset Get",
+        "operationId": "dataset_get_projects_training_datasets__ident__get",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/datasets/{ident}/export": {
+      "get": {
+        "summary": "Dataset Export",
+        "operationId": "dataset_export_projects_training_datasets__ident__export_get",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/models": {
+      "get": {
+        "summary": "Models",
+        "operationId": "models_projects_training_models_get",
+        "parameters": [
+          {
+            "name": "engine",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "qwen",
+                "paddleocr",
+                "rtmdet",
+                "architecture"
+              ],
+              "type": "string",
+              "title": "Engine"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/models/{engine}/versions": {
+      "post": {
+        "summary": "Version",
+        "operationId": "version_projects_training_models__engine__versions_post",
+        "parameters": [
+          {
+            "name": "engine",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "qwen",
+                "paddleocr",
+                "rtmdet",
+                "architecture"
+              ],
+              "type": "string",
+              "title": "Engine"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Version"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/models/{engine}/{ident}/test": {
+      "post": {
+        "summary": "Test Version",
+        "operationId": "test_version_projects_training_models__engine___ident__test_post",
+        "parameters": [
+          {
+            "name": "engine",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "qwen",
+                "paddleocr",
+                "rtmdet",
+                "architecture"
+              ],
+              "type": "string",
+              "title": "Engine"
+            }
+          },
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/models/qwen/{ident}/reference": {
+      "get": {
+        "summary": "Reference",
+        "operationId": "reference_projects_training_models_qwen__ident__reference_get",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "",
+              "title": "Q"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/models/{engine}/{ident}/{action}": {
+      "post": {
+        "summary": "Model Action",
+        "operationId": "model_action_projects_training_models__engine___ident___action__post",
+        "parameters": [
+          {
+            "name": "engine",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "qwen",
+                "paddleocr",
+                "rtmdet",
+                "architecture"
+              ],
+              "type": "string",
+              "title": "Engine"
+            }
+          },
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "action",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "enum": [
+                "approve",
+                "publish",
+                "rollback"
+              ],
+              "type": "string",
+              "title": "Action"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Confirm"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/runs": {
+      "get": {
+        "summary": "Runs",
+        "operationId": "runs_projects_training_runs_get",
+        "parameters": [
+          {
+            "name": "engine",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "qwen",
+                "paddleocr",
+                "rtmdet",
+                "architecture"
+              ],
+              "type": "string",
+              "title": "Engine"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Launch",
+        "operationId": "launch_projects_training_runs_post",
+        "parameters": [
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Run"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/runs/{ident}": {
+      "get": {
+        "summary": "Run Status",
+        "operationId": "run_status_projects_training_runs__ident__get",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/runs/{ident}/logs": {
+      "get": {
+        "summary": "Run Logs",
+        "operationId": "run_logs_projects_training_runs__ident__logs_get",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/runs/{ident}/cancel": {
+      "post": {
+        "summary": "Cancel",
+        "operationId": "cancel_projects_training_runs__ident__cancel_post",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/audit": {
+      "get": {
+        "summary": "Journal",
+        "operationId": "journal_projects_training_audit_get",
+        "parameters": [
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AcceptAnalysis": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Revision"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "revision"
+        ],
+        "title": "AcceptAnalysis"
+      },
+      "Analysis": {
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "title": "Document Id"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Page"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Revision"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "local",
+              "multimodal"
+            ],
+            "title": "Mode",
+            "default": "local"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "document_id",
+          "page",
+          "revision"
+        ],
+        "title": "Analysis"
+      },
+      "AnalysisJob": {
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "title": "Document Id"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Page"
+          },
+          "engine": {
+            "type": "string",
+            "enum": [
+              "local",
+              "paddleocr",
+              "qwen",
+              "rtmdet"
+            ],
+            "title": "Engine"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "document_id",
+          "page",
+          "engine"
+        ],
+        "title": "AnalysisJob"
+      },
+      "Annotation": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]{1,80}$",
+            "title": "Id"
+          },
+          "source_document_id": {
+            "type": "string",
+            "title": "Source Document Id"
+          },
+          "source_page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Source Page"
+          },
+          "bbox": {
+            "$ref": "#/components/schemas/Box"
+          },
+          "anchor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "anchor_kind": {
+            "type": "string",
+            "enum": [
+              "unknown",
+              "direct",
+              "arrow_tip",
+              "leader_tip",
+              "manual"
+            ],
+            "title": "Anchor Kind",
+            "default": "unknown"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Text",
+            "default": ""
+          },
+          "color": {
+            "type": "string",
+            "maxLength": 40,
+            "title": "Color",
+            "default": "unknown"
+          },
+          "shape": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Shape",
+            "default": "unknown"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "default": 0
+          },
+          "method": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Method",
+            "default": "manual"
+          },
+          "equipment_type": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Equipment Type",
+            "default": ""
+          },
+          "asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asset Id"
+          },
+          "floor_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor Id"
+          },
+          "rotation_deg": {
+            "type": "number",
+            "maximum": 360.0,
+            "minimum": -360.0,
+            "title": "Rotation Deg",
+            "default": 0
+          },
+          "size_mm": {
+            "type": "number",
+            "maximum": 200.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Size Mm",
+            "default": 7
+          },
+          "target": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "review",
+              "confirmed",
+              "rejected",
+              "missing_asset",
+              "uncertain_position"
+            ],
+            "title": "Status",
+            "default": "review"
+          },
+          "review": {
+            "$ref": "#/components/schemas/Review"
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Evidence",
+            "default": ""
+          },
+          "comment": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Comment",
+            "default": ""
+          },
+          "training_accepted": {
+            "type": "boolean",
+            "title": "Training Accepted",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "source_document_id",
+          "source_page",
+          "bbox"
+        ],
+        "title": "Annotation"
+      },
+      "Approval": {
+        "properties": {
+          "approved": {
+            "type": "boolean",
+            "title": "Approved"
+          },
+          "pictogram_candidate": {
+            "type": "boolean",
+            "title": "Pictogram Candidate"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "approved",
+          "pictogram_candidate"
+        ],
+        "title": "Approval"
+      },
+      "Body_document_add_projects__ident__documents_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "survey",
+              "target"
+            ],
+            "title": "Role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file",
+          "role"
+        ],
+        "title": "Body_document_add_projects__ident__documents_post"
+      },
+      "Body_illustrator_report_projects__ident__illustrator_reports_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_illustrator_report_projects__ident__illustrator_reports_post"
+      },
+      "Body_library_add_libraries_post": {
+        "properties": {
+          "inventory": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Inventory"
+          },
+          "archive": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Archive"
+          }
+        },
+        "type": "object",
+        "required": [
+          "inventory"
+        ],
+        "title": "Body_library_add_libraries_post"
+      },
+      "Box": {
+        "properties": {
+          "x": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "X"
+          },
+          "y": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Y"
+          },
+          "w": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "W"
+          },
+          "h": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "H"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "x",
+          "y",
+          "w",
+          "h"
+        ],
+        "title": "Box"
+      },
+      "Category": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{1,50}$",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "wall",
+              "door",
+              "opening",
+              "equipment",
+              "text",
+              "other"
+            ],
+            "title": "Kind"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "name",
+          "kind"
+        ],
+        "title": "Category"
+      },
+      "Confirm": {
+        "properties": {
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Confirm"
+      },
+      "ControlAction": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "start",
+              "stop"
+            ],
+            "title": "Action"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "ControlAction"
+      },
+      "Dataset": {
+        "properties": {
+          "engine": {
+            "type": "string",
+            "enum": [
+              "qwen",
+              "paddleocr",
+              "rtmdet",
+              "architecture"
+            ],
+            "title": "Engine"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "example_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 500,
+            "minItems": 1,
+            "title": "Example Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "engine",
+          "name",
+          "example_ids"
+        ],
+        "title": "Dataset"
+      },
+      "Decision": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Revision"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "validated",
+              "rejected"
+            ],
+            "title": "Status"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Reason",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "revision",
+          "status"
+        ],
+        "title": "Decision"
+      },
+      "Equipment": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9_]{1,50}$",
+            "title": "Code"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "synonyms": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "maxItems": 50,
+            "title": "Synonyms"
+          },
+          "asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asset Id"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active",
+            "default": true
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000,
+            "title": "Description",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "name"
+        ],
+        "title": "Equipment"
+      },
+      "Example": {
+        "properties": {
+          "revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Revision",
+            "default": 0
+          },
+          "engine": {
+            "type": "string",
+            "enum": [
+              "qwen",
+              "paddleocr",
+              "rtmdet",
+              "architecture"
+            ],
+            "title": "Engine"
+          },
+          "project_id": {
+            "type": "string",
+            "title": "Project Id"
+          },
+          "document_id": {
+            "type": "string",
+            "title": "Document Id"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Page"
+          },
+          "floor_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Floor Id"
+          },
+          "region": {
+            "$ref": "#/components/schemas/Box"
+          },
+          "rotation": {
+            "type": "integer",
+            "enum": [
+              0,
+              90,
+              180,
+              270
+            ],
+            "title": "Rotation",
+            "default": 0
+          },
+          "labels": {
+            "items": {
+              "$ref": "#/components/schemas/Label"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Labels"
+          },
+          "interpretation": {
+            "type": "string",
+            "maxLength": 16000,
+            "title": "Interpretation",
+            "default": ""
+          },
+          "observed": {
+            "type": "string",
+            "maxLength": 16000,
+            "title": "Observed",
+            "default": ""
+          },
+          "convention": {
+            "type": "string",
+            "maxLength": 400,
+            "title": "Convention",
+            "default": ""
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Notes",
+            "default": ""
+          },
+          "junctions": {
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Junctions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "engine",
+          "project_id",
+          "document_id",
+          "page"
+        ],
+        "title": "Example"
+      },
+      "Floor": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]{1,40}$",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "target_page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Target Page"
+          },
+          "artboard_index": {
+            "type": "integer",
+            "maximum": 999.0,
+            "minimum": 0.0,
+            "title": "Artboard Index"
+          },
+          "target_group": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Target Group",
+            "default": ""
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "default": false
+          },
+          "source_document_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Document Id"
+          },
+          "source_page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Source Page",
+            "default": 1
+          },
+          "source_region": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Box"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rotation_deg": {
+            "type": "integer",
+            "enum": [
+              0,
+              90,
+              180,
+              270
+            ],
+            "title": "Rotation Deg",
+            "default": 0
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "target_page",
+          "artboard_index"
+        ],
+        "title": "Floor"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ImportedAnalysis": {
+        "properties": {
+          "engine": {
+            "type": "string",
+            "enum": [
+              "paddleocr",
+              "qwen",
+              "rtmdet"
+            ],
+            "title": "Engine"
+          },
+          "document_id": {
+            "type": "string",
+            "title": "Document Id"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Page"
+          },
+          "width": {
+            "type": "integer",
+            "maximum": 50000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Width"
+          },
+          "height": {
+            "type": "integer",
+            "maximum": 50000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Height"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Revision"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "engine",
+          "document_id",
+          "page",
+          "width",
+          "height",
+          "revision",
+          "data"
+        ],
+        "title": "ImportedAnalysis"
+      },
+      "Label": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]{1,80}$",
+            "title": "Id"
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 50,
+            "title": "Category"
+          },
+          "bbox": {
+            "$ref": "#/components/schemas/Box"
+          },
+          "anchor": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "segments": {
+            "items": {
+              "prefixItems": [
+                {
+                  "$ref": "#/components/schemas/Point"
+                },
+                {
+                  "$ref": "#/components/schemas/Point"
+                }
+              ],
+              "type": "array",
+              "maxItems": 2,
+              "minItems": 2
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Segments"
+          },
+          "mask_polygons": {
+            "items": {
+              "items": {
+                "$ref": "#/components/schemas/Point"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Mask Polygons"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Text",
+            "default": ""
+          },
+          "origin": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Origin",
+            "default": "manual"
+          },
+          "checked": {
+            "type": "boolean",
+            "title": "Checked",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "bbox"
+        ],
+        "title": "Label"
+      },
+      "Legend": {
+        "properties": {
+          "source_document_id": {
+            "type": "string",
+            "title": "Source Document Id"
+          },
+          "source_page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Source Page"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Box"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/LegendEntry"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Entries"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source_document_id",
+          "source_page"
+        ],
+        "title": "Legend"
+      },
+      "LegendEntry": {
+        "properties": {
+          "color": {
+            "type": "string",
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Color"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "equipment_type": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Equipment Type"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "color",
+          "label",
+          "equipment_type"
+        ],
+        "title": "LegendEntry"
+      },
+      "LegendRead": {
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "title": "Document Id"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Page"
+          },
+          "bbox": {
+            "$ref": "#/components/schemas/Box"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "document_id",
+          "page",
+          "bbox"
+        ],
+        "title": "LegendRead"
+      },
+      "Mapping": {
+        "properties": {
+          "annotation": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Annotation"
+          },
+          "equipment_type": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Equipment Type"
+          },
+          "asset_id": {
+            "type": "string",
+            "title": "Asset Id"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "annotation",
+          "equipment_type",
+          "asset_id"
+        ],
+        "title": "Mapping"
+      },
+      "Metadata": {
+        "properties": {
+          "reference": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Reference",
+            "default": ""
+          },
+          "client": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Client",
+            "default": ""
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Address",
+            "default": ""
+          },
+          "building_type": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Building Type",
+            "default": ""
+          },
+          "responsible": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Responsible",
+            "default": ""
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 4000,
+            "title": "Notes",
+            "default": ""
+          },
+          "training_authorized": {
+            "type": "boolean",
+            "title": "Training Authorized",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Metadata"
+      },
+      "NewProject": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "reference": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Reference",
+            "default": ""
+          },
+          "client": {
+            "type": "string",
+            "maxLength": 200,
+            "title": "Client",
+            "default": ""
+          },
+          "address": {
+            "type": "string",
+            "maxLength": 500,
+            "title": "Address",
+            "default": ""
+          },
+          "building_type": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Building Type",
+            "default": ""
+          },
+          "responsible": {
+            "type": "string",
+            "maxLength": 100,
+            "title": "Responsible",
+            "default": ""
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "NewProject"
+      },
+      "Point": {
+        "properties": {
+          "x": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "X"
+          },
+          "y": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Y"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "x",
+          "y"
+        ],
+        "title": "Point"
+      },
+      "ProjectState": {
+        "properties": {
+          "schema_version": {
+            "type": "string",
+            "const": "doemo.review/1",
+            "title": "Schema Version",
+            "default": "doemo.review/1"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Revision"
+          },
+          "annotations": {
+            "items": {
+              "$ref": "#/components/schemas/Annotation"
+            },
+            "type": "array",
+            "maxItems": 10000,
+            "title": "Annotations"
+          },
+          "floors": {
+            "items": {
+              "$ref": "#/components/schemas/Floor"
+            },
+            "type": "array",
+            "maxItems": 100,
+            "title": "Floors"
+          },
+          "registrations": {
+            "items": {
+              "$ref": "#/components/schemas/Registration"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Registrations"
+          },
+          "legends": {
+            "items": {
+              "$ref": "#/components/schemas/Legend"
+            },
+            "type": "array",
+            "maxItems": 200,
+            "title": "Legends"
+          },
+          "mappings": {
+            "items": {
+              "$ref": "#/components/schemas/Mapping"
+            },
+            "type": "array",
+            "maxItems": 1000,
+            "title": "Mappings"
+          },
+          "mapping_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Mapping Version",
+            "default": 1
+          },
+          "library_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Library Id"
+          },
+          "workflow": {
+            "type": "string",
+            "enum": [
+              "draft",
+              "review",
+              "corrected",
+              "validated"
+            ],
+            "title": "Workflow",
+            "default": "draft"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "revision"
+        ],
+        "title": "ProjectState"
+      },
+      "Registration": {
+        "properties": {
+          "source_document_id": {
+            "type": "string",
+            "title": "Source Document Id"
+          },
+          "source_page": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Source Page"
+          },
+          "floor_id": {
+            "type": "string",
+            "title": "Floor Id"
+          },
+          "model": {
+            "type": "string",
+            "enum": [
+              "affine",
+              "homography"
+            ],
+            "title": "Model"
+          },
+          "matrix": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Matrix"
+          },
+          "source_points": {
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "type": "array",
+            "title": "Source Points"
+          },
+          "target_points": {
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "type": "array",
+            "title": "Target Points"
+          },
+          "check_source_points": {
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Check Source Points"
+          },
+          "check_target_points": {
+            "items": {
+              "$ref": "#/components/schemas/Point"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Check Target Points"
+          },
+          "fit_error_px": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Fit Error Px"
+          },
+          "check_error_px": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Check Error Px"
+          },
+          "max_error_px": {
+            "type": "number",
+            "maximum": 30.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Max Error Px"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "default": false
+          },
+          "architecture_confirmed": {
+            "type": "boolean",
+            "title": "Architecture Confirmed",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "source_document_id",
+          "source_page",
+          "floor_id",
+          "model",
+          "matrix",
+          "source_points",
+          "target_points",
+          "check_source_points",
+          "check_target_points",
+          "fit_error_px",
+          "check_error_px",
+          "max_error_px"
+        ],
+        "title": "Registration"
+      },
+      "Review": {
+        "properties": {
+          "equipment": {
+            "type": "boolean",
+            "title": "Equipment",
+            "default": false
+          },
+          "asset": {
+            "type": "boolean",
+            "title": "Asset",
+            "default": false
+          },
+          "floor": {
+            "type": "boolean",
+            "title": "Floor",
+            "default": false
+          },
+          "position": {
+            "type": "boolean",
+            "title": "Position",
+            "default": false
+          },
+          "orientation": {
+            "type": "boolean",
+            "title": "Orientation",
+            "default": false
+          },
+          "size": {
+            "type": "boolean",
+            "title": "Size",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Review"
+      },
+      "Run": {
+        "properties": {
+          "engine": {
+            "type": "string",
+            "enum": [
+              "qwen",
+              "paddleocr",
+              "rtmdet",
+              "architecture"
+            ],
+            "title": "Engine"
+          },
+          "dataset_id": {
+            "type": "string",
+            "title": "Dataset Id"
+          },
+          "epochs": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Epochs",
+            "default": 10
+          },
+          "batch_size": {
+            "type": "integer",
+            "maximum": 16.0,
+            "minimum": 1.0,
+            "title": "Batch Size",
+            "default": 1
+          },
+          "learning_rate": {
+            "type": "number",
+            "maximum": 0.01,
+            "exclusiveMinimum": 0.0,
+            "title": "Learning Rate",
+            "default": 0.0001
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "engine",
+          "dataset_id"
+        ],
+        "title": "Run"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "Version": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "dataset_id": {
+            "type": "string",
+            "title": "Dataset Id"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "dataset_id"
+        ],
+        "title": "Version"
+      }
+    }
+  }
+}

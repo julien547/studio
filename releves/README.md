@@ -9,6 +9,7 @@ un éditeur de niveaux et d’annotations fonctionnant sans GPU, une sauvegarde 
 versionnée, les imports des sorties Qwen/PaddleOCR/RTMDet et une file de travaux persistante.
 
 - [Gestion du GPU RunPod et configuration de la clé sur OVH](docs/runpod-lifecycle.md)
+- [Contrat backend d’apprentissage IA](docs/CONTRAT-ENTRAINEMENT-IA.md) et [reprise avec accès SSH](docs/REPRISE-BACKEND-IA.md)
 - [Démarrage et parcours utilisateur](docs/mvp-demarrage.md)
 - [Audit, fonctionnalités vérifiées et limites](docs/mvp-audit.md)
 

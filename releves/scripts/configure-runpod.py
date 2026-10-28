@@ -43,7 +43,7 @@ def write_configuration(directory, pod_id, provider_key, gateway_token):
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output-dir',required=True)
-    parser.add_argument('--pod-id',default='41m7oy6qjaj2ji')
+    parser.add_argument('--pod-id',required=True,help='Identifiant actuel vérifié dans RunPod, jamais déduit d’un ancien guide')
     args=parser.parse_args()
     if not sys.stdin.isatty():
         parser.error('Utiliser un terminal interactif sur OVH pour masquer la clé.')
