@@ -1,4 +1,4 @@
-# Génération Linux 0.3.0 — lots de test
+# Génération Linux 0.3.5 — lots de test
 
 Le bouton **Générer tous les plans** produit maintenant les PDF puis un ZIP,
 sans Illustrator, pour le profil de BAT pris en charge. Il devient disponible
@@ -27,6 +27,11 @@ client choisi. Une trame manquante ou ambiguë bloque le lot complet.
 
 - Décompose les opérations PDF avec leurs états graphiques, clips, polices,
   images et ressources incorporées ; ne rasterise jamais le dessin.
+- Lit les polices TrueType CID `Identity-H` incorporées (tables CIDToGIDMap,
+  largeurs W/DW et Unicode), ainsi que les encodages simples WinAnsi, MacRoman
+  et StandardEncoding. Les opérateurs de texte et les polices restent ceux du BAT.
+  Les couleurs CMJN ICC et les tons directs à fonction de teinte exponentielle
+  sont également reconnus pour identifier les flèches ; leurs flux restent intacts.
 - Associe les noms natifs aux tracés PDF par comparaison géométrique complète
   des contours échantillonnés dans les deux sens, avec une borne conservatrice
   de correspondance de 0,02 pt. L'échantillonnage sert uniquement à l'association ;
@@ -37,17 +42,49 @@ client choisi. Une trame manquante ou ambiguë bloque le lot complet.
 - Identifie chaque pastille, tige, pointe et étiquette VEI ; retire tous les
   composants des autres VEI et les codes PEV/PIV du dessin.
 - Oriente la flèche active vers le haut et redresse les symboles de lecture et
-  les textes du calque `texte` autour de leurs ancres. Les flèches directionnelles
+  les textes autour de leurs ancres, quel que soit le nom de leur calque visible.
+  Les flèches directionnelles
   suivent le bâtiment ; les panneaux « sortie finale » restent lisibles.
+- Associe les libellés multilignes aux séquences de glyphes ou au texte Unicode
+  des histoires natives Illustrator. Une association unique couvrant tous les
+  fragments est requise ; toutes les lignes partagent alors la même ancre.
+  Des libellés identiques tels que « BUREAU » peuvent apparaître plusieurs fois,
+  chacun conservant son propre emplacement. Les calques `SIG`, `Niveau` ou les
+  autres noms ne sont pas refusés uniquement à cause de leur nom.
+  Les noms de pièces restent dans le dessin. Les vrais titres de niveaux sont
+  extraits et placés sous le niveau concerné en priorité, puis sur le côté si
+  l'espace manque. Les regroupements géométriques servent uniquement au placement
+  des titres : ils ne déplacent ni ne découpent les bâtiments. Avec une sélection
+  PE explicite, seul le titre associé est replacé hors du contour ; les autres
+  titres ne laissent pas de lettres tronquées en bordure du plan.
 - Utilise les équipements des calques natifs visibles, y compris les neuf
   extincteurs du calque EXT non imprimable du BAT fourni, comme la 1.0.16.
 - Place séparément l'adresse, le niveau, la référence/date et le logo client.
   Le masque du logo est conservé ; sa taille est calculée sur la zone visible.
-  Le PE réserve l'espace sous Prévention, le PI le bas droit de la page.
+  Le PE réserve l'espace sous Prévention : à gauche en horizontal, à droite en
+  vertical. Le PI utilise le bas droit de la page. Le logo reste entièrement
+  dans cet espace blanc et ne peut pas recouvrir la légende. Les limites placées
+  sont enregistrées dans `layout.logo_bounds` et `layout.level_titles`.
+  Un logo isolé en bas du BAT peut aussi se trouver sur le calque Date ; il est
+  placé comme logo, séparément du texte de mise à jour.
 - Construit la légende depuis les symboles vectoriels identifiés. Ses libellés
   viennent des noms natifs ; sa présentation diffère de la bibliothèque Illustrator.
+  Un cadre vectoriel vert entoure la légende des PE, rouge celle des PI.
+  Le titre gras et coloré est placé au-dessus du cadre. Les libellés sont en
+  capitales grasses ; les colonnes sont dimensionnées selon leur contenu avec
+  un intervalle de 12 pt, dans un bloc compact centré sous le dessin.
+- Place la ligne « Mise à jour… » tout en bas de la page, sous les consignes,
+  avec un espace réservé sous le logo. L'indice de mise à jour du BAT est conservé.
+  La date du jour est calculée une seule fois au démarrage du lot, en heure de
+  Paris (`DOEMO_TIMEZONE`, facultatif, fuseau IANA ; défaut `Europe/Paris`).
+  La référence finale suit le numéro du VEI : `CO26100364-1`, `CO26100364-2`, etc.
+  Seul ce texte de publication est réécrit en Helvetica ; les textes du dessin
+  architectural gardent leurs glyphes incorporés. Le nom des fichiers conserve
+  le nom du BAT et le suffixe `VEI-XX` pour identifier la source et la déclinaison.
 - Vérifie après réouverture les flux des fragments source, les ressources
-  incorporées, les empreintes des entrées et la direction du VEI.
+  incorporées, les empreintes des entrées et la direction du VEI. La vérification
+  des fragments inchangés exclut le cartouche date/référence volontairement réécrit,
+  signalé par `publication_metadata_rewritten` dans chaque résultat.
 
 Le ZIP est proposé uniquement après réussite de tous les PDF. Le manifeste est
 publié en dernier. Une erreur ne laisse pas un ZIP partiel téléchargeable ; aucun
@@ -61,13 +98,71 @@ contrôlées. Le BAT `CO26100364-1.ai` et son PDF fourni passent l'identificatio
 27 symboles, trois VEI, deux PE et un PI. Les PDF sans données natives exploitables,
 les BAT multipages, les textes fragmentés/multilignes non associés, certaines
 polices/encodages et les opérateurs non pris en charge sont refusés explicitement.
+`Identity-V`, les CMap composites personnalisées et les polices CID CFF ne sont
+pas encore pris en charge. Un message mentionnant une trame H manquante signifie
+qu'il faut installer cette trame horizontale dans la collection choisie ; le
+moteur ne la remplace jamais automatiquement par une trame verticale.
 L'éditeur de niveaux et ses aperçus continuent à prendre en charge plusieurs pages.
 
-La zone de trame est actuellement identifiée par un unique grand rectangle blanc
-sur le calque Date, présent dans les deux trames fournies. Une trame personnalisée
-sans cette convention est refusée. Les trames d'essai contiennent SPECIMEN,
+La zone de trame est détectée dans cet ordre :
+
+1. Bornes géométriques d'un repère sur un calque `ZONE`, `ZONE_PLAN`,
+   `DOEMO_ZONE`, etc., y compris un tracé non peint.
+2. Grand rectangle blanc, quel que soit le nom du calque, avec préférence pour
+   le calque Date historique. Le blanc CMJN, RVB, gris et ICC est reconnu.
+   Les rectangles superposés identiques et les chemins fermés par retour au
+   premier sommet sont acceptés.
+3. Plus grande zone libre entre les objets visibles : bandeau, consignes,
+   cadres et autres éléments fixes. Les champs d'exemple Adresse/Date/Légende
+   sont exclus de l'habillage et le filigrane ne constitue pas un obstacle.
+   Les cadres laissent leur intérieur disponible. Deux zones de surface
+   équivalente à 5 % près restent ambiguës ; le moteur ne choisit pas au hasard.
+
+Cette détection utilise les objets vectoriels, sans rasterisation. Le dessin
+réserve ensuite l'espace de l'adresse et du logo client. `layout.zone_detection`
+indique la méthode et les coordonnées détectées ; `layout.zone` donne la zone
+après ces réservations. La limite de recherche est de 256 régions, avec une
+surface minimale de 20 % de la page pour la détection automatique d'espace libre.
+La reconnaissance des noms concerne les calques PDF ; un nom d'objet Illustrator
+non exporté dans le PDF n'est pas présenté comme un repère nommé reconnu.
+
+Les erreurs précisent désormais le nom de la trame concernée. Pour contrôler
+une trame directement sur le serveur, sans BAT :
+
+```sh
+/opt/doemo-studio/venv-pdf/bin/doemo-pdf inspect-template /var/lib/doemo-studio/templates/doemo/PI-A3-H.pdf
+```
+
+Les trames d'essai contiennent SPECIMEN,
 conservé dans les sorties. Les groupes de transparence sont préservés ; des
-espaces de fusion incompatibles ou des OutputIntents à harmoniser sont refusés.
+espaces de fusion non CMJN incompatibles ou des OutputIntents à harmoniser sont
+refusés. Si un BAT utilise un profil ICC CMJN et la trame DeviceCMYK, la trame
+est conservée dans un groupe isolé avec son espace de fusion d'origine ; le BAT
+garde son profil ICC sur la page.
+
+Le BAT `CO26100010-1.ai` vérifie aussi l'import : 48 symboles, cinq VEI et 17
+blocs de texte, dont cinq multilignes. Les trois déclinaisons verticales ont été
+générées avec les trames disponibles dans l'environnement de test. Les deux
+horizontales demandent `PI-A3-H.pdf` et `PE-A3-H.pdf`, déjà présentes sur le serveur
+selon Julien. Le PDF exporté joint à ce BAT ne contient plus les données natives :
+utiliser le `.ai` pour la génération. Le message d'import le précise désormais.
+La 0.3.4 a aussi été testée sur le lot des cinq VEI, avec les deux vraies trames
+verticales et deux trames horizontales synthétiques sans repère blanc : cinq PDF
+et ZIP générés. Ce test valide le traitement complet et la détection d'espace
+libre, pas le placement dans les trames horizontales privées du serveur.
+
+La 0.3.5 traite `CO26100179-1.ai` : quatre VEI, trois PI et un PE, libellés de
+pièces sur Niveau, texte de signature sur SIG et logo sur Date. Le contenu de
+signature reste présent ; aucun calque utilisateur n'est supprimé par cette
+correction. Les exports PDF Illustrator utilisant les balises `Layer/Title`
+et les métadonnées `AltAI8` sont également lus. Les flux alternatifs des calques
+masqués ne sont jamais exécutés comme des opérations de dessin.
+Les deux titres de niveaux de `CO26100010-1.ai` sont conservés comme fragments
+vectoriels et replacés sous leurs niveaux, y compris après rotation. Les trois
+sorties portrait ont été contrôlées avec les trames fournies. Le placement du logo
+PE horizontal sous la colonne Prévention gauche est testé sur une trame
+synthétique ; le rendu avec la trame horizontale réelle du serveur reste à
+contrôler après déploiement.
 
 Un contour qui masque la zone occupée par le VEI actif est refusé : la pastille
 et sa flèche doivent rester visibles. Élargir explicitement le contour dans ce
@@ -99,7 +194,7 @@ Ce fonctionnement est synchrone ; il n'y a pas encore de file persistante de wor
 
 ```text
 /opt/doemo-studio/src/engine/                 code moteur
-/opt/doemo-studio/venv-pdf/                   environnement Python 0.3.0
+/opt/doemo-studio/venv-pdf/                   environnement Python 0.3.5
 /var/www/studio/api/                         PHP, dont les deux routeurs internes
 /var/www/studio/app/                         build doemo-app, branche feat/studio-host
 /var/lib/doemo-studio/templates/doemo/        trames DOEMO
@@ -118,6 +213,7 @@ cd /opt/doemo-studio/src
 git pull --ff-only origin main
 /opt/doemo-studio/venv-pdf/bin/python -m pip install -r engine/requirements.lock
 /opt/doemo-studio/venv-pdf/bin/python -m pip install --no-deps ./engine
+/opt/doemo-studio/venv-pdf/bin/python -c "from importlib.metadata import version; print(version('doemo-studio-pdf'))"
 /opt/doemo-studio/venv-pdf/bin/doemo-pdf generate-test-batch --help
 ```
 
@@ -137,14 +233,23 @@ trames clients et projets privés. Adapter si nécessaire le délai PHP/FPM/prox
 résultats pour le compte PHP. Voir aussi [le guide serveur](deploiement-serveur.md).
 
 Contrôle après déploiement : ouvrir `https://studio.doemo.fr/app/orientation`,
-choisir `doemo`, charger le BAT fourni, laisser la délimitation décochée, générer
-et vérifier trois PDF dans le ZIP. Tester ensuite la délimitation facultative.
+choisir le dossier client approprié, charger le BAT fourni, laisser la
+délimitation décochée et générer. Vérifier le nombre de PDF dans le ZIP : trois
+pour CO26100364, quatre pour CO26100179, cinq pour CO26100010. Tester ensuite la
+délimitation facultative. Pour CO26100010, contrôler spécialement le logo du
+PE horizontal sous Prévention à gauche, et les titres sous chaque niveau du PI.
+Cette correction 0.3.5 nécessite la réinstallation du moteur Python ; elle
+ne nécessite pas de reconstruire un frontend déjà à jour.
 Le serveur cible n'est pas accessible depuis cette session : son activation et
 ses délais doivent être contrôlés par la session de déploiement.
 
 ## Contrôles locaux
 
-- 123 tests Python, 27 scénarios HTTP ciblés et cinq tests navigateur passent.
+- 166 tests Python passent en 0.3.5, dont titres sous les niveaux, repli latéral,
+  suppression du titre hors sélection PE, noms de pièces conservés et logo PE
+  horizontal sous Prévention à gauche sans recouvrement de la légende.
+  Les 27 scénarios HTTP et cinq tests navigateur ont été validés lors de la
+  livraison de la génération ; cette correction ne modifie pas ces interfaces.
 - Chaîne HTTP réelle avec le BAT fourni : contrôle natif, génération des trois
   PDF par le moteur Python puis téléchargements individuels et ZIP via PHP 8.4
   authentifié en environnement isolé. Empreintes téléchargées identiques,

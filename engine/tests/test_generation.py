@@ -16,11 +16,14 @@ from doemo_pdf.bindings import bind, outlines_match
 from doemo_pdf.generate import generate_batch, inspect_generation
 from doemo_pdf.scene import Scene, multiply, instruction
 from doemo_pdf.pdf import file_hash
+from fontTools.agl import UV2AGL
+from datetime import date
+from pypdf import PdfReader
 
 
 def font(pdf):
-    chars=' PEVI'; names=['.notdef','space','P','E','V','I'];fb=FontBuilder(1000,isTTF=True)
-    fb.setupGlyphOrder(names);fb.setupCharacterMap({ord(c):'space' if c==' ' else c for c in chars})
+    chars=''.join(chr(c) for c in range(32,127))+'à°';names=['.notdef',*(UV2AGL[ord(c)] for c in chars)];fb=FontBuilder(1000,isTTF=True)
+    fb.setupGlyphOrder(names);fb.setupCharacterMap({ord(c):UV2AGL[ord(c)] for c in chars})
     glyphs={}
     for name in names:
         pen=TTGlyphPen(None)
@@ -31,18 +34,20 @@ def font(pdf):
     fb.setupOS2(sTypoAscender=800,sTypoDescender=-200,usWinAscent=800,usWinDescent=200);fb.setupPost();fb.setupMaxp()
     buf=BytesIO();fb.save(buf);stream=pdf.make_stream(buf.getvalue());stream.Length1=len(buf.getvalue())
     descriptor=pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.FontDescriptor,FontName=pikepdf.Name.Fixture,Flags=32,FontBBox=[0,-200,500,800],ItalicAngle=0,Ascent=800,Descent=-200,CapHeight=700,StemV=80,FontFile2=stream))
-    return pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Font,Subtype=pikepdf.Name.TrueType,BaseFont=pikepdf.Name.Fixture,FirstChar=32,LastChar=86,Widths=[500]*55,Encoding=pikepdf.Name.WinAnsiEncoding,FontDescriptor=descriptor))
+    return pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Font,Subtype=pikepdf.Name.TrueType,BaseFont=pikepdf.Name.Fixture,FirstChar=32,LastChar=255,Widths=[500]*224,Encoding=pikepdf.Name.WinAnsiEncoding,FontDescriptor=descriptor))
 
 
 def layer(name,body=''):
     return f'%AI5_BeginLayer\n1 1 1 1 0 0 1 16 0 0 136 0 50 0 Lb\n({name}) Ln\n{body}\nLB\n%AI5_EndLayer--\n'
 
 
-def bat(path, mismatch=False):
+def bat(path, mismatch=False, footer=None, extra_text_layer=None):
     pdf=pikepdf.Pdf.new();pg=pdf.add_blank_page(page_size=(300,500));disc=pdf.make_stream(b'0.9 0.7 0 0 k -5 -5 10 10 re f')
     disc.Type=pikepdf.Name.XObject;disc.Subtype=pikepdf.Name.Form;disc.BBox=[-5,-5,5,5];disc.Resources=pikepdf.Dictionary()
     props=pikepdf.Dictionary()
     for key,name in [('A','Relevé'),('P','Pictos')]:props['/'+key]=pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.OCG,Name=name))
+    if footer:props['/D']=pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.OCG,Name='Date et N° de conception'))
+    if extra_text_layer:props['/X']=pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.OCG,Name=extra_text_layer))
     pg.Resources=pikepdf.Dictionary(Properties=props,Font=pikepdf.Dictionary(F0=font(pdf)),XObject=pikepdf.Dictionary(Disc=disc))
     pdf.Root.OCProperties=pikepdf.Dictionary(OCGs=list(props.values()),D=pikepdf.Dictionary(BaseState=pikepdf.Name.ON))
     ops=['/OC /A BDC 0 G 2 w 40 90 200 360 re S EMC /OC /P BDC'];native=[]
@@ -52,10 +57,14 @@ def bat(path, mismatch=False):
         ops.append(f'0.9 0.7 0.01 0 k 105 {y} m 115 {y-3} l 115 {y+3} l h f')
         ops.append(f'BT /F0 8 Tf 1 0 0 1 70 {y-24} Tm ({"PIV" if i==2 else "PEV"}) Tj ET')
         native.append(f'/SymbolInstance :\n(Nouveau symbole VEI) /SymbolRef ,\n1 0 0 -1 80 {y-500} /RTransformMatrix\n;\n')
-    ops.append('EMC');pg.Contents=pdf.make_stream('\n'.join(ops).encode())
+    ops.append('EMC')
+    if footer:ops.append(f'/OC /D BDC BT /F0 5 Tf 1 0 0 1 10 20 Tm ({footer}) Tj ET EMC')
+    if extra_text_layer:ops.append('/OC /X BDC BT /F0 8 Tf 1 0 0 1 160 220 Tm (NOTE) Tj ET EMC')
+    pg.Contents=pdf.make_stream('\n'.join(ops).encode('cp1252'))
     size=6 if mismatch else 5
     definition=f'%AI14_BeginSymbol\n(Nouveau symbole VEI)\n-{size} -5 m\n5 -5 L\n5 5 L\n-5 5 L\n-{size} -5 L\nf\n%AI10_EndSymbol\n'
-    data=('%!PS-Adobe-3.0\n%AI3_Cropmarks: 0 -500 300 0\n'+definition+layer('Relevé')+layer('Pictos',''.join(native))).encode()
+    data=('%!PS-Adobe-3.0\n%AI3_Cropmarks: 0 -500 300 0\n'+definition+layer('Relevé')+layer('Pictos',''.join(native))+(layer('Date et N° de conception') if footer else '')+
+          (layer(extra_text_layer,'/AI11Text :\n0 /FreeUndo ,\n0 /StoryIndex ,\n;') if extra_text_layer else '')).encode()
     pg.obj.PieceInfo=pikepdf.Dictionary(Illustrator=pikepdf.Dictionary(Private=pikepdf.Dictionary(AIPrivateData1=pdf.make_stream(PREFIX+zstandard.ZstdCompressor().compress(data)))))
     pdf.save(path)
 
@@ -201,3 +210,187 @@ def test_clip_cannot_silently_hide_active_vei(project,tmp_path):
                     'contours':[{'id':'small','role':'include','fill_rule':'nonzero','nodes':[{'x':x,'y':y} for x,y in [(20,20),(30,20),(30,30),(20,30)]]}]}]
     with pytest.raises(ValueError,match='zone occupée par le VEI'):generate_batch(source,tmp_path/'bad-clip',levels=doc)
     assert not (tmp_path/'bad-clip').exists()
+
+
+def test_legend_frames_and_bottom_footer_date_and_sequence(project,tmp_path,monkeypatch):
+    source,_=project
+    bat(source,footer='Mise à jour n° 1 - Date et n° du plan : 27-10-2026 - CO26100364-1')
+    # Date must be captured once per lot, not individually for each PDF.
+    dates=iter([date(2026,10,28)])
+    monkeypatch.setattr('doemo_pdf.generate.batch_date',lambda:next(dates))
+    destination=tmp_path/'dated';report=generate_batch(source,destination)
+    assert report['generation_date']=='2026-10-28'
+    for n,row in enumerate(report['results'],1):
+        expected=f'Mise à jour n° 1 - Date et n° du plan : 28-10-2026 - CO26100364-{n}'
+        assert row['footer_text']==expected and row['plan_reference']==f'CO26100364-{n}'
+        text=PdfReader(destination/row['file']).pages[0].extract_text()
+        assert text.count(expected)==1 and '27-10-2026' not in text
+        assert 0<row['layout']['footer_bounds'][1]<row['layout']['footer_bounds'][3]<16
+        with pikepdf.open(destination/row['file']) as pdf:
+            ops=pikepdf.parse_content_stream(pdf.pages[0])
+            # Check actual page operators: one closed, stroked coloured frame.
+            colours=[tuple(map(float,ins.operands)) for ins in ops if str(ins.operator)=='K']
+            assert colours==[(1.,0.,1.,0.) if row['type']=='PE' else (0.,.99,.97,0.)]
+            rects=[tuple(map(float,ins.operands)) for ins in ops if str(ins.operator)=='re']
+            x0,y0,x1,y1=row['layout']['legend_frame']
+            assert rects==[pytest.approx((x0,y0,x1-x0,y1-y0))]
+            assert y0>row['layout']['zone'][1]
+
+
+def test_footer_keeps_revision_and_handles_double_digit_plan_numbers():
+    from types import SimpleNamespace
+    from doemo_pdf.generate import footer_label
+    scene=SimpleNamespace(items=[SimpleNamespace(kind='text',text='Mise à jour n° 4 - Date et n° du plan : 31-12-2025 - CLIENT-A-9',bounds=(0,0,10,10))])
+    text,reference=footer_label(scene,[0],12,date(2027,1,1))
+    assert text=='Mise à jour n° 4 - Date et n° du plan : 01-01-2027 - CLIENT-A-12'
+    assert reference=='CLIENT-A-12'
+
+
+def test_unique_vei_stem_may_start_off_center_inside_disc(project,tmp_path):
+    source,_=project
+    modified=tmp_path/'off-centre.ai'
+    with pikepdf.open(source) as pdf:
+        data=pdf.pages[0].Contents.read_bytes().replace(b'80 410 m',b'80.5 410 m')
+        pdf.pages[0].Contents=pdf.make_stream(data);pdf.save(modified)
+    with pikepdf.open(modified) as pdf:
+        _,markers,_=bind(pdf.pages[0],Scene(pdf.pages[0]));assert len(markers)==3
+        pdf.pages[0].Contents=pdf.make_stream(data+b'\n/OC /P BDC .9 .7 .01 0 K 80 410 m 100 410 l S EMC')
+        with pytest.raises(ValueError,match='Tige VEI absente ou ambiguë'):bind(pdf.pages[0],Scene(pdf.pages[0]))
+
+
+def test_pdf_without_native_data_gives_actionable_ai_import_message(tmp_path):
+    source=tmp_path/'export.pdf'
+    with pikepdf.Pdf.new() as pdf:
+        pg=pdf.add_blank_page();pg.Contents=pdf.make_stream(b'/Layer /MC0 BDC EMC');pdf.save(source)
+    with pytest.raises(ValueError,match='Importez le fichier .ai original'):inspect_generation(source)
+
+
+def test_template_retains_its_blending_space_when_bat_has_cmyk_icc(project,tmp_path):
+    source,templates=project;modified=tmp_path/'icc.ai'
+    with pikepdf.open(source) as pdf:
+        profile=pdf.make_stream(b'ICC fixture');profile.N=4
+        pdf.pages[0].obj.Group=pikepdf.Dictionary(S=pikepdf.Name.Transparency,CS=pikepdf.Array([pikepdf.Name.ICCBased,profile]))
+        pdf.save(modified)
+    for template_path in templates.glob('*.pdf'):
+        with pikepdf.open(template_path,allow_overwriting_input=True) as pdf:
+            pdf.pages[0].obj.Group=pikepdf.Dictionary(S=pikepdf.Name.Transparency,CS=pikepdf.Name.DeviceCMYK)
+            pdf.save(template_path)
+    report=generate_batch(modified,tmp_path/'icc-batch')
+    for row in report['results']:
+        with pikepdf.open(tmp_path/'icc-batch'/row['file']) as pdf:
+            assert pdf.pages[0].obj.Group.CS[1].read_bytes()==b'ICC fixture'
+            groups=[obj.Group for obj in pdf.pages[0].Resources.XObject.values() if '/Group' in obj]
+            assert len(groups)==1 and groups[0].CS==pikepdf.Name.DeviceCMYK and groups[0].I
+
+
+@pytest.mark.parametrize('name',['SIG','Annotations client'])
+def test_text_on_custom_layer_is_preserved_and_counterrotated(project,tmp_path,name):
+    source,_=project;bat(source,extra_text_layer=name)
+    report=generate_batch(source,tmp_path/'custom-layer')
+    for row in report['results']:
+        with pikepdf.open(tmp_path/'custom-layer'/row['file']) as pdf:
+            drawn=[matrix for stream,matrix in calls(pdf.pages[0]) if b'(NOTE) Tj' in stream]
+            assert len(drawn)==1
+            a,b,c,d,_,_=drawn[0]
+            assert b==pytest.approx(0,abs=1e-8) and c==pytest.approx(0,abs=1e-8)
+            assert a>0 and d>0
+
+
+def test_footer_layer_can_contain_the_client_logo(project,tmp_path):
+    source,_=project;bat(source,footer='Mise à jour n° 1 - Date et n° du plan : 21-10-2026 -CO26100179-1')
+    with pikepdf.open(source,allow_overwriting_input=True) as pdf:
+        logo=pdf.make_stream(b'\xff\x00\x00');logo.Type=pikepdf.Name.XObject;logo.Subtype=pikepdf.Name.Image
+        logo.Width=1;logo.Height=1;logo.BitsPerComponent=8;logo.ColorSpace=pikepdf.Name.DeviceRGB
+        page=pdf.pages[0];page.Resources.XObject.ClientLogo=logo
+        page.Contents=pdf.make_stream(page.Contents.read_bytes()+b'\n/OC /D BDC q 40 0 0 20 5 40 cm /ClientLogo Do Q EMC')
+        pdf.save(source)
+    report=generate_batch(source,tmp_path/'footer-logo')
+    for row in report['results']:
+        with pikepdf.open(tmp_path/'footer-logo'/row['file']) as pdf:
+            assert sum(b'/ClientLogo Do' in stream for stream,_ in calls(pdf.pages[0]))==1
+        assert row['footer_text'].endswith('CO26100179-'+str(row['vei']))
+
+
+def add_level_titles(source):
+    from doemo_pdf.ai_metadata import decode_native
+    with pikepdf.open(source,allow_overwriting_input=True) as pdf:
+        pg=pdf.pages[0]
+        pg.Resources.Properties.N=pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.OCG,Name='Niveau'))
+        data=decode_native(pg)+layer('Niveau','/AI11Text :\n'*3).encode()
+        pg.obj.PieceInfo.Illustrator.Private.AIPrivateData1=pdf.make_stream(PREFIX+zstandard.ZstdCompressor().compress(data))
+        # Two separated buildings, two titles, and a room name on the same layer.
+        content=pg.Contents.read_bytes().replace(b'40 90 200 360 re S',b'40 90 200 240 re S 40 360 200 90 re S')
+        content+=b'/OC /N BDC BT /F0 8 Tf 1 0 0 1 100 80 Tm (NIVEAU 0) Tj 1 0 0 1 100 345 Tm (NIVEAU 1) Tj 1 0 0 1 150 300 Tm (BUREAU) Tj ET EMC'
+        pg.Contents=pdf.make_stream(content);pdf.save(source)
+
+
+def test_level_titles_are_below_their_rotated_buildings_and_room_text_stays(project,tmp_path):
+    from doemo_pdf.scene import transform_box
+    from doemo_pdf.template_zones import overlap
+    source,_=project;add_level_titles(source)
+    with pikepdf.open(source) as pdf:
+        scene=Scene(pdf.pages[0]);room=next(it for it in scene.items if it.text=='BUREAU')
+    report=generate_batch(source,tmp_path/'titles')
+    for row in report['results']:
+        labels=row['layout']['level_titles'];assert [r['name'] for r in labels]==['NIVEAU 0','NIVEAU 1']
+        for label in labels:
+            assert label['placement']=='below'
+            assert label['bounds'][3]<label['region_bounds'][1]
+            assert not overlap(label['bounds'],row['layout']['legend_frame'])
+        with pikepdf.open(tmp_path/'titles'/row['file']) as pdf:
+            for label in labels:
+                drawn=[matrix for stream,matrix in calls(pdf.pages[0]) if ('('+label['name']+') Tj').encode() in stream]
+                assert len(drawn)==1
+                assert drawn[0][1:3]==pytest.approx((0,0),abs=1e-8)
+            room_drawn=[m for stream,m in calls(pdf.pages[0]) if b'(BUREAU) Tj' in stream]
+            assert len(room_drawn)==1
+            assert overlap(transform_box(room.bounds,room_drawn[0]),row['layout']['plan_bounds'])
+
+
+def test_clipped_pe_drops_other_level_title_without_partial_letters(project,tmp_path):
+    from doemo_pdf.levels import new_document
+    source,_=project;add_level_titles(source);doc=new_document(source)
+    doc['markers']=[{'id':f'p001-vei{i:03d}','page':1,'point':[80,y]} for i,y in enumerate([410,280,150],1)]
+    for name,low,high,vei in [('NIVEAU 1',355,460,1),('NIVEAU 0',85,335,2)]:
+        doc['levels'].append({'id':f'l{vei}','name':name,'page':1,'color':'#ff0000','vei_ids':[f'p001-vei{vei:03d}'],
+                             'contours':[{'id':f'c{vei}','role':'include','fill_rule':'nonzero','nodes':[{'x':x,'y':y} for x,y in [(30,low),(250,low),(250,high),(30,high)]]}]})
+    doc['review_acknowledged']=True
+    report=generate_batch(source,tmp_path/'clipped-titles',levels=doc)
+    for row in report['results']:
+        expected=['NIVEAU 1'] if row['vei']==1 else ['NIVEAU 0'] if row['vei']==2 else ['NIVEAU 0','NIVEAU 1']
+        assert [r['name'] for r in row['layout']['level_titles']]==expected
+        with pikepdf.open(tmp_path/'clipped-titles'/row['file']) as pdf:
+            for name in ['NIVEAU 0','NIVEAU 1']:
+                assert sum(('('+name+') Tj').encode() in stream for stream,_ in calls(pdf.pages[0]))==(name in expected)
+
+
+def test_landscape_pe_logo_goes_under_left_prevention_and_outside_legend(project,tmp_path):
+    from doemo_pdf.generate import build_plan
+    from doemo_pdf.template_zones import overlap,contains
+    from doemo_pdf.scene import transform_box
+    source,_=project
+    with pikepdf.open(source,allow_overwriting_input=True) as pdf:
+        pg=pdf.pages[0];pg.Resources.Properties.Logo=pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.OCG,Name='Logo client'))
+        from doemo_pdf.ai_metadata import decode_native
+        data=decode_native(pg)+layer('Logo client').encode()
+        pg.obj.PieceInfo.Illustrator.Private.AIPrivateData1=pdf.make_stream(PREFIX+zstandard.ZstdCompressor().compress(data))
+        pg.Contents=pdf.make_stream(pg.Contents.read_bytes()+b'/OC /Logo BDC 0 1 1 0 k 10 30 60 20 re f EMC');pdf.save(source)
+    template_file=tmp_path/'PE-A3-H.pdf'
+    with pikepdf.Pdf.new() as pdf:
+        pg=pdf.add_blank_page(page_size=(1190.55,841.89))
+        pg.Resources=pikepdf.Dictionary(Properties=pikepdf.Dictionary(Zone=pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.OCG,Name='ZONE'))))
+        pg.Contents=pdf.make_stream(b'/OC /Zone BDC 230 30 930 640 re n EMC 0 0 1 0 k 15 180 180 12 re f 0 g 15 100 180 60 re f')
+        pdf.save(template_file)
+    output=tmp_path/'landscape.pdf'
+    with pikepdf.open(source) as pdf:
+        scene=Scene(pdf.pages[0]);symbols,markers,visible=bind(pdf.pages[0],scene);marker=markers[0];marker.orientation='H'
+        logo=next(it for it in scene.items if it.layer=='Logo client')
+        row=build_plan(pdf,scene,symbols,markers,visible,marker,template_file,output)
+    logo_bounds=row['layout']['logo_bounds']
+    assert contains((15,22,195,92),logo_bounds)
+    assert not overlap(logo_bounds,row['layout']['legend_frame'])
+    assert not overlap(logo_bounds,row['layout']['plan_bounds'])
+    with pikepdf.open(output) as pdf:
+        drawn=[m for stream,m in calls(pdf.pages[0]) if b'10 30 60 20 re' in stream]
+        assert len(drawn)==1
+        assert transform_box(logo.bounds,drawn[0])==pytest.approx(logo_bounds)
