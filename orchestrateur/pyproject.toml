@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "doemo-orchestrator"
+version = "0.1.0"
+description = "Orchestrateur IA central DOEMO : file de tâches, priorités, équité, registre de modèles"
+requires-python = ">=3.9"
+dependencies = ["fastapi>=0.115", "pydantic>=2.7,<3", "uvicorn>=0.30"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
