@@ -8,3 +8,5 @@ engine/dist/
 .env
 .env.*
 !.env.example
+releves/web/node_modules/
+releves/dist/

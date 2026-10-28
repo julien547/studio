@@ -1,5 +1,9 @@
 # DOEMO Studio (studio.doemo.fr)
 
+Le nouveau module [Relevés & pictogrammes](releves/README.md) fournit l’import SAI,
+la revue des annotations, le recalage, l’export contrôlé et le script Illustrator 2024+.
+Il reste en validation : voir [les essais réels et leurs limites](releves/docs/essais-reels.md).
+
 Espace interne DOEMO : page de connexion et socle de l'application d'orientation automatique des plans « Vous êtes ici ».
 
 Adresse du module d'orientation : **https://studio.doemo.fr/app/orientation**.

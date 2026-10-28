@@ -1,0 +1,5520 @@
+{
+  "name": "Légende SAI",
+  "source_library_id": "e7cce0de-9d55-4f5c-aa46-621759fef05f",
+  "archive_verified": true,
+  "counts": {
+    "image": 228,
+    "color": 52,
+    "characterstyle": 9,
+    "text": 1
+  },
+  "assets": [
+    {
+      "id": "6e833fbe-3cfa-4cbc-aeb8-e35b6fafd682",
+      "name": "ORS",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "6e833fbe-3cfa-4cbc-aeb8-e35b6fafd682/4e3b6a64-b2f9-4539-bd35-5946d6cc9a31.ai",
+          "size_bytes": 460270,
+          "sha256": "1304c2f66055a6acda5a8c5bb750384b04e9633a4105b23b2b5355d278c474eb"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "1ba2a92f-3008-4d01-b682-37d01ba9d581",
+      "name": "CRPH",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "1ba2a92f-3008-4d01-b682-37d01ba9d581/05d1d8ad-0a47-4380-86b0-5e0f60d5bf3f.ai",
+          "size_bytes": 376090,
+          "sha256": "c529039c464946eb6fe05ddc613b9922e33ba64f5966ec468ac2a7d34a095371"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "04bfbfe0-c5f1-4a84-b0f5-01f039e423dc",
+      "name": "Thalmann",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "04bfbfe0-c5f1-4a84-b0f5-01f039e423dc/f3f90286-cf92-4b9a-9458-40b84a039c1f.ai",
+          "size_bytes": 375537,
+          "sha256": "a7cf173120dd565cd4db1d8b4a49ce7f6ddd1d395efc976fc248f3f99ed0a8c4"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "572d542d-8fe5-4ae8-b10c-bc36855c4185",
+      "name": "Desautel",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "572d542d-8fe5-4ae8-b10c-bc36855c4185/c2a7bc96-4612-49a7-b201-5ab18a4ddc56.ai",
+          "size_bytes": 385153,
+          "sha256": "1b08f9968e6505a1b389e40b1c7c186ef8b54e8af0abba35b1f0b40a94749376"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "c76f3e9f-7c62-4f39-b390-87f658c2f487",
+      "name": "LPI",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "c76f3e9f-7c62-4f39-b390-87f658c2f487/e1fd598c-326a-4e37-97a3-82b1593192c8.ai",
+          "size_bytes": 460691,
+          "sha256": "77b6e1eb08094dca83283b67ec0c3f3e980d5dc8674e73568209fd4d18e5aa6f"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "c77bcd2c-3b0f-4b46-b078-d36dad57b437",
+      "name": "Dumont Sécurité",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "c77bcd2c-3b0f-4b46-b078-d36dad57b437/9bcbf099-96c4-42fe-a218-6c5847c47c0c.ai",
+          "size_bytes": 460536,
+          "sha256": "da8fea049316c72e84b93557805322e5cc4e9af377c81546a60cf170d379d622"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "d3098a04-57cd-4371-9254-5141137481bd",
+      "name": "SEP Incendie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "d3098a04-57cd-4371-9254-5141137481bd/f293ab97-47ac-4273-b578-0b80031b48bd.ai",
+          "size_bytes": 385350,
+          "sha256": "da8c3d20c62253f8bf7857a6ba796dd654c861811b7dc0f5b4a47b50b30b7408"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "4c417b41-9972-4aa3-a144-c843e948ae3d",
+      "name": "Déclencheur d’Alarme Incendie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "4c417b41-9972-4aa3-a144-c843e948ae3d/76d8534d-00f6-4d37-8769-7705bdfb6fa7.ai",
+          "size_bytes": 808890,
+          "sha256": "d546f1edd143c9178d80d9aa3c66ddf950248e0f6224ce17d7451c1664017913"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "d16eb145-0c43-49fe-bdbe-b65081a9be37",
+      "name": "Robinet Incendie Armé",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "d16eb145-0c43-49fe-bdbe-b65081a9be37/00018958-097b-4552-bf6a-a47ec60046c2.ai",
+          "size_bytes": 817598,
+          "sha256": "953e8b6016fcf15a79338a0e1fd20fb5f61d08121e16c4cea4ae6a98056caa3f"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "2f3f701f-ae6e-4d67-81d7-39df1e4e0795",
+      "name": "Extincteur sur Roues",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "2f3f701f-ae6e-4d67-81d7-39df1e4e0795/fdc8f857-d98e-4ead-94a9-138db1b5c823.ai",
+          "size_bytes": 807936,
+          "sha256": "b46ae0967e34506bf11fd4a8c4f1a79278cef06a933b14e95d97c095617197d3"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "f75ada92-94e9-42ac-8aa5-1df786ee939c",
+      "name": "Système d’Appel des Secours",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "f75ada92-94e9-42ac-8aa5-1df786ee939c/dcafe62a-efc6-497e-8da3-aa3ad7ed0428.ai",
+          "size_bytes": 811585,
+          "sha256": "c4f86a6532c4275d31bb472c42b5ce834c81668fa103ec3fdf1f0d4cc9a9970d"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "7d5a0b6c-3695-46a4-a363-0fa3731fe485",
+      "name": "Service de Sécurité Incendie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "7d5a0b6c-3695-46a4-a363-0fa3731fe485/bee6dbe6-0d71-469d-9be8-bfb3229f93a3.ai",
+          "size_bytes": 805576,
+          "sha256": "1c4dc797079997ba5feace3d5d615367f46973ad6e0e03118b95e20fe50ac6d4"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "02063716-c9a4-4fc3-828b-2dfaa7f44111",
+      "name": "Porte Coupe Feu",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "02063716-c9a4-4fc3-828b-2dfaa7f44111/009eabd3-e184-4232-978b-e24adc1eb749.ai",
+          "size_bytes": 802989,
+          "sha256": "4afb31dab7b19a65d3332a06593a3e5543cefd36577537a9dd9c6faf61d1fbba"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "2b0f3abe-c194-4491-a65e-f5a2ce9c5931",
+      "name": "Rideau Coupe Feu",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "2b0f3abe-c194-4491-a65e-f5a2ce9c5931/564518bd-51bb-4f85-b7c6-54beb843e17d.ai",
+          "size_bytes": 772683,
+          "sha256": "20e28248354a0ff1efe938c608134b06d927aea0cb8e7cef4e5378a49ad58783"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "3f6ffdfe-c394-4437-a69e-7d7dbe96dc2d",
+      "name": "Système de Sécurité Incendie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "3f6ffdfe-c394-4437-a69e-7d7dbe96dc2d/7efe870f-48c4-453c-a626-d05b9d1e09d1.ai",
+          "size_bytes": 783251,
+          "sha256": "7cf9cea88a812780709c46f8a9c5d9a7b9459204b88b95a62d52dff2509d76be"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a13c64ea-6ea8-44d0-b506-9c8d70da0524",
+      "name": "Commande de Désenfumage",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a13c64ea-6ea8-44d0-b506-9c8d70da0524/0dc3e3b2-e7b8-4df4-b983-cf43aeb1baf8.ai",
+          "size_bytes": 799675,
+          "sha256": "33c1e5200e5010557033572f11b6e1806e33dbe81078b4578bf2a596bd0c9bd6"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "b12c0fa3-6a88-48b4-ac5c-dbbfb0bda62f",
+      "name": "Echelle",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "b12c0fa3-6a88-48b4-ac5c-dbbfb0bda62f/0a6fd00e-d650-438c-9ce6-636e1e955b76.ai",
+          "size_bytes": 814134,
+          "sha256": "ad5a43a91640f23eb38c7070bdbfc5f634269d0ccf88e921e1da8c9a8b53ffc9"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "b584f872-1c70-4ace-9030-6fc098eda9aa",
+      "name": "Centralisateur de mise en sécurité incendie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "b584f872-1c70-4ace-9030-6fc098eda9aa/eda06077-3edd-45e4-97e3-a50547ac16b3.ai",
+          "size_bytes": 789862,
+          "sha256": "04cc3199a8515d004c1a64cd9da98e8504e3501b31501873c780a95b90cfbc91"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "b79b262c-55e7-482d-b2e5-d843e6296a4a",
+      "name": "Equipements de contrôle et de signalisation incendie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "b79b262c-55e7-482d-b2e5-d843e6296a4a/464bef32-9885-4302-8e77-5742cca74db8.ai",
+          "size_bytes": 785285,
+          "sha256": "c6fa6ed01107efa51d8b367a82eab584094abde5c52a4cb43ef3fbc0a28d1fd0"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "80e9a7fe-2fef-486d-aa51-6d7ceca5cdf4",
+      "name": "Equipement Divers de Sécurité Incendie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "80e9a7fe-2fef-486d-aa51-6d7ceca5cdf4/37f8ade0-1d71-4ce5-b3a0-397e81c2c142.ai",
+          "size_bytes": 777713,
+          "sha256": "fb71fde85b8a62d7a99a1f9b89215cbf3a3fe7f053d6c55425e4441dd58f8011"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "3a1dee0a-afa4-4b64-a912-a5b304f1f279",
+      "name": "Couverture Anti Feu",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "3a1dee0a-afa4-4b64-a912-a5b304f1f279/7aaf1569-32b8-42c1-a7af-53579ff8d596.ai",
+          "size_bytes": 785498,
+          "sha256": "00d01556c499baf8a2fca4dad5741a94f427161092f466b196248a559a8de49d"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "8d409b09-eea6-41d3-a4da-4bc517f13551",
+      "name": "Clé Fermeture Gaz",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "8d409b09-eea6-41d3-a4da-4bc517f13551/4aad65c7-8fbb-4b2f-a746-63c386357a9c.ai",
+          "size_bytes": 796683,
+          "sha256": "9175ada4a80109549196f062bf0df7fae6a053c1f78f54baa9a35e021365e5e1"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "714e18e0-d432-45a5-8b16-c38660d53613",
+      "name": "Diffuseur sonore",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "714e18e0-d432-45a5-8b16-c38660d53613/f3b22e9a-e0af-4c10-bb4c-42bf307a0095.ai",
+          "size_bytes": 803084,
+          "sha256": "7c4e0b1b56c8687ab69ee87ae65429ccdf17233ca434da61539c3869016d7f58"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a8f209a6-52dd-4afa-83da-0cc58e82cc38",
+      "name": "Baie accessible",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a8f209a6-52dd-4afa-83da-0cc58e82cc38/6f502b7c-bda0-45a2-b502-a359c5e671f3.ai",
+          "size_bytes": 786510,
+          "sha256": "0c01e3e88e7646c8be884f795f36e7e395b1897831904eb3c52c196544829841"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "562ba836-7667-4d71-8cce-e8386a7830b2",
+      "name": "Colonne Humide",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "562ba836-7667-4d71-8cce-e8386a7830b2/c317371a-a578-44d9-9895-680e5f3f2213.ai",
+          "size_bytes": 792059,
+          "sha256": "6869f6d2027f9c93369ec1276ffdcc6cb17cee6d18ddacf7b45a491732c8c7a1"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "25e1aaa9-8f21-4def-8513-9f4e29263620",
+      "name": "Colonne Sèche",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "25e1aaa9-8f21-4def-8513-9f4e29263620/3d7ffda7-a61b-4928-9781-e87a26c4512e.ai",
+          "size_bytes": 792232,
+          "sha256": "1ce6a7d746e1af3f575753e5caa17c68576cbe97825aedfd9c4423a65656fdc5"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "55083a4a-84da-4be9-b288-797044487d89",
+      "name": "Alimentation Colonne Sèche",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "55083a4a-84da-4be9-b288-797044487d89/a7778f74-cd38-4d9f-b090-8f1f5230b93b.ai",
+          "size_bytes": 783794,
+          "sha256": "285615ced4682c042bd8b01d22bdb2a7131853fd63df419d49140a35425bed0c"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a41aafc3-ffd9-41cb-a989-e74f3b9ba973",
+      "name": "Raccord de Ventilation «ZAG»",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a41aafc3-ffd9-41cb-a989-e74f3b9ba973/75ef3b87-95cb-4b83-840c-58d5871e335c.ai",
+          "size_bytes": 792266,
+          "sha256": "9c120f6ee9196d68bf3f27e2f8c4312e4153001cedc344ab79146ad2bbd6fa24"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "d8482494-5884-4428-97a6-2cf457a45bae",
+      "name": "Vanne «Police»",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "d8482494-5884-4428-97a6-2cf457a45bae/3cf84d4e-78bc-4afd-a3d0-caf1b743343c.ai",
+          "size_bytes": 778878,
+          "sha256": "f5ed145862b28909ab55b8f6865821e019548d9465e544cd7eed1d86ce9b1285"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "ca35348d-a98c-4466-9d94-cb265727fbd6",
+      "name": "Barrage eau incendie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "ca35348d-a98c-4466-9d94-cb265727fbd6/c29641cb-b3a7-464b-bc51-38df937c3ec3.ai",
+          "size_bytes": 786246,
+          "sha256": "8bfa32ae69adce33472b6d41386839462e1f8def51de0dfaf15e1535dc0dc2c8"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "fa9b2886-24e8-435e-a1be-b726abd76ede",
+      "name": "Sens interdit",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "fa9b2886-24e8-435e-a1be-b726abd76ede/76bcac60-71af-4042-8fd2-24864a05c8d1.ai",
+          "size_bytes": 804422,
+          "sha256": "77788fb1078fe9220c49688ecaf66b802f77273e2a908f89ebabf6ef0afcee39"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "cbdaf7e9-e422-4bd6-951e-0764378f0dbf",
+      "name": "Interdiction de fumer",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "cbdaf7e9-e422-4bd6-951e-0764378f0dbf/3d5ba96b-6340-4a26-8e5f-a875d35f7320.ai",
+          "size_bytes": 790636,
+          "sha256": "d7106b7236512e2de0bccf71fce6467612980c9b9c1898a8c05f9078039e69c1"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "e76956ac-4696-43e5-bb85-c5ad8a733a7c",
+      "name": "Trappe Désenfumage VOLVIC",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "e76956ac-4696-43e5-bb85-c5ad8a733a7c/03d2c988-decd-4ece-83f1-b5a4fdb7643f.ai",
+          "size_bytes": 789169,
+          "sha256": "065611ca481cf0ae4a4dec8531781323440dd17d1bd0355c919bdb97cad77917"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "99ba243d-1bbd-4b11-8ee7-1bdf433a0c2f",
+      "name": "Arrêt d’Urgence",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "99ba243d-1bbd-4b11-8ee7-1bdf433a0c2f/ce6b1939-af61-4f92-8baa-75b3ec62247c.ai",
+          "size_bytes": 770355,
+          "sha256": "7d1490a5d99c21c82469c7fccb0c920566fd7ac8f877db31d05aa319ddf4a990"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "fcafc0e8-4ad7-4053-ab61-998542f82e5b",
+      "name": "Coupe Circuit",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "fcafc0e8-4ad7-4053-ab61-998542f82e5b/ea6b51be-af90-42f2-b172-4df527af3b81.ai",
+          "size_bytes": 791470,
+          "sha256": "881f06a76d1f62887bc02e318e62c26a7ca0c3c517a5c648db7dcb0fe789b9e7"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "d4ffd52d-2c8f-4774-ac62-471a4eb4160b",
+      "name": "Coupure Basse tension",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "d4ffd52d-2c8f-4774-ac62-471a4eb4160b/461e2725-80c0-4682-87d1-f09a9b9a84f8.ai",
+          "size_bytes": 774025,
+          "sha256": "9b0875baf3054d5eea1e43b17c18c16d5ce5c9c880d6249f0da56e88260ea425"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "6fe43847-abe4-497c-86bd-a310f067fef1",
+      "name": "Coupure Haute tension",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "6fe43847-abe4-497c-86bd-a310f067fef1/6fc411c6-1c90-4e8c-96ed-65d30da355fa.ai",
+          "size_bytes": 773431,
+          "sha256": "048f0679b0160b4f425f9a789441755cedb9d3779893465cf4ae1c83dddc8245"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "640e2da4-8868-46d7-8a44-c46d8f7697c4",
+      "name": "Barrage Gaz",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "640e2da4-8868-46d7-8a44-c46d8f7697c4/5b079af3-8233-4217-8455-0e6ee944f244.ai",
+          "size_bytes": 784479,
+          "sha256": "4fcdae133ff07e68260032aad2f8e26bad227659370e73ac5c380b8859e85fcd"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "1bce0f23-b4ed-4a87-a392-177c57d72788",
+      "name": "Chaufferie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "1bce0f23-b4ed-4a87-a392-177c57d72788/34432ccb-a97e-4083-9139-1d0f88bc73d0.ai",
+          "size_bytes": 791451,
+          "sha256": "03915c2d896e51b5137de74c43ec7b0f0c6eb142db30153669d86d62d60a8fcc"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a7848440-e339-4659-8d99-0a0e6608346a",
+      "name": "Local Electrique - Transfo - TGBT",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a7848440-e339-4659-8d99-0a0e6608346a/4c42d3b9-eb42-4cbd-8b7e-70f62e91102c.ai",
+          "size_bytes": 792345,
+          "sha256": "a11b0cf3a02cf34b872e96051564286cd3f269d623d2f446b4dc0126c816c61c"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "22cbbe60-69db-4601-b0e7-4e00a70fe4ea",
+      "name": "Générateur de Source Ionisante",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "22cbbe60-69db-4601-b0e7-4e00a70fe4ea/a076ce78-94b9-40cb-a679-a5c94073ea85.ai",
+          "size_bytes": 794264,
+          "sha256": "157e5e5447d5858d6ee5797e238e62f26da6c99e4959cc390471da0f1d1773f9"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "1164ac73-b837-47e4-bf5c-f824cf76097f",
+      "name": "Matières Nocives ou Irritantes",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "1164ac73-b837-47e4-bf5c-f824cf76097f/dc975200-4dc9-4478-9382-9cac41629b87.ai",
+          "size_bytes": 792168,
+          "sha256": "89de4b8810c623c89f1f2940eb07e40db15ccbd0d8cfb459d0137fd20d0590fb"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "1b36c571-4f6d-47f9-b360-e09540154c34",
+      "name": "Gaine Technique",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "1b36c571-4f6d-47f9-b360-e09540154c34/c5dd5718-ead0-4eee-a8ba-398cb444796c.ai",
+          "size_bytes": 791543,
+          "sha256": "06de9029bf1f73f520e6b89ad8d73102d0fd35a93899d88fba1144ef0cf0d11d"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "201ac6a2-f99f-40cd-b4c2-ad9e9fd500b4",
+      "name": "Atmosphère explosive",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "201ac6a2-f99f-40cd-b4c2-ad9e9fd500b4/4f06ccc2-38ba-44b2-83d8-a571df789dec.ai",
+          "size_bytes": 794458,
+          "sha256": "f8471772efa2389a1f27461f8b545a615f2dd9972a33d43b07f5278b4b4234d5"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "fa19bfd8-53bd-4aea-a0e8-f328d3b0a2d8",
+      "name": "Champ magnétique",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "fa19bfd8-53bd-4aea-a0e8-f328d3b0a2d8/1c29797b-f959-417b-baa2-ca5a3f16dcb1.ai",
+          "size_bytes": 795651,
+          "sha256": "9ee18184e019e07bb0ae3774fed7bd435484202487ca024539739c115d72fb1f"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "09baeb3d-f6f6-43fa-bc51-94113a58cd62",
+      "name": "Equipement de Rincage des Yeux",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "09baeb3d-f6f6-43fa-bc51-94113a58cd62/5f65f77c-39de-484f-b8e4-8f103b9873d5.ai",
+          "size_bytes": 810112,
+          "sha256": "98d7f7cfd9e5ce8c8ca92b869b9d0d890888a26fde703c9fa2c50ea7477de5b6"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "340c47ae-db18-4c61-9e99-72a8d57b4142",
+      "name": "Douche de Sécurité",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "340c47ae-db18-4c61-9e99-72a8d57b4142/b59572d9-6cee-4cc8-b920-9d408e6a985d.ai",
+          "size_bytes": 813673,
+          "sha256": "0fb8453d00d3068925cf3b8cc9a74c9af9efe828765d19a040ebf2240afc8cfe"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "8cf50f0f-d16c-47a6-9b1f-8fe61b9ee46f",
+      "name": "Infirmerie - Local de Soins - Pharmacie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "8cf50f0f-d16c-47a6-9b1f-8fe61b9ee46f/91231c7b-3b8c-4e2b-9f84-9ac1a19ffb47.ai",
+          "size_bytes": 776769,
+          "sha256": "e9d17f3172d24eea6da9fd8217c5efb411889283be078af5b31dd6ba3fb893c6"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "dfddf8f3-770f-4e85-bad2-83c9be178308",
+      "name": "Espace d’Attente Sécurisé",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "dfddf8f3-770f-4e85-bad2-83c9be178308/654a88c7-3e37-455e-962f-23439d0fdf03.ai",
+          "size_bytes": 801636,
+          "sha256": "d6f5ee99f3e58e60ccb515188079dc6153f931bad1ead137c50ce568091fa128"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "15cebf32-65ac-4554-ae3c-9b8df7ff37c4",
+      "name": "Défibrillateur",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "15cebf32-65ac-4554-ae3c-9b8df7ff37c4/c6ff798d-1a2e-4d5f-a907-033b1e1aa720.ai",
+          "size_bytes": 784834,
+          "sha256": "7a04a82a839aebace3b32ed6892d8dd96a6c56ee04a44be6f806ae2d0b9263b5"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "2b5a2624-259e-488d-a6f9-5975e4f24cdc",
+      "name": "Point de Rassemblement",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "2b5a2624-259e-488d-a6f9-5975e4f24cdc/6544bf7c-26fd-405a-82f0-e569d60fdf2c.ai",
+          "size_bytes": 802766,
+          "sha256": "7c00594e83f1da8ff7854f6bb7a8ec4a83b7f210274b658e7eca9cfefc263389"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "6d3f0123-93dd-4702-b804-18b5eae6cfdd",
+      "name": "Ouverture de Porte",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "6d3f0123-93dd-4702-b804-18b5eae6cfdd/5500bdf4-6c3c-4ace-84ba-f4db6c22a0e8.ai",
+          "size_bytes": 787311,
+          "sha256": "11bf6f9801756fa86686fd0c20e40199e3c17dfcaa06d644ec4a229eb23e3be0"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "b5556095-d2b3-49a1-a486-05ad73899664",
+      "name": "Arrêt d’urgence électricité",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "b5556095-d2b3-49a1-a486-05ad73899664/fc531c1c-cc07-46e6-b666-69a0b26fb9a0.ai",
+          "size_bytes": 786625,
+          "sha256": "895b42f7c508be4de44a6bf318e72eccfb1e996f79e6eb8f5f80df9880222fdb"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "b6c752c9-3574-4071-9544-6f72e2de0331",
+      "name": "Itinéraire d’évacuation",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "b6c752c9-3574-4071-9544-6f72e2de0331/eaab42be-6fdb-4c13-9254-5d2ea79b9e54.ai",
+          "size_bytes": 770752,
+          "sha256": "87dffac0b87ddf7f8eb96694e40ee6645d864bed2e3591c545523aafe14aee0f"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a546c0cb-aaaf-4da2-9dcb-94793631c7f1",
+      "name": "Issue d’évacuation",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a546c0cb-aaaf-4da2-9dcb-94793631c7f1/06e59a44-3951-44b8-af47-2db47981c972.ai",
+          "size_bytes": 790674,
+          "sha256": "9871a14e190b9ea82cb322506388a56a081744160dd0a2a41bab6349bad0903c"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "1c6de144-7c29-4482-8458-6fe20928dd05",
+      "name": "Medecin",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "1c6de144-7c29-4482-8458-6fe20928dd05/2839d960-14f2-49e1-a1bc-7e48941717a7.ai",
+          "size_bytes": 779608,
+          "sha256": "7d7583099871e6ae40e0556803f1afdcf354200e370837d4f19664ba9662c988"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "9ce5c4ee-bc59-4960-b9af-c010fd11675c",
+      "name": "Brancard",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "9ce5c4ee-bc59-4960-b9af-c010fd11675c/ba7de811-d87c-4714-a7bb-002d0689e61e.ai",
+          "size_bytes": 780347,
+          "sha256": "7ec47427048c1ac79fad9b7d8363fb23c8745e3a4e4308618b8be0cb302af76e"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "b945e984-2085-4516-b90a-c512055c0cc6",
+      "name": "Sanitaires H-F",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "b945e984-2085-4516-b90a-c512055c0cc6/a18e968b-48d5-4d85-974d-5c2bea76ee21.ai",
+          "size_bytes": 805360,
+          "sha256": "d27b706f0d2482b70b7ba8785a5462c9ac0e18eb05cd1074aabfc034aa2d4869"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "251255c8-a255-4b40-89ed-cee637148fe7",
+      "name": "Voiture éléctrique",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "251255c8-a255-4b40-89ed-cee637148fe7/77f3507c-5cce-44cc-b069-418e2e407682.ai",
+          "size_bytes": 809606,
+          "sha256": "bbb2925b3ffd0b101bbea6ee988e90991024352d43e1ab8fdf4328f74cd9b85e"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a9da8e8b-25b9-4f36-af97-4a1a212037cd",
+      "name": "Sanitaires PMR",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a9da8e8b-25b9-4f36-af97-4a1a212037cd/f12dc6cb-6260-485e-ac0b-83353d3bbfb6.ai",
+          "size_bytes": 804881,
+          "sha256": "a76bce5b4018efa413d69029cd643b32dc7c177d2a72efa0fc884fa2e7480465"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "b3737fc2-ee30-4a2e-8181-af830c8d3358",
+      "name": "Sanitaires d’Enfant",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "b3737fc2-ee30-4a2e-8181-af830c8d3358/0157d9e6-a20f-480b-bdff-b9739bfcad19.ai",
+          "size_bytes": 795248,
+          "sha256": "c309e51929d0e53d7b8f75c2df6c3500e29b8c3fe380306c9da29224a705b8d1"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "e585f7ef-6cc4-4440-9c2f-6a2ed5381ccd",
+      "name": "Barrage d’Eau Général",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "e585f7ef-6cc4-4440-9c2f-6a2ed5381ccd/99a49c15-23be-414a-ba3d-18e8776f0fb7.ai",
+          "size_bytes": 778707,
+          "sha256": "4062194bdb34d4130344f7a4ac24c6027784bcd7fb59dfb7dc47ca3823d4290a"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "944cd0ee-a5f0-46f2-afc6-0f5eac560a67",
+      "name": "Barrage d’Eau Partiel",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "944cd0ee-a5f0-46f2-afc6-0f5eac560a67/a51fb2d5-5ed8-4db8-9265-7652f7db0b7e.ai",
+          "size_bytes": 779473,
+          "sha256": "26f50325b8e090bff077bbc7ab16fbff8d586eb673a649848010298b28fb1e57"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "3b450bc4-ec92-44fb-8630-6f801ee763b4",
+      "name": "Place famille",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "3b450bc4-ec92-44fb-8630-6f801ee763b4/f0f61646-cb4a-4c10-82ae-8e3a1437fcf8.ai",
+          "size_bytes": 778805,
+          "sha256": "35ea94b99ed3993d1ffa83dd086fbb6e8d41603b5511720f23719225ed94477b"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "c174e085-f459-4d44-92c8-27bb429eeb67",
+      "name": "Vanne fluide médicaux",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "c174e085-f459-4d44-92c8-27bb429eeb67/e4f56622-412b-4422-8037-c3909f18b553.ai",
+          "size_bytes": 788274,
+          "sha256": "5756bda1cff9e5f13f6187abc583d9edb820a375b1072720ea4c9611e2c1df30"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "0378f554-00c9-450c-a0b3-cd66390af021",
+      "name": "Vanne oxygène",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "0378f554-00c9-450c-a0b3-cd66390af021/53b6269d-aeb3-4d98-8379-11d303fa36cd.ai",
+          "size_bytes": 786495,
+          "sha256": "aefa12ae9636abb817281b5eef62b5e97e5b937f06763316cdfe755e564599a1"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "928b04af-3d81-4335-99a2-480eab9413df",
+      "name": "Vanne vide",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "928b04af-3d81-4335-99a2-480eab9413df/8e37c13a-0b6c-4c61-89d2-2147bf503bba.ai",
+          "size_bytes": 788878,
+          "sha256": "8865814f3100bc759e1a20e0da56462c2706c78a92c55d6511b722807cfbbd80"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "9b2ca266-516b-4ee7-b850-82565da9f5c6",
+      "name": "Local Poubelles",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "9b2ca266-516b-4ee7-b850-82565da9f5c6/aa6d6dac-6ecf-427a-aedd-de321119ae41.ai",
+          "size_bytes": 772731,
+          "sha256": "80b288d73b9d6b0469e238c42923bba771337b22f10fbdf0eaeee35b9ffef1e4"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "67005e85-b0c0-438e-9b6d-99f36323f420",
+      "name": "Vide-Ordures",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "67005e85-b0c0-438e-9b6d-99f36323f420/c37b0074-68be-49da-8541-9a7102fb7eb5.ai",
+          "size_bytes": 779573,
+          "sha256": "38b9e99f87dc6194fd499b3d1e0a3ff9a1a03a94a22764ac84e797956d8bad90"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "d1874830-3476-4a7e-997c-b3f3b42db588",
+      "name": "Coffret Electrique - Gaine Technique Electrique",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "d1874830-3476-4a7e-997c-b3f3b42db588/1399a7d9-0c65-4c72-859c-34b41a7ed607.ai",
+          "size_bytes": 778533,
+          "sha256": "782625711d716f294cb89032c865335e208841226e091b1ec32b5f56087c5c80"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "af775e7a-c0ea-4ce5-88f0-a90b277c1cf9",
+      "name": "Coffret Gaz - Gaine Technique Gaz",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "af775e7a-c0ea-4ce5-88f0-a90b277c1cf9/ff3acb9e-97ad-4c11-8f7f-512f4f657cc7.ai",
+          "size_bytes": 779100,
+          "sha256": "aedd8e26ac464696def10153d5a48746247b986f717bd06182a5dbda9969dfc1"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "d0d3fbc8-6d6f-43c8-bc77-8b8990410512",
+      "name": "Coffret Ligne Téléphonique",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "d0d3fbc8-6d6f-43c8-bc77-8b8990410512/a521bea9-2041-4514-a009-99342eb33509.ai",
+          "size_bytes": 773322,
+          "sha256": "9f7b51d1bb02de82cba3b523283428853e373af7a31b3e59fbd9adabf2ce0ae1"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a04efb5b-dbe3-472c-88ff-d4cb5f6c32ad",
+      "name": "Stockage de Liquide Inflammables",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a04efb5b-dbe3-472c-88ff-d4cb5f6c32ad/fd95d4bd-90dc-4c63-b361-1449eb7cd3a9.ai",
+          "size_bytes": 783223,
+          "sha256": "a52af548d3d47218b0874cce614702eaea69e9ad07d75728d9dcea66472eb400"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "bad433db-81d6-4a65-8528-cc74088fb6eb",
+      "name": "Bouteille de gaz comprimé ou liquéfié",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "bad433db-81d6-4a65-8528-cc74088fb6eb/f74bc567-bc6f-446a-8421-6c31128ef549.ai",
+          "size_bytes": 792008,
+          "sha256": "b3edcebbc5504d13f74d64a119d6347340465fc0c0860a307ca01a357e72f2de"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "1b84f8b2-66a8-4a81-9cca-37e3539acc14",
+      "name": "Bac à Sable",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "1b84f8b2-66a8-4a81-9cca-37e3539acc14/57fe6528-280c-4dc2-a160-093e16555078.ai",
+          "size_bytes": 785188,
+          "sha256": "600ef08b0300a127d7dc6cd9554413dffbf0057c1ffc37797e3777503c6901ee"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a50db30b-03a2-4932-9681-3479acfc584b",
+      "name": "Poteau d'incendie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a50db30b-03a2-4932-9681-3479acfc584b/e1c2e729-8e6e-4015-9088-f4972cbd20fb.ai",
+          "size_bytes": 801980,
+          "sha256": "dea03c6919c2ce37504ac4491bb018826cafd3a3c1d589f85c907a3fb3bb3747"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "7a1033f9-bc88-44e4-9cef-18435309a9be",
+      "name": "Bouche d'incendie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "7a1033f9-bc88-44e4-9cef-18435309a9be/c50f72c7-86dd-4dc2-b014-6147af58494b.ai",
+          "size_bytes": 803589,
+          "sha256": "2209868a2e4b8cd19678c0ea05a405619714d9c38ac717f900038a549c330e3e"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "901c35b8-d7ac-411a-8dfc-0f0c859882c7",
+      "name": "Espace Handicapé",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "901c35b8-d7ac-411a-8dfc-0f0c859882c7/ecb9e39d-38ce-424b-8609-8328e1bd49fd.ai",
+          "size_bytes": 802844,
+          "sha256": "f784a53cb928eb3c25935e464122e458334894895b942c97a042a613acfa2495"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "6ec2a422-2b5b-412b-97ee-9e2514df353e",
+      "name": "Elévateur PMR",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "6ec2a422-2b5b-412b-97ee-9e2514df353e/1ca667d8-0cab-4c4d-94fc-bc6b257fda33.ai",
+          "size_bytes": 813441,
+          "sha256": "10e484a5b6f4dce920e3df14854cc4482338011ff76cfb65310e01470b55e319"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "1b35ccdd-25ec-409b-a820-c828f5328209",
+      "name": "Risques de foudroiement",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "1b35ccdd-25ec-409b-a820-c828f5328209/2996579e-751e-440e-aace-3acd4af1b806.ai",
+          "size_bytes": 809144,
+          "sha256": "5535bf29356df8a9a186933d7ca8bb4013360c23790477496ba4090540855575"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "02e2b678-711f-4344-b5c9-7706d3803f5f",
+      "name": "Conduite de Gaz",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Autres"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "02e2b678-711f-4344-b5c9-7706d3803f5f/5305239f-c02d-44ce-918e-aadb8571cee5.ai",
+          "size_bytes": 768680,
+          "sha256": "6f81375ea576d7f977401ef1cde5f2d7b090b152a2622762e66fc7999f175dc6"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "2c28d2bd-7282-4fcd-ba1c-2cce2e6ccccb",
+      "name": "Machinerie Ascenseur",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "2c28d2bd-7282-4fcd-ba1c-2cce2e6ccccb/a98f80db-c4e3-4b88-9b38-28dce98f4ed9.ai",
+          "size_bytes": 780262,
+          "sha256": "a665373ce3cee6d54981fb89b8816e8927bda91244709ad4d64d151db2fbedd5"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "7edf4c52-e142-4e53-9913-be1ebd9671e0",
+      "name": "Ascenseur",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "7edf4c52-e142-4e53-9913-be1ebd9671e0/1cbdaf14-6597-42ea-8554-c9cc6d3e4ec4.ai",
+          "size_bytes": 780659,
+          "sha256": "310ce86331292a7571b7809636d3de60fcf6422014ce8c8228dbde5f274550c7"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "9fe837e3-373e-4d68-b6de-25a98f1cc28a",
+      "name": "Monte-Charges",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "9fe837e3-373e-4d68-b6de-25a98f1cc28a/5b6ff709-47f0-48ee-b267-0c6872a65d2d.ai",
+          "size_bytes": 781744,
+          "sha256": "b39a5333f23558d93bd2b824679bcc5ae4ce3575446797ebe6de0533430e647b"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "44586a2c-f597-44d2-b031-fc688208a5c0",
+      "name": "Merci d'utiliser la couleur risque et non le picto",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "44586a2c-f597-44d2-b031-fc688208a5c0/dc4ad8cc-008e-4d7d-8387-18be7ac48b40.ai",
+          "size_bytes": 797155,
+          "sha256": "07deeb5c7e6b608819b306fa30f196cfa7c7932c676ff6d3ed1238fff3375171"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "ed8987b1-771d-4220-99f9-9d4dacc9f5e5",
+      "name": "Ascenseur prioritaire",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "ed8987b1-771d-4220-99f9-9d4dacc9f5e5/0a2e41e7-ac32-4ab3-8b5b-7dd71150a7cd.ai",
+          "size_bytes": 787732,
+          "sha256": "114dff0936038f7105428c92ba0838d129433dd5851a86e608abc2691d541d68"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "21f9b053-eb8e-470f-a9ee-7c8ae05bb7e3",
+      "name": "Installation d'extinction automatique",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "21f9b053-eb8e-470f-a9ee-7c8ae05bb7e3/169302a7-bfbe-46fc-9898-bfd96b246ea9.ai",
+          "size_bytes": 771856,
+          "sha256": "68c86129d07e22e8b8e82aea253fbcafbc3d0034627269254e840e5d667e2897"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "3aa5b802-4af8-497d-a90d-5c936a9a91f3",
+      "name": "Commande manuelle d'extinction automatique",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "3aa5b802-4af8-497d-a90d-5c936a9a91f3/ac78c8b6-b720-42e0-94e2-2fe93149a83b.ai",
+          "size_bytes": 774195,
+          "sha256": "9c1c85e05d51fa628f1ee50a71651ff2a9e0135baa5e179eb377d897827f1bfc"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a1f6e502-6349-47d5-ad51-c7d942db9e39",
+      "name": "Installation d'extinction automatique localisée",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a1f6e502-6349-47d5-ad51-c7d942db9e39/8030ba50-2a04-427a-9760-7509ee5ccbac.ai",
+          "size_bytes": 769783,
+          "sha256": "21c3ecada146147f886737c77e862417a5d8aed2f3956c197026e72a6c7a429d"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "922fa103-2684-437d-98f7-c159162a4247",
+      "name": "Vanne gaz médicaux",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "922fa103-2684-437d-98f7-c159162a4247/97d235dc-d5f4-408a-a5b4-923d100e2a41.ai",
+          "size_bytes": 789932,
+          "sha256": "820e07de77c982db1aab271081264c3446f49b54c1b38eaf41583f4e1bafb6c4"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "deb6e155-7a18-42a0-94c1-e426eae73b17",
+      "name": "Toxicité aigüe",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "deb6e155-7a18-42a0-94c1-e426eae73b17/606e1ab4-e254-4184-9834-f78280a625eb.ai",
+          "size_bytes": 813008,
+          "sha256": "35fc741c6af2f326b12309116608e4e9250e8284ba9a0ded8ade40b91340f397"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "51bd7270-f0b0-4c78-9f82-af265ad2257e",
+      "name": "Dangereux pour l’environnement",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "51bd7270-f0b0-4c78-9f82-af265ad2257e/45608861-006c-4074-8af9-cec5f4aa92d2.ai",
+          "size_bytes": 800186,
+          "sha256": "1703be6b4ee8946344dfe2954895f1419af651c448fbc91ecbbe213834e3331f"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "ada7340e-0adb-4526-a326-e0036fe6aada",
+      "name": "Produits Dangereux",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "ada7340e-0adb-4526-a326-e0036fe6aada/d77347c0-f7fd-44d8-b372-0e2261151d8c.ai",
+          "size_bytes": 785043,
+          "sha256": "96677c19ccbd0e39da434a5e38e69c7ce3b8cad47362937dc171897d7c8b9bbe"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "4d99b457-43e9-4a0b-9155-e24373913e43",
+      "name": "Inflammable",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "4d99b457-43e9-4a0b-9155-e24373913e43/06e5564e-8cf1-428a-bdbf-caa7010f4b58.ai",
+          "size_bytes": 809928,
+          "sha256": "115c27745ed163e57aed206f431d773dbcd3badae80f6b7892a48fd77de74556"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "34f84b01-554f-4eda-a68c-ca0d68936648",
+      "name": "Corrosif",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "34f84b01-554f-4eda-a68c-ca0d68936648/c0c56a77-e2e4-46c1-b905-86b82c65f88e.ai",
+          "size_bytes": 807776,
+          "sha256": "13126a0c2297ac4b11c5a0ba4da0876dc617f856b662aacf6b8f4fa5e71cc3dd"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "bd577d8a-dc18-4ba3-b656-7e5786bd9c8a",
+      "name": "Comburant",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "bd577d8a-dc18-4ba3-b656-7e5786bd9c8a/bcfd6d74-5291-4711-be37-db4ec719fcfd.ai",
+          "size_bytes": 804427,
+          "sha256": "c36e55ad889dab64fce4755075816b369f5c4d445853c78b8a0d069b028ecb09"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "e2e984a0-8cb7-4e3e-aa35-7017bb795d9b",
+      "name": "Gaz sous pression",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "e2e984a0-8cb7-4e3e-aa35-7017bb795d9b/6e185871-3096-4336-8db0-5ab5fdb325a9.ai",
+          "size_bytes": 788864,
+          "sha256": "38b5fbfeb0548cf45ffc9dece1ca7c17bd349d6b972c7942f8e017a03dca12ef"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "fcfeaeaf-37fa-474d-b00a-36ed8fff5820",
+      "name": "Explosif",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "fcfeaeaf-37fa-474d-b00a-36ed8fff5820/55191f62-a84e-4884-ba0d-c3f6aa6dfb27.ai",
+          "size_bytes": 798648,
+          "sha256": "a8c4b105ac88978641aec85af30e7d2b05a030236e5141c301be762429220737"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "171225d3-019e-4988-bc9e-7575a7d13ec5",
+      "name": "Gaine Pompier",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "171225d3-019e-4988-bc9e-7575a7d13ec5/264a30ae-24ad-4647-b248-c579496f0752.ai",
+          "size_bytes": 799033,
+          "sha256": "0d7c2d2285dcadab5a9e80fe802f66903c40e6d5c206362b733bd5ca880b158a"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "387f6ca9-4e2d-4d7f-9b42-d61aa0a79a5a",
+      "name": "Groupe électrogène",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "387f6ca9-4e2d-4d7f-9b42-d61aa0a79a5a/8b6eafea-1f68-4fff-99ac-a3be463fd089.ai",
+          "size_bytes": 776747,
+          "sha256": "02bff96fbad3d3ce920f34fa6b5315c2ec580a43b2f03c7d3d770e57d7336473"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "db756c0f-22ab-4cfc-bc65-9d5d6a7f5076",
+      "name": "Groupe de climatisation",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "db756c0f-22ab-4cfc-bc65-9d5d6a7f5076/feaad11e-daf0-45f2-a348-2b02d15476a4.ai",
+          "size_bytes": 775311,
+          "sha256": "3ee51b54b5a87c8650306d2ab728ecd08cc739309da12dc9fe4a197220846f39"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "837d72ef-7d05-4906-b476-e54a9bfc0b3c",
+      "name": "Armoire Registre",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "837d72ef-7d05-4906-b476-e54a9bfc0b3c/be842486-0ee1-45e7-8ac5-867bfddcf5f1.ai",
+          "size_bytes": 778558,
+          "sha256": "5082e88d71ef7fcb0ad532b67e3af97f0660e2c5168f30e230a3ec43d3577cea"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "5f390dc3-6290-4c31-ad06-7294469aacac",
+      "name": "Groupe de ventilation",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "5f390dc3-6290-4c31-ad06-7294469aacac/02f9c94c-ee1c-4438-947e-313c5f20d203.ai",
+          "size_bytes": 777502,
+          "sha256": "5a4999931c6fd9a9bd5c1da612239fb642ef6e76386398aa7d2e1086aa105cbf"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "216623b2-ec53-4542-ab7d-896f6d67ef68",
+      "name": "Coupe Circuit",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "216623b2-ec53-4542-ab7d-896f6d67ef68/d67c6982-bd1b-4a1d-9665-814537eacc83.ai",
+          "size_bytes": 780565,
+          "sha256": "7dd2a5205a1b9ed476a6c7824b6ce66c0622d70fc9c86dc050e035014493108e"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a016057f-89e3-48b3-924d-c33ba80834ea",
+      "name": "Groupe froid",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a016057f-89e3-48b3-924d-c33ba80834ea/7559e1bd-6c33-47c6-bb7e-ce15085f12ea.ai",
+          "size_bytes": 775487,
+          "sha256": "92c4d109ed44c10e6690b7966e8a39bd08a33f5731ff0557bfcc379bc3088d70"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "434c9447-a3c5-4434-9ddb-61d45331b8af",
+      "name": "Mur Coupe Feu",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Autres"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "434c9447-a3c5-4434-9ddb-61d45331b8af/09f4f4ff-b91d-41d8-9c0e-b2da78dc3279.ai",
+          "size_bytes": 768188,
+          "sha256": "7b64af1e9b76de6b0fa68c06443ea152b51067aa33d09e41211f32cc27745868"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "26b7b25c-c918-4735-9d6f-8772c0947637",
+      "name": "Arrêt sur extraction",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "26b7b25c-c918-4735-9d6f-8772c0947637/78ecfe0d-b572-4a55-9c4c-b0d75a8dd449.ai",
+          "size_bytes": 784043,
+          "sha256": "ff2f45bec5e5494f45a9dcf11f1856add2de0c7a0bedce9188e71936e37d7337"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "b2ec9de3-3e87-4511-962b-27652955b18d",
+      "name": "Surpresseur",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "b2ec9de3-3e87-4511-962b-27652955b18d/503c07a8-d78d-4c99-97ed-8be8258e9a20.ai",
+          "size_bytes": 771990,
+          "sha256": "4ec8497a945e1f597f8316c65b00e566162ac4b58db6bcf1543f608f2d834e87"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "c48f746d-d08c-4c44-a229-5cfcefb9d51f",
+      "name": "Compresseur",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "c48f746d-d08c-4c44-a229-5cfcefb9d51f/58d548a3-5719-4b01-8843-4f9c0e9f252e.ai",
+          "size_bytes": 787744,
+          "sha256": "b02eb93f2ace963509e2347a3eed7c8a09c1e2e4e0146e67124ea7bbf47792fd"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "6eb9275d-7553-4430-b149-3c0341c36e69",
+      "name": "Arrêt sur ventilation",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "6eb9275d-7553-4430-b149-3c0341c36e69/73dfcdb4-cf2a-4a2a-a511-3bb368ace749.ai",
+          "size_bytes": 788921,
+          "sha256": "3fa086154e1544fb9cbb15d7db65c1cad1319787bd0333cc66cf1d9b8c604d80"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "6d812fd4-5b78-4a3b-8985-dc77ab941c47",
+      "name": "Alarme Type 4",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "6d812fd4-5b78-4a3b-8985-dc77ab941c47/3bbd590d-bc16-46e8-8a76-1e32e6206629.ai",
+          "size_bytes": 785709,
+          "sha256": "0b89e0f53d8169de542f834c118effe4481801613c6a401aabe50e446ce8ee1b"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "c23c3f0e-ce76-4d33-b1e7-ea73d5c494d6",
+      "name": "Arrêt sur soufflage",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "c23c3f0e-ce76-4d33-b1e7-ea73d5c494d6/99cc460b-72a6-4b4a-a596-abe7361ae4cf.ai",
+          "size_bytes": 789783,
+          "sha256": "596fd18bd6625f198e525205d7c4b8fd61128b05fa0dce21848cff35c367c6a8"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "64b3f53c-916f-4c53-acd4-d5e61676a327",
+      "name": "Porte sectorielle",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Autres"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "64b3f53c-916f-4c53-acd4-d5e61676a327/03f3cd9b-3c9a-45a6-ac2d-eee095839258.ai",
+          "size_bytes": 767879,
+          "sha256": "8fa2746a33631b49548e3c44701d8944ce2fce22851650ea88feb657d626be50"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "c1f3c9b2-06a1-4f7a-b8f6-1e45af23607a",
+      "name": "Signal Lumineux",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "c1f3c9b2-06a1-4f7a-b8f6-1e45af23607a/3fe43265-d251-47e3-b344-34146a3a16e0.ai",
+          "size_bytes": 775897,
+          "sha256": "76e04c3fca9f3e375430699999c286e17b2f9fc2633d5e5875989d38c64d7bf2"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "052da35d-971c-4d7a-a57f-53ce0e09d5e5",
+      "name": "Clé Coffret Gaz",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "052da35d-971c-4d7a-a57f-53ce0e09d5e5/da1147ec-003f-4b59-bc35-150c703df348.ai",
+          "size_bytes": 782394,
+          "sha256": "a14e209dfe12727123f9ca7ad7e299cc86ff1bac11cac1326135ec44aad7687b"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "4192b945-ac0f-4997-8acb-e508e5f82c35",
+      "name": "Unité de gestion des issues de secours",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "4192b945-ac0f-4997-8acb-e508e5f82c35/a301ea8e-ddf1-4b11-84c6-fcdce2ba9e9f.ai",
+          "size_bytes": 771020,
+          "sha256": "f37da48c624f13491cde9335f4a3cb8dd63aaa067630a98b9d541a9f979c9da2"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "80807655-57c7-455a-9091-ece1c0db37f9",
+      "name": "Gaine Pompier Chaufferie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "80807655-57c7-455a-9091-ece1c0db37f9/ecd2558b-37f5-4c9f-a28c-20c9edd0cfaa.ai",
+          "size_bytes": 792894,
+          "sha256": "cea504831524035d4231915156a40988bbcaff69d5c569008ed35ee1d095e648"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "1cc7cfde-d486-4b9c-a718-0444f6d5f00a",
+      "name": "Serveur Informatique",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "1cc7cfde-d486-4b9c-a718-0444f6d5f00a/0791836d-26d9-47c3-9d77-a029060ceb03.ai",
+          "size_bytes": 808692,
+          "sha256": "32f17f0b597b348593123f1ef77e516c4af1d6c8f64de7cdae8ed63aa2a4b5f6"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "d45e83a3-0257-41ac-842b-9758d620a7f3",
+      "name": "Blanc",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "05692fba-9069-4131-952e-ec2249b5828a",
+      "name": "Best Western",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "4f0edc03-2100-4dd9-af4a-0175cbedb47d",
+      "name": "Noir",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "3367355d-2ffd-4162-aa21-72973ccabf14",
+      "name": "Gris",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "abffbda9-11c5-4c8f-9335-e830dadcb044",
+      "name": "Rouge",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "b2604f6e-a4dc-47b7-9823-6dcbbafec1c4",
+      "name": "Orange",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "4655edc2-f42e-4d08-9c8e-9c7e1264fdf2",
+      "name": "Vert",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "d020294b-5880-4ced-a34c-d9be3538abf0",
+      "name": "Vert Clair",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "a794cde2-4365-4f2f-8bdc-fb9754ec47de",
+      "name": "Bleu VEI",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "4fa8d1f0-316f-4d93-9c52-b43bd867cee2",
+      "name": "Bleu",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "ef30eee3-344a-40c7-bede-32e3fb73a71f",
+      "name": "Rose",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "ac3f4805-3f67-427b-bd1c-46630573dfe5",
+      "name": "Beige",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "cd491fc1-2459-4b64-b6c2-a90dc03f3aea",
+      "name": "Marron",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "edc788cf-1411-47c2-9f4c-9f5dc654b7f3",
+      "name": "Violet",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "66e6ce6b-865d-4d3e-8935-63abb99d0393",
+      "name": "Vert Patio",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "d0e8a715-8112-4c79-b28a-9b32fbf4d95b",
+      "name": "Bleu Piscine",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "361c88c9-429f-4609-bc92-bb3dc6905e98",
+      "name": "Gris Clair",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "d551beb6-d775-4243-b6dd-1846163e4ad1",
+      "name": "Gris Clair 2",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "3c6cb917-aa0b-4212-b3b2-8fe99dbcadd8",
+      "name": "Bleu Ciel",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "380a3887-df77-4972-bdcd-f23e940e821e",
+      "name": "jaune",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "f4e5b669-5fa4-4172-8c1d-7f3d26c1f51a",
+      "name": "Texte 10",
+      "type": "application/vnd.adobe.element.characterstyle+dcx",
+      "groups": [
+        "Polices d'écritures"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "cf60f46f-68d2-43c7-9e14-74a0dbbbee5e",
+      "name": "Titre 18",
+      "type": "application/vnd.adobe.element.characterstyle+dcx",
+      "groups": [
+        "Polices d'écritures"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "df49c95d-f87e-4d6e-9d67-0b14154b9cae",
+      "name": "Titre 24",
+      "type": "application/vnd.adobe.element.characterstyle+dcx",
+      "groups": [
+        "Polices d'écritures"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "1bad4fc5-986b-4f8d-bfee-ae7111775b06",
+      "name": "Titre 28",
+      "type": "application/vnd.adobe.element.characterstyle+dcx",
+      "groups": [
+        "Polices d'écritures"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "e1b719d9-594f-4336-acbc-5c949bfacd22",
+      "name": "Titre 36",
+      "type": "application/vnd.adobe.element.characterstyle+dcx",
+      "groups": [
+        "Polices d'écritures"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "d52c4192-69dd-452f-93f4-438c172c0908",
+      "name": "Texte 8",
+      "type": "application/vnd.adobe.element.characterstyle+dcx",
+      "groups": [
+        "Polices d'écritures"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "9c68f62a-34ec-467f-ba61-59d1e575966d",
+      "name": "Texte 6",
+      "type": "application/vnd.adobe.element.characterstyle+dcx",
+      "groups": [
+        "Polices d'écritures"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "9b3ae83f-9ed6-4f3c-b120-411b3bd9b593",
+      "name": "Texte 12",
+      "type": "application/vnd.adobe.element.characterstyle+dcx",
+      "groups": [
+        "Polices d'écritures"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "7ac2bd23-49a4-4845-bedd-d67a8b3b532f",
+      "name": "Report SSI",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "7ac2bd23-49a4-4845-bedd-d67a8b3b532f/b4411466-7125-4975-8839-2e07c18a5a33.ai",
+          "size_bytes": 801469,
+          "sha256": "7cf61252195252d89fecb4c6617c170b1998ff68cb916186f88008afbb45fdfd"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "968c5507-d5bf-440b-94d5-b33d8dc1b906",
+      "name": "Encart Norme",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Consignes"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "968c5507-d5bf-440b-94d5-b33d8dc1b906/1c25c960-d4ab-4961-a652-d56598255205.ai",
+          "size_bytes": 836501,
+          "sha256": "1da24bb12ff2f0eaed10a17afdfd87b5ad32e9878d5f5bbf7293c2cca41d5a1c"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "414e077b-653a-4cf7-86a9-75764db9d70e",
+      "name": "Encart Signature",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Consignes"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "414e077b-653a-4cf7-86a9-75764db9d70e/4f6b81e4-7c00-4485-a43a-7c71003fbc6c.ai",
+          "size_bytes": 775292,
+          "sha256": "dfb2758258857955cde660cf2c520ad5026464cf250285adb425b1c6de8371b2"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "189e424c-d541-4fea-b1ef-79fec6e18e75",
+      "name": "Encart Consigne Chambre",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Consignes"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "189e424c-d541-4fea-b1ef-79fec6e18e75/03546148-300f-4d73-8687-e48aee60a99c.ai",
+          "size_bytes": 793102,
+          "sha256": "e0567aab36946f65b5f652ae4f9e6789db1e41c6ed9c4b41b05d58862a49d5cb"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a5044aae-b06b-4693-a3e1-dfe4c80001b5",
+      "name": "LIDL",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [
+        "Couleurs"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "83be19eb-920b-4eab-80af-57e37ebb5fed",
+      "name": "TELEPHONE PORTABLE",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "83be19eb-920b-4eab-80af-57e37ebb5fed/11d35cb2-df88-4a0b-b10f-0f7246fbbccc.ai",
+          "size_bytes": 773775,
+          "sha256": "97f0cd4cdccf42b3048d7fd595865ef0e00baefa886f19e8affe0a2a6bddf3a8"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "525a7d1b-414a-41a9-a7d9-7cd1491b68cf",
+      "name": "Extincteur Poudre",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "525a7d1b-414a-41a9-a7d9-7cd1491b68cf/dbae81e3-bd49-4167-9df8-b48ec49a8168.ai",
+          "size_bytes": 803292,
+          "sha256": "6f1203936c371515dbef093d7fadb864a2b9b0cd9823993effd63968cd2acb43"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "63127e2b-2de5-4012-835c-610500013378",
+      "name": "Chaise d'évacuation",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "63127e2b-2de5-4012-835c-610500013378/11c0d4c4-00bc-4422-906d-2e1c782627bc.ai",
+          "size_bytes": 803097,
+          "sha256": "719ecc5d11e31cb51c844278279d849d253c8825e380eb346b51a294edfbde26"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "b9616961-d03c-4635-a644-dbe02d292f5a",
+      "name": "Provisoire",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Consignes"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "b9616961-d03c-4635-a644-dbe02d292f5a/de8292fb-1f9a-417b-ab22-01978d7668e5.ai",
+          "size_bytes": 769597,
+          "sha256": "64cde1201d7b7e9fce1c329a1c0c7058734571de87c68702dbfc72ba60cd6b74"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "286a2059-6bf6-470d-b1a1-4bfbbde47093",
+      "name": "Alimentation Colonne Humide",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "286a2059-6bf6-470d-b1a1-4bfbbde47093/5010f155-c3d4-4ce3-b0ad-12953545206b.ai",
+          "size_bytes": 766669,
+          "sha256": "2dc087d405b78cf011f8c72c7108a57621f768c4fd679f89f05a7b5c8851ec53"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "17867e06-c554-477c-826c-301b90657aa1",
+      "name": "Encart CIC & CM",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Consignes"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "17867e06-c554-477c-826c-301b90657aa1/2bc841d3-8567-40a9-bebe-917b12bde238.ai",
+          "size_bytes": 1913151,
+          "sha256": "1838204abc171331b42c0a2e65140a5c86e2c99f27f2d5a4e88b26fd529f89fe"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a3a42b7b-1017-4ec4-b007-7c028516bc04",
+      "name": "Nord",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Consignes"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a3a42b7b-1017-4ec4-b007-7c028516bc04/2088ee0c-f3f8-4203-8607-24577ff80514.ai",
+          "size_bytes": 208055,
+          "sha256": "7cc3cbde375b6839094ea70ba0994a68edecf97b4bdbfe520234dfa82a8ce138"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "8ad0a6d4-270c-4e30-98ec-e0d1287f1f35",
+      "name": "Chaufferie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Spécifique"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "8ad0a6d4-270c-4e30-98ec-e0d1287f1f35/e4ea65da-64e7-4016-96c4-f724f80ee1e5.ai",
+          "size_bytes": 781030,
+          "sha256": "7f5134631e90b501360f19ca32c93e74a6f98acaf907acc298dee05780bd9e99"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "5f6ce5ed-97e4-47d9-b8f1-42804cf29f82",
+      "name": "Local Electrique - Transfo - TGBT",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Spécifique"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "5f6ce5ed-97e4-47d9-b8f1-42804cf29f82/17e0f015-a767-4c4e-85bb-4351d1b1def5.ai",
+          "size_bytes": 780200,
+          "sha256": "fb23b721b54c6e428292b8d35a4af0d2be4de56e26861d25a2c3be8f1216a0bf"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "443c4ec4-e114-4378-b5cf-e7b26aa310e4",
+      "name": "Coupure Basse tension",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Spécifique"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "443c4ec4-e114-4378-b5cf-e7b26aa310e4/501a2b36-0dd1-49f3-835f-8506a5d53347.ai",
+          "size_bytes": 774761,
+          "sha256": "5de8401287767e26c5a505ca9543cd0eef882c144ba19e7c2043714020cbad0a"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a7277802-32a5-421a-9a94-6c233250b81b",
+      "name": "Coupure Haute tension",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Spécifique"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a7277802-32a5-421a-9a94-6c233250b81b/d02c1fc6-6d9c-4ba7-bb35-503994c573d9.ai",
+          "size_bytes": 773787,
+          "sha256": "3634870db33d4cc1990c93190b294dcdd932ca1602ff3933effada8950b22f35"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "c8481a7d-6eb2-4ece-8b8d-5503a2ab2a64",
+      "name": "Barrage Gaz",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Spécifique"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "c8481a7d-6eb2-4ece-8b8d-5503a2ab2a64/1a93c006-ee18-4589-b4f7-779df84084a0.ai",
+          "size_bytes": 776807,
+          "sha256": "b9e9d4268531c51e38124e0a55af9eca30d9528dd7011ea6926b82b65ef825fe"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "505f5e0e-6817-4f5e-98d2-858a44fad907",
+      "name": "Arrêt d’Urgence",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Spécifique"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "505f5e0e-6817-4f5e-98d2-858a44fad907/f6cb6b3b-9915-4c75-9dd3-1d2d3f032e5c.ai",
+          "size_bytes": 773405,
+          "sha256": "537d2def21c993fb2a5d87758d4a202c0551d6645c88d380d2bdbf5625076109"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "e0e29781-8429-434b-8a68-f72558f4e7a6",
+      "name": "Groupe de climatisation",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Spécifique"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "e0e29781-8429-434b-8a68-f72558f4e7a6/82900f5c-1d3d-403f-9d74-d83557f66ce3.ai",
+          "size_bytes": 801552,
+          "sha256": "6158b2cca57a6aa6a9f8babf8bc9a1d46267c988ce9ef97c2e1c25b8e3a6c89e"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a3b121a4-9ab8-4fbf-8983-f4339fd81fc4",
+      "name": "Local Poubelles",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Spécifique"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a3b121a4-9ab8-4fbf-8983-f4339fd81fc4/82d41c6a-c5e6-4cc3-8401-f5dcad77d17e.ai",
+          "size_bytes": 782189,
+          "sha256": "03bed2f6026943d6970fd64d76da54ab63d78fde38b312b12e5fbb760ca64a80"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "62ee817e-3fa3-4d5b-be4c-eab9b31fdf01",
+      "name": "Ascenseur",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Spécifique"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "62ee817e-3fa3-4d5b-be4c-eab9b31fdf01/5bf484da-9363-470d-b284-b8cb4708ebab.ai",
+          "size_bytes": 786412,
+          "sha256": "5e5026fb840722bf0decf13f5bff86b1bf4369a7df5128613c427f4b171ad700"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "52152628-d9b8-4e0e-ad05-2e18a6c0f675",
+      "name": "Monte-Malades",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "52152628-d9b8-4e0e-ad05-2e18a6c0f675/419257f4-1f07-411d-b44c-c7fc83c7d612.ai",
+          "size_bytes": 785410,
+          "sha256": "63fb59439b5fe524e6a3155949750b9fb0c7fe5963ce4e46086f375f6437e603"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "84faa41c-aeaa-4a6d-b8bb-860e2a8fdd4b",
+      "name": "Monte-Voitures",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "84faa41c-aeaa-4a6d-b8bb-860e2a8fdd4b/290d1a35-df45-4351-bd95-2d79cc33544c.ai",
+          "size_bytes": 780043,
+          "sha256": "d55cdf02218072f915baf313aa0cb9a00f6c16400857531b60a7bf22b444623b"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "850a2809-b403-4c97-8832-89b3d163d6aa",
+      "name": "Accès Toiture",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "850a2809-b403-4c97-8832-89b3d163d6aa/cc9378b4-0e96-441f-b47b-123d3b4b7d96.ai",
+          "size_bytes": 208284,
+          "sha256": "72fd8a847b7ecaebc0e8942544c134984e6e4526ca023b6a00fadc127c0a7329"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "5517b0f5-a000-4144-94b6-ae93a581fe5d",
+      "name": "Raccordement à l'égout",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "5517b0f5-a000-4144-94b6-ae93a581fe5d/0b296440-f7c7-4a13-9101-21bf98b4265a.ai",
+          "size_bytes": 197568,
+          "sha256": "16af3e6957cd74801603a1e2b2dcb92053c3f16127aac2ffdc5ba089eb64ae38"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "d0b0f0b7-8e59-4b55-903b-a55270f87548",
+      "name": "Masque Respiratoire",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "d0b0f0b7-8e59-4b55-903b-a55270f87548/c6e97230-5214-4ba5-b5bb-05b11f1d9a9e.ai",
+          "size_bytes": 226388,
+          "sha256": "a7e0d087dca5a0e7799c296febe930adac080ad8bdaf15ff99e688bb3598b890"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "8ed43629-523a-452e-9727-84d666c77c40",
+      "name": "Report Alarme",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "8ed43629-523a-452e-9727-84d666c77c40/1f595c91-28a4-4db5-93f5-32740b9317b3.ai",
+          "size_bytes": 803290,
+          "sha256": "3c987915e5a520fef24301a787c027bfd8642c28733a2d67aeec959855236f98"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "7b551a69-e75c-45e6-a284-eb682cc1a0f8",
+      "name": "Tableau Alarme",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "7b551a69-e75c-45e6-a284-eb682cc1a0f8/c8140f62-8914-477a-8383-37fe69be98b4.ai",
+          "size_bytes": 799930,
+          "sha256": "b922f295bb591c33bf79315403a587c0ffc135ce331e9071aa948c73a9bfa258"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "aba27472-9214-4bed-9df9-27111fae662f",
+      "name": "ENCARD SOURD ET MAL ENTENDU",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Spécifique"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "aba27472-9214-4bed-9df9-27111fae662f/9d556953-d1f8-452d-b213-52847a1f3093.ai",
+          "size_bytes": 457436,
+          "sha256": "83a6d705070b4124f323157a587e235b73bfe697b839691012d3d5b5f40cf8c2"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "7d0bf94d-688c-4cc7-a68e-a991a196bb2e",
+      "name": "Espace Handicapé FOND NOIR",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "7d0bf94d-688c-4cc7-a68e-a991a196bb2e/55f920cf-4971-4511-86a1-cd54c7337f30.ai",
+          "size_bytes": 797830,
+          "sha256": "d81d1e365b1351400749575b30f37487d9f5c2123b4d03f82c6478a6549bb99f"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "d3b6f369-aeed-465f-87aa-16ea0ec4d186",
+      "name": "Extincteur Eau",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "d3b6f369-aeed-465f-87aa-16ea0ec4d186/ca3e81ff-feed-4c85-bbfd-aa6d4ab5666f.ai",
+          "size_bytes": 808744,
+          "sha256": "f92be0e70f604398c8f24ee6d03ecb722270289492add506643005701042980c"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "88836ad1-50b7-4819-a011-90facae3d207",
+      "name": "Encart Non respect Norme",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Consignes"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "88836ad1-50b7-4819-a011-90facae3d207/8ec623d9-4f5b-4629-b0a0-80ae3d124ca0.ai",
+          "size_bytes": 792159,
+          "sha256": "c7b9e0e4a2871b18836577a20e556d35b7b3c7119a7e5de56fec3f2487fa0543"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "3c4cb31a-b613-49ca-b171-1673f9e2d62b",
+      "name": "SUD Incendie 2",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "3c4cb31a-b613-49ca-b171-1673f9e2d62b/1c5dcad6-8de4-49dd-849c-351eb9db08a0.ai",
+          "size_bytes": 1997776,
+          "sha256": "2a6b156c2bacd42f80229e379a7f52e681d177f3773923e7a167b980fd7cda1c"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "9bf3aa54-0404-4911-9397-dc7956a90e95",
+      "name": "SUD INCENDIE",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "9bf3aa54-0404-4911-9397-dc7956a90e95/0456e240-0d7e-4a53-b8b3-3d8209684e3c.ai",
+          "size_bytes": 2043007,
+          "sha256": "6d6f4540fe91a116a67f0bc66655a3b5c93b697d5418a0cffe001c4b3018e67a"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "e6abd60b-325f-4299-8bb6-20c83ddd9a65",
+      "name": "CAISSE-1",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Autres"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "e6abd60b-325f-4299-8bb6-20c83ddd9a65/ed129d44-f450-4f91-958f-8c459591acf2.ai",
+          "size_bytes": 814454,
+          "sha256": "798c3e494a4e3a31b5d9387f8c4bd8a5698382913a4bae4bd7aa1adb522e5c1a"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "071a196d-20ac-4928-9563-1472a538535d",
+      "name": "CAISSE-2",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Autres"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "071a196d-20ac-4928-9563-1472a538535d/6e5e8029-d60b-474b-8f88-624d8f4e2783.ai",
+          "size_bytes": 818477,
+          "sha256": "8e558baa58d0ee97d1a62c92d1bbde0cf82b0ac9f143cec573a6a59b28df65a1"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "54ecd4bd-aa9b-48a2-ade4-bf1937aac6db",
+      "name": "CAISSE-3",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Autres"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "54ecd4bd-aa9b-48a2-ade4-bf1937aac6db/222425ec-9bbf-4b04-9c28-68139cc92abc.ai",
+          "size_bytes": 797740,
+          "sha256": "aa8c797b48d1714d30851e4fd69581b5bd8d300e56d0e07463fdf5462d55d7bf"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "f8054dfe-4cc3-4f2b-90e8-dbc778572890",
+      "name": "CAISSE RAPIDE 1",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Autres"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "f8054dfe-4cc3-4f2b-90e8-dbc778572890/49540ced-6967-4a7e-8256-470f5954cac5.ai",
+          "size_bytes": 773996,
+          "sha256": "51b57f020b9e8e707de3476bfd0d0d41f4953615b452aec380c5b1617704954a"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "7f0a7cfb-f26b-410f-be36-98d4b2b0422d",
+      "name": "CAISSE RAPIDE 2",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Autres"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "7f0a7cfb-f26b-410f-be36-98d4b2b0422d/552175f3-a9f3-4cac-8e82-3eea48098419.ai",
+          "size_bytes": 775473,
+          "sha256": "8bdf7d987a60e9478cf51e67c0ced39800bb339e0df94947e7449dd6741d498a"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "7bf7b643-3b83-4aa5-b1e2-858d24cee634",
+      "name": "CAISSE",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Autres"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "7bf7b643-3b83-4aa5-b1e2-858d24cee634/92d856b6-1da3-4e7d-9d2b-fd3728a740e9.ai",
+          "size_bytes": 780764,
+          "sha256": "9f9493e6087399345e156fd07b43789cbff6689497d9638a52f65cf7a1504c62"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "d95e4e50-e70b-4fc1-a9bd-ff2a495ae342",
+      "name": "Kit d'oxygene",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "d95e4e50-e70b-4fc1-a9bd-ff2a495ae342/197f7a72-40b7-4e3b-9569-abfdf00e2438.ai",
+          "size_bytes": 826877,
+          "sha256": "b9773abd3e5311079355c2ef16b650922ca6121c2aecbf634b1823dae1a163e6"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "362cbbe1-751d-4b99-893a-25e2525bf115",
+      "name": "Barrage sur Canalisation de Gaz",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "362cbbe1-751d-4b99-893a-25e2525bf115/661185f8-a55b-486a-ab24-70d485351bb4.ai",
+          "size_bytes": 777850,
+          "sha256": "7e11627a7ef32910beea8ff90927f37f322f125a48fbf06f35c19f8664d2f50b"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "df2f4f0c-7067-4092-9a72-d74b6a47a909",
+      "name": "Sanitaires Hommes",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "df2f4f0c-7067-4092-9a72-d74b6a47a909/13970919-ae41-4f57-869f-4ff2e7591855.ai",
+          "size_bytes": 799843,
+          "sha256": "678a87236e592d03fc363f76145de0f8a059c75b5ae10592440fd6e19a89f135"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "90892d07-69e1-4f28-af83-23ba327652b1",
+      "name": "Sanitaires Femmes",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "90892d07-69e1-4f28-af83-23ba327652b1/9c20925f-100d-4834-84fe-45743278cfc2.ai",
+          "size_bytes": 800771,
+          "sha256": "2c0e84f4859986bd60adadfad9420902cc6e57cddf6d60ed70897db88bacaf5f"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "ed574e6f-47be-4e77-949d-623191935c47",
+      "name": "Risque Anoxie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "ed574e6f-47be-4e77-949d-623191935c47/366932b3-8f93-4d98-b44a-752cfcfc5259.ai",
+          "size_bytes": 794112,
+          "sha256": "2d89d8ccc3181d9af8c9fa3075e8e4fbe0fe0ee4b2adab4fec24585ab0bfa053"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "389d5078-14db-4a20-875d-6def1a6187a5",
+      "name": "Risque Incendie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "389d5078-14db-4a20-875d-6def1a6187a5/01afb162-81b2-4667-8b2e-abf6ca90a12a.ai",
+          "size_bytes": 806705,
+          "sha256": "d436cd9475cb0c19d6222c47af360c211a64bdaf20d3d26760fd0300d603ed8b"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "1333cca4-a43c-4bcf-b4f3-17b53f15c0a9",
+      "name": "Risque Pollution",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "1333cca4-a43c-4bcf-b4f3-17b53f15c0a9/cfe7f867-b689-4b01-9e12-e9367786f603.ai",
+          "size_bytes": 812227,
+          "sha256": "eb17e6d3f212f3e543cdb5050bba2b8318cf0eef387cea48a53452f486f909bb"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "616663b5-78cc-4949-944c-f712fb619be3",
+      "name": "Matière Explosive",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "616663b5-78cc-4949-944c-f712fb619be3/37464aca-23ba-4a56-a6f8-42f1c1889919.ai",
+          "size_bytes": 806104,
+          "sha256": "28bc056cef0a5370e01d7323743d4dd028bff622eb6793a4ead68d308d721047"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "15d58f3c-e710-45bc-a40d-5ba0d7e6352a",
+      "name": "Electrovanne gaz",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "15d58f3c-e710-45bc-a40d-5ba0d7e6352a/9b7a5bf6-7768-4bdf-b659-475235ead763.ai",
+          "size_bytes": 780321,
+          "sha256": "dea5cf8f727d23dc35ce173f20583a419dc230d0da60fadb4f8fc39eb99f0145"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "4118e5ce-66a9-416b-a309-11e13508ec1a",
+      "name": "Interphone EAS",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "4118e5ce-66a9-416b-a309-11e13508ec1a/c46ad7cb-1c38-4dc2-aa42-4e6c3b7aaf5d.ai",
+          "size_bytes": 800174,
+          "sha256": "4af51de6c72a68dd733ef6decb8d6912bb675a3ffdfa1cc02ab596fcb0d92581"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "28fce029-90b2-43eb-b7d3-b6b799ac1acd",
+      "name": "Zone de Confinement",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "28fce029-90b2-43eb-b7d3-b6b799ac1acd/e667d4c5-ca93-42c1-ac1f-c45728abacf5.ai",
+          "size_bytes": 810729,
+          "sha256": "ed66c17212709bd6fb281cb7f647638a86bd184e24a476b3afaed2b79c25585d"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "e5bc7ee3-500a-4292-a302-cafc90aa2960",
+      "name": "Monte-Charges Prioritaire",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "e5bc7ee3-500a-4292-a302-cafc90aa2960/969995ab-a154-44c9-a1f7-2323644506ce.ai",
+          "size_bytes": 786766,
+          "sha256": "9ffdf89b86b0a23317f99a9e5f039d9d7676fcf28eedb47e9f4a662b14c89c56"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "801a9c34-d317-453b-a255-b29aea85cc39",
+      "name": "ATI",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "801a9c34-d317-453b-a255-b29aea85cc39/f139ac5a-975b-435e-9bac-4d731ccf239b.ai",
+          "size_bytes": 514356,
+          "sha256": "98c68209d99a6167392cfb4ad4c47c5033d5400eced9d3a17f66da95a51dec72"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "d4b3a371-3ffc-4cfd-ba87-a3c804e69375",
+      "name": "Interphone de Sécurité",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "d4b3a371-3ffc-4cfd-ba87-a3c804e69375/72c54662-ceea-4f14-b328-24dcb5846521.ai",
+          "size_bytes": 810377,
+          "sha256": "141270911a72418f21e32de840e54353019632612814dc22ba905bb577d1ed77"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "eb386249-a587-4e80-b56d-9b75b7c635e5",
+      "name": "Marsella",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "eb386249-a587-4e80-b56d-9b75b7c635e5/4e303104-0ad9-47d2-ba7b-ed7fbda8363c.ai",
+          "size_bytes": 385365,
+          "sha256": "7336473e32136609eeaa88e759d7e9682e37487916a732feba0e15eb958b35ed"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "fb4c1713-b539-481a-af68-2c5ce9cf6cb2",
+      "name": "NOIR NF 318",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "4d6eed38-2dcc-4130-bee5-e657ef31af4a",
+      "name": "Point d'encrage",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "4d6eed38-2dcc-4130-bee5-e657ef31af4a/df061922-7cec-43e4-9f30-797f1b590adc.ai",
+          "size_bytes": 800064,
+          "sha256": "3a98e1a65561c4df80d8e144b059326eeecef03f6138ed3c06c277030c8647ab"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "7ea71827-c3cc-44d9-bf29-261fa78195c6",
+      "name": "Installations photovoltaïques",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Electricité"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "7ea71827-c3cc-44d9-bf29-261fa78195c6/67a5a74f-37cd-4678-a87d-fa57a11755d1.ai",
+          "size_bytes": 798154,
+          "sha256": "7279d2f426d1b2b74a592ef5209c096331869ce6e6b66d255984df7500b742bb"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "17a6b9aa-983b-4061-92aa-d705745f7016",
+      "name": "Siphon",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "17a6b9aa-983b-4061-92aa-d705745f7016/b476591c-8ecd-4487-b7e2-0ebd785ca6e6.ai",
+          "size_bytes": 785383,
+          "sha256": "ce1a24c7122679098c4fd768cb21fb84e700143be52084a1971aac76b13b13e2"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "563fcec1-d11d-4798-a11b-ce42aa85700e",
+      "name": "IKEA BLEU",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "40d7841a-6555-45f9-9d81-e8e78e570a6f",
+      "name": "IKEAU JAUNE",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "f6c08313-e5b9-4e1a-b73a-0c6dea70b95d",
+      "name": "Déclencheur d'alarme menace",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "f6c08313-e5b9-4e1a-b73a-0c6dea70b95d/981c85ae-b700-429a-9dee-7b7968ef5377.ai",
+          "size_bytes": 778843,
+          "sha256": "28b66b898c4303f2468856081023b8fceafa4a2aeeeaac24e5361e31d1ed8175"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "13ad1af7-6ff9-4bf2-a8af-81333b5c013f",
+      "name": "Boué de Sauvetage",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "13ad1af7-6ff9-4bf2-a8af-81333b5c013f/2909e971-f470-4498-800c-7313c2d6b218.ai",
+          "size_bytes": 813315,
+          "sha256": "bcbf13730f7ac1b5fdfea01f7a2ff035e855c17887c05336381ca2e1d2697a27"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "817e463e-0326-48d0-bc9c-cf3a3b7e26fe",
+      "name": "Détecteurs automatiques incendie",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "817e463e-0326-48d0-bc9c-cf3a3b7e26fe/721634b6-c653-4059-a01d-778b9e111ab5.ai",
+          "size_bytes": 809318,
+          "sha256": "800140130d79957fb5cf24cf50c7b50342b3021c055e92540a152a5f61152cad"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "d61b8b47-5d45-4539-bd36-5b68f62e890b",
+      "name": "Onduleur",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "d61b8b47-5d45-4539-bd36-5b68f62e890b/40d2df4d-5bf3-4a67-977f-c1d639378bcc.ai",
+          "size_bytes": 795437,
+          "sha256": "2c200c780775fd83b1ef6859324d66df2fec9b69fce21e921278a08b413b39a3"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "4c627489-2de1-4d4d-8dcb-79be757f8648",
+      "name": "White2",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "3be71406-f52b-4129-9df9-624592f8c233",
+      "name": "White",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "191cdc38-ae24-4618-80e5-9de35af9ff3e",
+      "name": "Déclencheur manuel gaz",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "191cdc38-ae24-4618-80e5-9de35af9ff3e/e6660f53-c63b-4e78-8449-e018356eb3fa.ai",
+          "size_bytes": 780446,
+          "sha256": "f6f9b6c4a287a1c14f867f51ae4c641fd46a1b2af98e7ccb3c04e53816ee2b72"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "489481e7-b538-40df-a419-9945115e97cb",
+      "name": "Point de Confinement",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "489481e7-b538-40df-a419-9945115e97cb/49d1da61-6d64-41fb-83cb-960e86caf21a.ai",
+          "size_bytes": 809796,
+          "sha256": "b45936ad496618df031fddda5cf633acf06d4ae38f5a57e8c75a9760bdccd385"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "8783bb43-aa47-4f0b-8a02-0fad7375f501",
+      "name": "Fenêtre de secours",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "8783bb43-aa47-4f0b-8a02-0fad7375f501/3c71afa8-d0f7-4e28-a5a9-7503ebde03b4.ai",
+          "size_bytes": 815436,
+          "sha256": "8d62dc2d9ea2498476b406c3e9d85c936a451fd8db154b0534c9cfda7e698954"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "8ca3bd9d-c944-4e58-aff6-59ddcf05b873",
+      "name": "Douche PMR",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "8ca3bd9d-c944-4e58-aff6-59ddcf05b873/f2472a86-1318-4634-b901-052b5f4e7a0b.ai",
+          "size_bytes": 810170,
+          "sha256": "b9341bc07d99ffa119875e300d87b0a02ebd05b297498fc08ff71c28c21d9706"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "16306bcb-5dde-492d-835a-f5223d0e2100",
+      "name": "EDF",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "16306bcb-5dde-492d-835a-f5223d0e2100/238f0812-38c4-482a-b3e4-ee57007ae5a9.ai",
+          "size_bytes": 368587,
+          "sha256": "eee0ea51ef290ffdbecaa7194fa31af9ec08a942b4a22cfca3ae0e3ea485cb40"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "1cec1552-9c9b-4c29-b3c6-3ce836fc59df",
+      "name": "Alarme",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "1cec1552-9c9b-4c29-b3c6-3ce836fc59df/46d019f9-d866-4896-a4a2-70c2f4a93fb4.ai",
+          "size_bytes": 789180,
+          "sha256": "49e329a79f2b3bafac5428637ce87df58b24cde013cc583dd3a81dacff8c439d"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "e75ffc71-a3f1-438f-9e8b-b8b8a49d438a",
+      "name": "MC DONALDS",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "e75ffc71-a3f1-438f-9e8b-b8b8a49d438a/64908115-7198-41b8-9781-1956883f96a1.ai",
+          "size_bytes": 364047,
+          "sha256": "442085aea3a59b11f171853197a079b8b5609c72e4d4c804771ac17f272566d2"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "e73753ca-c056-4944-9057-d56c4488f17f",
+      "name": "ADE-PROTECTION-INCENDIE-logo-700px",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "b7a21686-b330-400f-b07e-2082d0197bf9",
+      "name": "Poste d'Appel d'Urgence Médicale",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "b7a21686-b330-400f-b07e-2082d0197bf9/f843e69b-8428-47b2-b7fd-f268ee134fc8.ai",
+          "size_bytes": 788332,
+          "sha256": "1197d0a8135f42436ae2798547e02826058710d84abaa51866268fd97483974c"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "ea66fa34-f4b6-4843-9f7c-c6cf2073b677",
+      "name": "Style de caractères normal",
+      "type": "application/vnd.adobe.element.characterstyle+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "70d9ff9a-bbd9-4a3b-a06f-cf380458b7b0",
+      "name": "Produits Chimiques",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "70d9ff9a-bbd9-4a3b-a06f-cf380458b7b0/d77347c0-f7fd-44d8-b372-0e2261151d8c.ai",
+          "size_bytes": 785043,
+          "sha256": "96677c19ccbd0e39da434a5e38e69c7ce3b8cad47362937dc171897d7c8b9bbe"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "6fac994a-56a3-4228-b2f5-ba5bc64c5541",
+      "name": "Extincteur Portatif",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "6fac994a-56a3-4228-b2f5-ba5bc64c5541/e7ba02ea-9f81-4cc9-b62c-2f6b3e6a243e.ai",
+          "size_bytes": 378983,
+          "sha256": "03d91f5b04e8398e99341b37ba56d1f6b9fed563e5fa9eb0c3fa3b4a7054499a"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "9e8cdd84-92c8-4e8b-a35b-7c96d0c09ab5",
+      "name": "Illustration 1",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "9e8cdd84-92c8-4e8b-a35b-7c96d0c09ab5/21356f7d-75da-4fe4-819e-1cc4125c325e.ai",
+          "size_bytes": 363293,
+          "sha256": "9b852914daa4c34b97de93ff28ba2732b9d36ac36e970c8e030f80d73a6f3b1c"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "8c4bd185-49f7-43dc-8c08-ca962012407c",
+      "name": "Commande de Désenfumage Mécanique",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "8c4bd185-49f7-43dc-8c08-ca962012407c/f78f934b-09f2-4e01-a5bf-82f1ef20481f.ai",
+          "size_bytes": 816920,
+          "sha256": "dd69b73d5135d3fe5cbe70b8fc4746fb3355c7ccac00073109a1cf6cf6173958"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "e2dd15f6-ff23-4c2e-88b2-b127ee2a0db3",
+      "name": "Charge Velo",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "e2dd15f6-ff23-4c2e-88b2-b127ee2a0db3/5034c614-d745-40e1-a661-8fb3a1655018.ai",
+          "size_bytes": 808491,
+          "sha256": "239c9c2b30bf2d0a6b50e107d045fc60478d16edfd52812a7e902950da76d2ce"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "8d5ead4b-b237-47e3-ad16-2773c5cfc1d2",
+      "name": "Charge vélo",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "8d5ead4b-b237-47e3-ad16-2773c5cfc1d2/d98d5f04-1ae1-42dc-a5ba-9aa979b68307.ai",
+          "size_bytes": 809334,
+          "sha256": "e506346354447264df6a2437f713c0abc1910723024db8f90144a71a35a45808"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "ad6c7cf7-eb78-4503-867c-c6c9b8b9304f",
+      "name": "Commande d’extinction gaz",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "ad6c7cf7-eb78-4503-867c-c6c9b8b9304f/c99765b1-e6cb-4426-a492-de93eb08637f.ai",
+          "size_bytes": 783397,
+          "sha256": "bebd537d141b9527d8784422ece2d73689458dc94a13e1d6ba9a9260288b188f"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "ab355d77-cda6-4ae3-86aa-d4a4aac19877",
+      "name": "Kit Membre Séctionné",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "ab355d77-cda6-4ae3-86aa-d4a4aac19877/dbddcfbb-c0ca-452c-aa0c-3a0d5c86dc8d.ai",
+          "size_bytes": 796859,
+          "sha256": "602bc709e4dff6ff33d7c318c99a78b342ce6a431e7116813779f04e1e119007"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "1ed3b374-2c85-405b-af69-cbc27ce18f47",
+      "name": "C=60 M=90 J=0 N=0",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "fd4ee91a-b6db-4a55-88f7-32e50919742c",
+      "name": "Blanc",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "81137d6d-ca44-4307-9b55-c53564dcfd53",
+      "name": "Best Western",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "2519a27c-277d-4a51-b397-3c74a6cb3b17",
+      "name": "Noir",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "c5407952-a473-4bc9-9ed6-954975891479",
+      "name": "Gris",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "776598fe-7041-4a92-9aaf-4a560df198fa",
+      "name": "Rouge",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "2f59a402-79d8-448d-9786-2bd899264bb9",
+      "name": "Orange",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "f11961b9-2180-44ca-8cf6-0f85aa5e07a7",
+      "name": "Vert",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "a896a6f3-96d8-4cf9-8bbe-a806e0c9ee15",
+      "name": "Vert Clair",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "786c469a-f5fa-430e-8afd-907804be9a31",
+      "name": "Bleu VEI",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "ca604ccd-a2cf-490d-b211-8c404cd3eae8",
+      "name": "Bleu",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "eb95cda6-6787-4445-82f9-2e79513da7c4",
+      "name": "Rose",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "1798f3ca-b42f-4848-8887-982d478db0ca",
+      "name": "Beige",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "1e82e307-9b29-45dc-96d9-49e85cef6fec",
+      "name": "Marron",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "2fb6e77d-243f-47b4-bc79-6a9a94fed42b",
+      "name": "Violet",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "ef743f0d-b4a7-440c-9086-238bb21c932a",
+      "name": "Vert Patio",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "8c23def8-a7a1-476f-9628-d931a0021a21",
+      "name": "Bleu Piscine",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "d7707674-e638-4d2a-8504-daa62887564a",
+      "name": "Gris Clair",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "5fef2599-6a0c-4c6c-90b4-e7d8303cffc6",
+      "name": "Gris Clair 2",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "fc902606-dabc-4edd-b073-d20599fbf13f",
+      "name": "Bleu Ciel",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "7460174e-6e4a-4193-85fd-2cce43817cde",
+      "name": "Jaune",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "232fd9dc-3d13-4fde-9afd-dd645ad7aec1",
+      "name": "NON COMMANDÉ",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "19ff6a10-3212-4a3a-86a8-e509201bfe60",
+      "name": "Déclencheur extinction automatique",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "19ff6a10-3212-4a3a-86a8-e509201bfe60/0c4315b8-e2d8-48de-aa69-6bf872a93553.ai",
+          "size_bytes": 805068,
+          "sha256": "94ff908c70cae42ba7ba080ce837f0185133c8f90c8cfd5c649f632b0fb7ccff"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "914d23b0-a714-4a0a-a4d4-40746254d342",
+      "name": "Trappe d'Accès",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "914d23b0-a714-4a0a-a4d4-40746254d342/95844387-f6ff-4228-b51d-2cb5aceaa5a0.ai",
+          "size_bytes": 789523,
+          "sha256": "955e66ff12c0f3adce2095311ca1983e552b9a6c39bb68488aedee0b13255284"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "4a34a2c6-0f62-40c7-aa0d-aa77cc6f39b8",
+      "name": "Trappe Désenfumage",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "4a34a2c6-0f62-40c7-aa0d-aa77cc6f39b8/32e0921b-b691-49ac-8bab-66ba171e10f7.ai",
+          "size_bytes": 796540,
+          "sha256": "0b4a0dc702f03d735df7fb6fa3bb2252d8c5e91fd3c5a8d30aa0e31d0c097afa"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "b0831759-6385-481f-8051-15269bc890fe",
+      "name": "TEST",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "b0831759-6385-481f-8051-15269bc890fe/45804466-518e-44ac-a697-2510ef304555.ai",
+          "size_bytes": 804274,
+          "sha256": "6b550f470d6e70e78e09606e8978da9ed7432e39c54acbf9a32d3a5a46223253"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "63ecb5a6-fec5-41cd-b405-acb157d6cf56",
+      "name": "Elévateur PMR",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "63ecb5a6-fec5-41cd-b405-acb157d6cf56/dabf0cc6-1552-4de0-a9f0-8dd3e6dd7bb8.ai",
+          "size_bytes": 778634,
+          "sha256": "b3df08bfd0987d6eb0a8f677cb3daa0e917d45335a3b9db3cc2810d9bb22614e"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "9ed6f980-464e-4ad0-97ab-44435e008f04",
+      "name": "Point d'aspiration aménagé",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "9ed6f980-464e-4ad0-97ab-44435e008f04/99d8f2a2-b3d0-4de1-928c-456b6e1b6614.ai",
+          "size_bytes": 786830,
+          "sha256": "e1f3c507671dc67a9d3eca838cf6352b56cbe1f8a5ea280c0f5b0e35fe7f5c5b"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a16aa910-e132-44b5-bb4d-4dc6447e09ee",
+      "name": "Réservoir d'eau aérien ou enterré",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a16aa910-e132-44b5-bb4d-4dc6447e09ee/4a2da81a-24fe-48bf-af95-1cb6e3cd6a1c.ai",
+          "size_bytes": 782915,
+          "sha256": "c44bcd6af98d78c43e3a3766ab3f0ca4f790b5a6b10589abb9908dc62d85d672"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "8af6c8ba-45f7-4723-ade0-27f9b68d0d64",
+      "name": "Voie Engin",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "8af6c8ba-45f7-4723-ade0-27f9b68d0d64/e728466f-396a-4141-ba9c-5639d3ea6820.ai",
+          "size_bytes": 778361,
+          "sha256": "ff82ff8deb3742ca66634a4f9a2affdf44acb7057f48871aaf4086b70eac6181"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "2e3e8c85-34ea-470e-be48-eacc3e46cf83",
+      "name": "Voie Echelle",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "2e3e8c85-34ea-470e-be48-eacc3e46cf83/2729297c-9b2a-4d5d-a3c7-9e0ae98196b1.ai",
+          "size_bytes": 787551,
+          "sha256": "c472c981baf35e605dbaed16398b4a7b767c04a6e2c3c3aaa85997735265b62f"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "09449e24-d2e4-47c9-ad1b-a95d8fe0e6c0",
+      "name": "Rideau d'eau",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "09449e24-d2e4-47c9-ad1b-a95d8fe0e6c0/3e3f9a50-3259-4616-815f-a7cffd74023a.ai",
+          "size_bytes": 770182,
+          "sha256": "4032e03cb07713a9b3140b1ca41627af8049b72ee23a9bdb0b06d7b05222a83c"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "5bfd2de7-44f3-43d0-bd9c-a2c4758fe7e8",
+      "name": "Commande manuelle d'extinction automatique localisée",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "5bfd2de7-44f3-43d0-bd9c-a2c4758fe7e8/20bbb9dd-938d-423e-987c-47f29ac83626.ai",
+          "size_bytes": 772131,
+          "sha256": "bd1a179c6e0a86c5aa4c58282871245e21ccb94be3a89f55bef04c6a06566988"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "5c4beecf-a97c-4fba-b7c7-bb8e25d7fbee",
+      "name": "Danger pour la santé, CMR",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Produits Dangereux - Risques"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "5c4beecf-a97c-4fba-b7c7-bb8e25d7fbee/f32c9732-523b-409b-8327-b5d1e6f12e00.ai",
+          "size_bytes": 814129,
+          "sha256": "4abe25b85d9c14f69fb001154485761bbce07034399b43a15914f4348ada48a1"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "4bf2f416-b5d1-4f51-8af9-1c276a1742a9",
+      "name": "Borne de recharge électrique",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "4bf2f416-b5d1-4f51-8af9-1c276a1742a9/55c4a7e7-10e4-4159-936a-b7a4dafbc2a5.ai",
+          "size_bytes": 791913,
+          "sha256": "79427b9544459686b9eccc00265a029dd2c151bc22a79c4964be737d7f058d87"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "2d356981-09e2-48c7-a3b7-697defd87d4c",
+      "name": "Ouverture d'urgence porte",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "2d356981-09e2-48c7-a3b7-697defd87d4c/9c7a2b3d-1789-42f0-b7eb-a16b355080a1.ai",
+          "size_bytes": 785220,
+          "sha256": "b42b097f4895a9075296579134a005d9aedb4004717c0ccd8a3fec007f966037"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "49461cd9-4f04-49c0-afc4-e5fec854d894",
+      "name": "Ouverture d'urgence porte",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "49461cd9-4f04-49c0-afc4-e5fec854d894/375a3abd-f683-486a-b247-95d8a92b8798.ai",
+          "size_bytes": 785357,
+          "sha256": "806664eb36afa44a7f24e1662bba7ead570dbd42bb9c0f1cece6a25117809a04"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "5a8817a5-1155-4345-82e3-de364114ba76",
+      "name": "White",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "8c310faa-c0c7-4b96-b89b-1dc7578bdae6",
+      "name": "CutContour_Michair",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "88afd948-885b-475e-9a68-4bd7667d732f",
+      "name": "Réserves d'eau",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Local"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "88afd948-885b-475e-9a68-4bd7667d732f/b492adb9-17c6-4932-a508-4bb57f9fcf3f.ai",
+          "size_bytes": 797580,
+          "sha256": "5cbc809b7b1a5c1562633998fc2ee509ec757523b26a8f5763e7cb4feb0b216b"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "bfe950ce-a6fe-41e1-a0ad-42047f96d857",
+      "name": "Jardin - Patio",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Local"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "bfe950ce-a6fe-41e1-a0ad-42047f96d857/bd0b9aa2-f6df-42e8-9906-cec7e8bcf1e1.ai",
+          "size_bytes": 797394,
+          "sha256": "7fab3fba1809a2df878daa0e6f6938de239fb9a407b8ea2cee41046c2a87ca8a"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "fe95d909-477e-49c6-8a55-aa02ed7bec67",
+      "name": "Vide",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Local"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "fe95d909-477e-49c6-8a55-aa02ed7bec67/bac90229-d9d6-453c-b065-55aea1152a07.ai",
+          "size_bytes": 797575,
+          "sha256": "f231babb89d586fcce94f57d455e4f6cf460d31280266ae9e420345cd77c86ef"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "c19213b5-6a9e-4a4a-9fb0-0bb772cc89f5",
+      "name": "Chambre Froide",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Local"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "c19213b5-6a9e-4a4a-9fb0-0bb772cc89f5/2fc28a17-e274-4b5b-bfda-06e6a97beee7.ai",
+          "size_bytes": 780430,
+          "sha256": "16de2ed1376018f1a9798b4ccb8e905f6d98f15dc8627a4f69c65092278499e4"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "07233da2-9433-46da-8db5-5b13c8244427",
+      "name": "Zone Privée",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Local"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "07233da2-9433-46da-8db5-5b13c8244427/6bad0dfa-fd53-4b10-ad08-675e1fc976eb.ai",
+          "size_bytes": 797780,
+          "sha256": "5ba515eccf1e2562e585b340cc8c15208604d13e97f08077883d85098a4524fb"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "4f447a1e-1dba-4137-a489-4e3a07c81ccd",
+      "name": "Non Concerné(e)",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Local"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "4f447a1e-1dba-4137-a489-4e3a07c81ccd/1c810796-d9f5-4573-95d6-fa3e9ef909f5.ai",
+          "size_bytes": 797534,
+          "sha256": "fea336e5a18472f97b57a23ed4b83c900f994afa9900c90d704f1edcf9fd3097"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "4c8e3dcf-4feb-47fa-8cc2-2bc24bb97e6f",
+      "name": "Consigne de Chambre",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Local"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "4c8e3dcf-4feb-47fa-8cc2-2bc24bb97e6f/1c32d771-1f93-4f53-8725-845d38fe5e59.ai",
+          "size_bytes": 798002,
+          "sha256": "ff7ade3b5a6630017942df93763409eda7e6ac4794b107dd6bd14adb435ba384"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "0ef5479b-181c-40d2-b25d-df7ac54c6a64",
+      "name": "Merci d'utiliser la couleur risque et non le picto",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Local"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "7e4fac0b-d0ba-4f0a-83de-2763e82f0591/dc4ad8cc-008e-4d7d-8387-18be7ac48b40.ai",
+          "size_bytes": 797155,
+          "sha256": "07deeb5c7e6b608819b306fa30f196cfa7c7932c676ff6d3ed1238fff3375171"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "ee3eb6fe-c930-457c-9dbb-2e0990bb8f47",
+      "name": "Desautel LOGO",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Logo Agences"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "ee3eb6fe-c930-457c-9dbb-2e0990bb8f47/5e3ae717-af7d-4e5f-8b83-2ae269a61bf4.ai",
+          "size_bytes": 1795031,
+          "sha256": "164a85f053e197ed7998d387e5dadccca08af75ef0cd16d0b39f9af2afc73ce3"
+        }
+      ],
+      "pictogram_candidate": false,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "c4a94ab3-fa32-4222-9fec-8c889761d9da",
+      "name": "QUANTITATIF",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "c4a94ab3-fa32-4222-9fec-8c889761d9da/5408bff7-aae0-48ff-bf20-d4d0eb5bfd93.ai",
+          "size_bytes": 436415,
+          "sha256": "32e79777fcd880762de454564b607c6f170b5776a032bf51dea186a4a7d32659"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "67c066c5-b449-40e0-8f19-973f933b15d3",
+      "name": "Douche",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "67c066c5-b449-40e0-8f19-973f933b15d3/4b8d46f3-35d8-4051-ad20-cbdcca2aeca1.ai",
+          "size_bytes": 826632,
+          "sha256": "29ae11db5b378e3655a9de31e70d67798f1aa4f0bb0cb549e6829c0c60bb6477"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "34f26a25-2292-4ced-a704-4ba3ab3f6313",
+      "name": "Illustration 2",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "34f26a25-2292-4ced-a704-4ba3ab3f6313/f39c7e9a-5b71-43f7-b88d-5e5950ef54ba.ai",
+          "size_bytes": 1419539,
+          "sha256": "dbb07427281a5ef3ad1b2e078bbdc61ff6f49ef8b638b8bc512d96be06d8f94b"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "06374fc2-ecc9-43ce-9598-f0160b1e45d8",
+      "name": "Texte 13",
+      "type": "application/vnd.adobe.element.text+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "d36cd6b7-8768-4b5b-aba8-342c7565d7fc",
+      "name": "#FFFFFF",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "2d3673e7-6d58-42b2-a45e-f70ab2411e42",
+      "name": "#070606",
+      "type": "application/vnd.adobe.element.color+dcx",
+      "groups": [],
+      "components": [],
+      "pictogram_candidate": false,
+      "verified": false,
+      "approved": false,
+      "preview": false
+    },
+    {
+      "id": "aecda542-27e6-4c3c-a541-d41fabcd5976",
+      "name": "Illustration 3",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "aecda542-27e6-4c3c-a541-d41fabcd5976/c7a2da5f-6771-4b78-ab29-55c05265c9a2.ai",
+          "size_bytes": 1418402,
+          "sha256": "622322f9ae61aac3b66f31a894936994dc487214325184bab53414db3fea3642"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "e2ed7973-0438-439b-bfdf-c64a8afc0339",
+      "name": "Illustration 4",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "e2ed7973-0438-439b-bfdf-c64a8afc0339/0081a7fd-9608-4e23-b70f-d109f09ed15d.ai",
+          "size_bytes": 1418404,
+          "sha256": "fb43437b5d1a5e8b3fcaacff06f0098a6da1360d47d4e320e2b816f2bbeb27dc"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "2ee3702a-f6c3-4089-88ac-8b800227d765",
+      "name": "Barrage sur Canalisation de Gaz",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "2ee3702a-f6c3-4089-88ac-8b800227d765/661185f8-a55b-486a-ab24-70d485351bb4.ai",
+          "size_bytes": 777850,
+          "sha256": "7e11627a7ef32910beea8ff90927f37f322f125a48fbf06f35c19f8664d2f50b"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "b605cd25-be7e-4c42-a8c1-95edf60c4c01",
+      "name": "Illustration 5",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "b605cd25-be7e-4c42-a8c1-95edf60c4c01/ec38744a-ef40-4b4f-bdba-358f6e1354ac.ai",
+          "size_bytes": 357554,
+          "sha256": "e7dcf95aa774549512dc474cc84cbb59ae5f993506dd3af3d97fb5eb0046d7b4"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    },
+    {
+      "id": "a5d477da-d944-4f57-9c87-8434e038e5a9",
+      "name": "Barrage sur Canalisation - Fluides Médicaux",
+      "type": "application/vnd.adobe.element.image+dcx",
+      "groups": [
+        "Incendie"
+      ],
+      "components": [
+        {
+          "type": "application/illustrator",
+          "role": "primary",
+          "archive_path": "a5d477da-d944-4f57-9c87-8434e038e5a9/d4692b02-d189-4829-af5a-7f9a395c2227.ai",
+          "size_bytes": 793463,
+          "sha256": "301f667e66b3efc44c7ca4436a8bb0b6e4f98d770d52d2f931c5b7b0030ef1ce"
+        }
+      ],
+      "pictogram_candidate": true,
+      "verified": true,
+      "approved": false,
+      "preview": true
+    }
+  ],
+  "warnings": [],
+  "manifest_files": [
+    "manifest"
+  ],
+  "archive_sha256": "01f8702f33094659c3cb95e94f9a42a9a6b1cc6f344d2724a651c5c50fef2fde"
+}
