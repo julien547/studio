@@ -51,7 +51,8 @@ def main():
             from .recognition import local_proposals, multimodal_proposals
             from .models import Box
             if data.pop("mode") == "multimodal":
-                proposals, report = multimodal_proposals(data["image_path"], data["document_id"], data["page"])
+                proposals, report = multimodal_proposals(data["image_path"], data["document_id"], data["page"],
+                                                        data.get("region"))
             else:
                 proposals, report = local_proposals(rgb(data["image_path"]), data["document_id"], data["page"],
                     Box.model_validate(data["legend_box"]) if data.get("legend_box") else None)

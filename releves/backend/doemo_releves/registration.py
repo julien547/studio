@@ -58,6 +58,18 @@ def automatic(source_rgb, target_rgb):
         raise ValueError("Pas assez de détails communs")
     pairs = cv2.BFMatcher().knnMatch(da, db, k=2)
     good = [p[0] for p in pairs if len(p) == 2 and p[0].distance < .65 * p[1].distance]
+    # Repeated walls/text can all match one target corner. Keep only a single
+    # correspondence for each physical point before fitting a homography.
+    unique, used_source, used_target = [], set(), set()
+    for match in sorted(good, key=lambda m: m.distance):
+        source_key = tuple(round(v, 1) for v in ka[match.queryIdx].pt)
+        target_key = tuple(round(v, 1) for v in kb[match.trainIdx].pt)
+        if source_key in used_source or target_key in used_target:
+            continue
+        used_source.add(source_key)
+        used_target.add(target_key)
+        unique.append(match)
+    good = unique
     if len(good) < 8:
         raise ValueError("Correspondances insuffisantes : utiliser les points manuels")
     a = np.float32([ka[m.queryIdx].pt for m in good])
@@ -66,6 +78,11 @@ def automatic(source_rgb, target_rgb):
     if matrix is None or int(mask.sum()) < 8 or float(mask.mean()) < .4:
         raise ValueError("Alignement automatique non fiable")
     a, b = a[mask.ravel() == 1], b[mask.ravel() == 1]
+    for points, shape in [(a, source.shape), (b, target.shape)]:
+        normalized = points / [shape[1], shape[0]]
+        if (np.linalg.matrix_rank(np.c_[normalized, np.ones(len(points))]) < 3
+                or cv2.contourArea(cv2.convexHull(normalized.astype(np.float32))) < .01):
+            raise ValueError("Correspondances trop concentrées : utiliser les points manuels")
     # Keep a bounded, spread sample; manual independent checks remain obligatory.
     idx = np.linspace(0, len(a) - 1, min(12, len(a)), dtype=int)
     return {"source_points": (a[idx] / [source.shape[1], source.shape[0]]).tolist(),

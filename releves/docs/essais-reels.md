@@ -3,6 +3,10 @@
 Ces essais concernent les fichiers effectivement reçus et l’archive déposée sur GitHub.
 Aucun relevé client, BAT ou placement privé n’est ajouté au dépôt source.
 
+Ce compte rendu décrit le premier lot. L’essai a depuis été repris à la demande
+de l’utilisateur sur de nouveaux relevés et un BAT Animalis, avec OpenAI configuré :
+voir [l’essai Animalis](essai-animalis.md).
+
 ## Bibliothèque SAI — test C
 
 Les deux parties GitHub représentent 178 207 556 octets, réunies dans l’ordre `aa`, `ab`.
