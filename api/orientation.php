@@ -1,6 +1,7 @@
 <?php
-// Page Orientation : dépose un BAT (PDF), le fait traiter par le moteur PDF de diagnostic (doemo-pdf)
-// et restitue le PDF composé dans une trame. Le moteur est un moteur de DIAGNOSTIC : production_ready est toujours false.
+// Inspection et diagnostic explicite. L'action compose refuse la génération
+// métier tant que le moteur ne sait pas isoler les VEI et redresser les objets.
+// compose-diagnostic reste un essai technique : production_ready est toujours false.
 // Accès : admin / administration. Fichiers dans des dossiers privés (hors web).
 require __DIR__ . '/_s.php';
 const OR_TEMPLATES = '/var/lib/doemo-studio/templates';
@@ -70,6 +71,21 @@ function or_num($v, $min = -1e7, $max = 1e7) { if (!is_numeric($v)) return null;
 
 $action = (string)($_GET['action'] ?? '');
 
+if ($action === 'capabilities') {
+    studio_json(200, ['ok' => true, 'production_ready' => false,
+        'generation_available' => false, 'diagnostic_available' => true,
+        'diagnostic_action' => 'compose-diagnostic']);
+}
+
+if ($action === 'compose') {
+    or_post_guard();
+    // Refuser avant tout lancement ou création de PDF. Une sortie de diagnostic
+    // ne peut pas satisfaire une demande de déclinaison, même si le CLI réussit.
+    studio_json(422, ['ok' => false, 'status' => 'generation_unavailable',
+        'production_ready' => false, 'code' => 'GENERATION_NOT_IMPLEMENTED',
+        'error' => 'La génération de plans n’est pas encore opérationnelle : le moteur ne sait pas conserver un seul « Vous êtes ici » et redresser les textes et pictogrammes. Aucun plan n’a été généré.']);
+}
+
 if ($action === 'templates') {
     $out = [];
     if (is_dir(OR_TEMPLATES)) foreach (scandir(OR_TEMPLATES) as $c) {
@@ -117,7 +133,7 @@ if ($action === 'upload') {
                       'layers' => array_values(array_map(function ($l) { return $l['name'] ?? ''; }, $info['layers'] ?? []))]);
 }
 
-if ($action === 'compose') {
+if ($action === 'compose-diagnostic') {
     or_post_guard();
     $in = json_decode(file_get_contents('php://input'), true) ?: [];
     $id = (string)($in['job'] ?? ''); $meta = or_job_meta($id, $login, $isAdmin);
@@ -141,9 +157,18 @@ if ($action === 'compose') {
     if ($code !== 0 || !is_array($report)) {
         studio_json(422, ['ok' => false, 'error' => 'Composition refusée : ' . or_msg($se, 'le moteur a échoué.')]);
     }
+    if (($report['status'] ?? null) !== 'diagnostic_nonconforming' ||
+        ($report['production_ready'] ?? null) !== false ||
+        !is_array($report['blockers'] ?? null) || count($report['blockers']) === 0) {
+        studio_json(502, ['ok' => false, 'production_ready' => false,
+            'error' => 'Le moteur a renvoyé un rapport de diagnostic incomplet.']);
+    }
     @chmod($out, 0660);
     @file_put_contents(OR_RESULTS . "/$id/.journal", date('c') . "\t$login\t$outName\n", FILE_APPEND);
-    studio_json(200, ['ok' => true, 'job' => $id, 'file' => $outName, 'report' => $report]);
+    studio_json(200, ['ok' => true, 'status' => 'diagnostic_nonconforming',
+        'production_ready' => false, 'job' => $id, 'file' => $outName,
+        'warning' => 'Essai technique non conforme : plusieurs VEI, ancien habillage et éléments non redressés peuvent être présents.',
+        'report' => $report]);
 }
 
 if ($action === 'result') {

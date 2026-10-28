@@ -87,7 +87,7 @@ visibles et vérifier les débordements avant la mise à l'échelle finale.
 
 ## Demande à transmettre à la session Illustrator
 
-Ajouter au nouveau moteur 1.0.13 une commande d'export de BAT structuré pour
+Ajouter au nouveau moteur (référence reçue : 1.0.14) une commande d'export de BAT structuré pour
 Studio, distincte de la génération AI. Elle doit produire les fragments
 vectoriels, leur manifeste et un BAT de référence, conserver les originaux,
 leurs visibilités et leur légende, et exposer les identifiants complets des VEI,

@@ -13,12 +13,22 @@ Cette livraison contient le socle HTML/JS/PHP de connexion, le relais
 vers `/app/`. D'après le README distant, ce frontend React est construit depuis
 `julien547/doemo-app`, branche `feat/studio-host`, puis copié dans
 `/var/www/studio/app/` ; son build n'est pas versionné dans ce dépôt Studio.
-Préserver ce frontend s'il existe déjà. Le moteur Python de cette livraison
-n'est pas raccordé à ce frontend ni à un worker de production. Ne pas annoncer
+Préserver ce frontend s'il existe déjà. L'API `api/orientation.php` ajoutée depuis
+raccorde le moteur aux uploads et compositions de diagnostic, avec accès
+administrateur, stockage privé et limites de processus. Ce raccordement n'a pas
+été testé sur le serveur cible ; ce n'est pas un worker de production. Ne pas annoncer
 la génération PDF conforme comme opérationnelle après cette installation.
 
-75 tests Python ont été exécutés dans l'environnement cloud, dont huit contrôles
-du rangement des trames par client. Les deux PDF d'essai
+Après le retour du PDF incorrect du 28 octobre, l'action web `compose` refuse
+explicitement la génération (HTTP 422, aucun PDF créé). Le diagnostic nécessite
+`compose-diagnostic`. Ne pas raccorder cette action au bouton de génération ;
+voir le [constat et le correctif](incident-generation-20261028.md). Sept scénarios
+HTTP ont été vérifiés en local avec PHP 8.4 ; le serveur cible reste à contrôler.
+
+81 tests Python ont été exécutés dans l'environnement cloud, dont huit contrôles
+du rangement des trames par client et six nouveaux cas d'impression native AI.
+La référence Illustrator 1.0.14 et ses 125 tests simulés ont aussi été contrôlés ;
+voir [le bilan](audit-moteur-1.0.14.md). Les deux PDF d'essai
 réels restent non conformes : page BAT complète, plusieurs VEI et pas de
 contre-rotation individuelle appliquée aux pictogrammes. L'authentification PHP
 et les commandes de déploiement serveur ci-dessous n'ont pas été testées sur le
@@ -38,6 +48,7 @@ serveur cible, qui n'est pas connecté à cette session.
 | Environnement Python du cloud | `/workspace/.venvs/studio-pdf/` |
 | Données de test et diagnostics privés | `/workspace/studio-audit/` |
 | Sources Illustrator reçues | `/workspace/studio-audit/script-1.0.13/DOEMO-Studio-nouveau-moteur-1.0.13/` |
+| Nouvelle référence Illustrator 1.0.14 | `/workspace/studio-audit/script-1.0.14/DOEMO-Generateur/` |
 | Fichiers originaux joints | `/workspace/attachments/` |
 | Archives préparées pour transmission | `/workspace/studio-handoff/` |
 

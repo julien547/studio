@@ -21,11 +21,16 @@ Aucun secret n'est stocké dans ce dépôt.
 
 Le module Python [engine](engine/README.md) inspecte les PDF et les métadonnées
 natives AI24, et réalise des compositions vectorielles de diagnostic. Ses tests
-sont exécutables indépendamment de PHP. Il n'est pas encore branché à l'espace
-connecté et ne produit pas de déclinaison certifiée pour la production.
+sont exécutables indépendamment de PHP. `api/orientation.php` le raccorde à
+l'espace connecté pour les diagnostics ; il ne produit pas de déclinaison
+certifiée pour la production.
+Après le retour du PDF incorrect, l'action web `compose` refuse la génération
+avant toute création de fichier. Le banc d'essai exige `compose-diagnostic` :
+voir le [constat et le correctif](docs/incident-generation-20261028.md).
 
 - [Cahier des charges](docs/cahier-des-charges.md)
 - [Audit du moteur Illustrator 1.0.13 et résultats PDF](docs/audit-moteur-1.0.13.md)
+- [Référence Illustrator 1.0.14 : impression des pictogrammes et tests](docs/audit-moteur-1.0.14.md)
 - [Contrat proposé pour l'export structuré](docs/contrat-export-structure.md)
 
 Les rapports initiaux du BAT et des trames sont conservés dans `docs/`. Les

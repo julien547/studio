@@ -1,5 +1,8 @@
 # Analyse du moteur Illustrator 1.0.13 et premier moteur PDF
 
+Mise à jour : la [référence 1.0.14](audit-moteur-1.0.14.md) a depuis été reçue
+et ses 125 tests exécutés. Le présent document conserve les résultats 1.0.13.
+
 ## Livraison reçue
 
 Le ZIP `DOEMO-Studio-nouveau-moteur-1.0.13.zip` remplace les trois scripts historiques

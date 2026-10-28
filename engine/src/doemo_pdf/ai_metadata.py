@@ -20,6 +20,21 @@ MATRIX = re.compile(r"\s*((?:"+NUMBER+r"\s+){5}"+NUMBER+r")\s+/RTransformMatrix\
 PREFIX = b"%AI24_ZStandard_Data"
 
 
+def layer_printability(block):
+    """Read the fourth Lb operand in the observed 14-operand AI24 profile.
+
+    This is a layer's own printing flag, not effective object visibility or
+    inherited printability. Unknown record layouts remain unknown.
+    """
+    match = re.match(r"\s*((?:[0-9]+[ \t]+){13}[0-9]+)[ \t]+Lb(?:\s|$)", block)
+    if match is None:
+        return None
+    operands = [int(value) for value in match[1].split()]
+    if any(value not in (0, 1) for value in operands[:4]):
+        return None
+    return bool(operands[3])
+
+
 def ps_string(text, offset):
     """Read one balanced PostScript literal; decode escapes, never evaluate it."""
     if offset >= len(text) or text[offset] != '(':
@@ -90,7 +105,8 @@ def parse_native(data):
             instances.append({'symbol':symbol,'matrix_native':values,
                               'record_offset':record.start()+match.start(),
                               'pdf_object_binding':'unverified'})
-        layers.append({'name':name,'symbol_instances':instances})
+        layers.append({'name':name,'symbol_instances':instances,
+                       'native_printable':layer_printability(block)})
     total=len(re.findall(r'^/SymbolInstance\s*:',normalized,re.M))
     accounted=sum(len(layer['symbol_instances']) for layer in layers)
     return {'native_format':'AI24_ZStandard_Data','decoded_bytes':len(data),

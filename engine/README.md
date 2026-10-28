@@ -4,6 +4,9 @@ Outils serveur indépendants d'Illustrator pour `https://studio.doemo.fr`.
 Adresse du module web cible : `https://studio.doemo.fr/app/orientation`.
 Le frontend et l'authentification PHP existants sont conservés. Aucun endpoint de
 production n'est branché sur ce banc d'essai.
+L'API `api/orientation.php` expose l'inspection et un diagnostic explicite ;
+son action `compose` refuse la génération, encore non implémentée. Voir le
+[retour sur le PDF incorrect](../docs/incident-generation-20261028.md).
 
 ## Installation et tests
 
@@ -53,6 +56,10 @@ explicite ; il n'y a pas encore de catalogue ni de page d'import branchée au CL
 validés. `inspect-ai` lit les données natives AI24 compressées avec Zstandard,
 sans exécuter le code PostScript ni les JSX. Il inventorie les noms et matrices
 de symboles, mais ne prétend pas reconstruire le DOM Illustrator.
+Il distingue `native_printable`, réglage propre du calque dans le profil AI24
+observé, de `visible_in_default_pdf`. Un profil de calque inconnu donne `null` ;
+l'inspection ne modifie aucun réglage d'impression ou de visibilité. Voir
+l'[audit 1.0.14](../docs/audit-moteur-1.0.14.md) pour le cas des neuf extincteurs EXT.
 
 `compose-diagnostic` place **la page BAT complète** dans la trame. Elle conserve
 tous les VEI, textes, légendes et habillages source. Elle ne fait aucune

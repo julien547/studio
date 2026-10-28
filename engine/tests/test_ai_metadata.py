@@ -62,6 +62,42 @@ def test_native_data_read_from_pdf_container_with_no_execution(tmp_path):
     assert r['layers'][0]['visible_in_default_pdf'] is None
 
 
+@pytest.mark.parametrize('printable', [False, True])
+def test_native_printability_is_distinct_from_pdf_visibility(tmp_path, printable):
+    # The supplied AI24 BAT uses 14 operands; EXT's fourth operand is zero.
+    native = NATIVE.replace(b'1 1 1 1 0 0 Lb',
+                            f'1 1 1 {int(printable)} 0 0 1 16 0 0 136 0 50 0 Lb'.encode())
+    pdf = pikepdf.Pdf.new()
+    page = pdf.add_blank_page(page_size=(400, 600))
+    layer = pdf.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.OCG, Name='Pictos'))
+    pdf.Root.OCProperties = pikepdf.Dictionary(
+        OCGs=pikepdf.Array([layer]),
+        D=pikepdf.Dictionary(BaseState=pikepdf.Name.ON, OFF=pikepdf.Array([layer])))
+    page.obj.PieceInfo = pikepdf.Dictionary(Illustrator=pikepdf.Dictionary(
+        Private=pikepdf.Dictionary(AIPrivateData1=pdf.make_stream(
+            PREFIX + zstandard.ZstdCompressor().compress(native)))))
+    path = tmp_path / 'nonprinting.ai'
+    pdf.save(path)
+    original = path.read_bytes()
+    report = inspect_ai_metadata(path)
+    assert report['layers'][0]['native_printable'] is printable
+    assert report['layers'][0]['visible_in_default_pdf'] is False
+    assert report['symbol_instance_count_in_layers'] == 1
+    assert report['source_unchanged']
+    assert path.read_bytes() == original
+
+
+@pytest.mark.parametrize('record', [
+    b'1 1 1 1 0 0 Lb',  # Different operand count: do not extrapolate.
+    b'1 1 1 2 0 0 1 16 0 0 136 0 50 0 Lb',
+    b'% no layer flags',
+    b'1 1 1 0 0 0 1 16 0 0 136 0 50 0 LbExtra',
+])
+def test_unknown_layer_record_does_not_guess_printability(record):
+    report = parse_native(NATIVE.replace(b'1 1 1 1 0 0 Lb', record))
+    assert report['layers'][0]['native_printable'] is None
+
+
 def test_decompression_limit_rejects_large_declared_frame(tmp_path,monkeypatch):
     import doemo_pdf.ai_metadata as module
     pdf=pikepdf.Pdf.new();page=pdf.add_blank_page(page_size=(400,600))
