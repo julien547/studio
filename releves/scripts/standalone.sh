@@ -15,6 +15,8 @@ fi
 "$python" -c 'import os; from doemo_releves.store import Store; Store(os.environ["DOEMO_RELEVES_DATA"])'
 "$python" -m doemo_releves.queue &
 worker_pid=$!
-cleanup(){ kill "$worker_pid" 2>/dev/null || true; wait "$worker_pid" 2>/dev/null || true; }
+"$python" -m doemo_releves.gpu &
+gpu_pid=$!
+cleanup(){ kill "$worker_pid" "$gpu_pid" 2>/dev/null || true; wait "$worker_pid" "$gpu_pid" 2>/dev/null || true; }
 trap cleanup EXIT INT TERM
 "$python" -m uvicorn doemo_releves.auth:standalone --factory --host 127.0.0.1 --port "$port" --no-access-log

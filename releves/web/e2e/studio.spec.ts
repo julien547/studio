@@ -37,6 +37,8 @@ with s.connect() as c:c.execute('INSERT INTO users(login,password_hash,role) VAL
         DOEMO_RELEVES_DATA: root,
         DOEMO_PUBLIC_ORIGIN: origin,
         DOEMO_RELEVES_DIST: resolve("../dist"),
+        DOEMO_RUNPOD_MANAGED: "0",
+        DOEMO_RUNPOD_POD_ID: "41m7oy6qjaj2ji",
       },
       stdio: "pipe",
     },
@@ -73,6 +75,17 @@ test("authenticated project, source floors, annotation vs equipment, autosave, u
   await expect(
     page.getByRole("heading", { name: "Chaque détail compte." }),
   ).toBeVisible();
+  const gpuPanel = page.getByRole("region", { name: "Gestion du serveur GPU" });
+  await expect(
+    gpuPanel.getByRole("button", { name: "Démarrer le GPU" }),
+  ).toBeDisabled();
+  await expect(
+    gpuPanel.getByRole("button", { name: "Arrêter le GPU" }),
+  ).toBeDisabled();
+  await gpuPanel.getByRole("button", { name: "Détails GPU" }).click();
+  await expect(gpuPanel.getByText("Pod : 41m7oy6qjaj2ji")).toBeVisible();
+  await expect(gpuPanel.getByText("● Qwen3.5-9B · en attente")).toBeVisible();
+  await gpuPanel.getByRole("button", { name: "Masquer", exact: true }).click();
   await page
     .getByRole("button", { name: "＋ Nouveau projet", exact: true })
     .click();

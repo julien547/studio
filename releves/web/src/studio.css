@@ -940,3 +940,67 @@ small {
   outline: 2px solid #a692e4;
   outline-offset: 2px;
 }
+.gpu-panel {
+  background: #fff;
+  border-bottom: 1px solid #e4e7ef;
+  padding: 12px 24px;
+  font-size: 12px;
+}
+.gpu-panel-heading,
+.gpu-panel-heading > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.gpu-panel-heading {
+  justify-content: space-between;
+}
+.gpu-badge {
+  border-radius: 20px;
+  padding: 6px 10px;
+  background: #f1f0f7;
+  color: #726488;
+}
+.gpu-ready,
+.gpu-busy {
+  background: #e7f6ef;
+  color: #267652;
+}
+.gpu-starting,
+.gpu-restoring,
+.gpu-warming {
+  background: #fff5de;
+  color: #96721f;
+}
+.gpu-provider_error,
+.gpu-configuration_error {
+  background: #ffede7;
+  color: #a94f35;
+}
+.gpu-details {
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: #7e8696;
+}
+.gpu-details > div {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.engine-status span {
+  padding: 6px 10px;
+  background: #f8f8fb;
+  border-radius: 5px;
+}
+.gpu-events {
+  max-height: 180px;
+  overflow: auto;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.gpu-events time {
+  font-variant-numeric: tabular-nums;
+}

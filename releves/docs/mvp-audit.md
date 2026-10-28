@@ -1,5 +1,10 @@
 # DOEMO Studio — audit et premier jalon, 28 octobre 2026
 
+Complément : le [module de gestion RunPod](runpod-lifecycle.md) ajoute ensuite le
+contrôleur REST v2, la restauration et la reprise automatique des travaux GPU.
+Ce document conserve le compte rendu du premier jalon ; les vérifications et
+conditions d’activation du GPU sont détaillées dans ce complément.
+
 ## État du dépôt et choix
 
 Branche de travail : `codex/studio-mvp-editor`. Le dépôt contenait déjà un module

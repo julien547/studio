@@ -25,7 +25,8 @@ exécute la commande**. Cette adresse n’ouvre pas à distance la machine cloud
 le Mac du dessinateur ; il faut un accès privé configuré ou le déploiement HTTPS
 isolé décrit plus bas. Aucun lien public n’a été publié pendant le développement.
 
-Lancer un seul worker pour le MVP. Le script l’arrête avec le serveur. La base et
+Lancer un seul worker pour le MVP. Le script lance aussi le contrôleur GPU et arrête
+ces deux processus avec le serveur. La base et
 les documents persistent dans `DOEMO_RELEVES_DATA` après redémarrage.
 
 Sur un serveur CPU neuf : utiliser un environnement dédié sous `/opt`, installer
@@ -85,39 +86,19 @@ cependant de ce cadre. Retrouver les dimensions réelles de l’image d’infér
 toute future superposition RTMDet. Ne pas remplacer la hauteur par un maximum calculé
 à partir des prédictions.
 
-## RunPod : préparation, pas réinstallation
+## RunPod : gestion automatique
 
-Les fichiers `services/runpod/` ne doivent être exécutés que sur le Pod prévu.
+Le module de cycle de vie remplace la préparation manuelle initiale.
+Suivre le [guide RunPod](runpod-lifecycle.md) pour le Pod **41m7oy6qjaj2ji** :
+clé fournisseur sur OVH uniquement, gateway authentifié, vérification des trois
+moteurs et archives de restauration sur le volume persistant.
 
-1. Copier le code dans `/workspace/doemo-studio/services/runpod` et lancer
-   `python3 check-existing.py`. Sauvegarder le rapport dans les exports persistants.
-2. Vérifier les trois interpréteurs `/opt/doemo-qwen-venv`, `/opt/doemo-ocr-venv`,
-   `/opt/doemo-rtmdet-venv` ; ne jamais les remplacer par un environnement commun.
-3. Le gateway nécessite un quatrième environnement léger sous `/opt` (uniquement
-   s’il est absent) et `services/runpod/requirements.txt`. Caches dans `/tmp`.
-4. Configurer `DOEMO_RUNPOD_TOKEN` (au moins 32 caractères), les chemins locaux du
-   modèle Qwen, de la configuration et des poids RTMDet. Aucun téléchargement
-   automatique de modèles n’est prévu par l’adaptateur Qwen/RTMDet. PaddleOCR exige
-   les deux répertoires déjà installés via `DOEMO_PADDLE_DETECTION_MODEL` et
-   `DOEMO_PADDLE_RECOGNITION_MODEL` ; vérifier leurs chemins avant activation.
-5. Lancer le gateway derrière un accès HTTPS authentifié. Son point d’entrée est
-   `gateway:app`. Ne pas ouvrir Jupyter publiquement. Toutes les routes du gateway,
-   y compris `/health`, exigent le jeton Bearer.
-6. Sur le serveur CPU, configurer `DOEMO_RUNPOD_ENDPOINT` et `DOEMO_RUNPOD_TOKEN`,
-   puis redémarrer l’API et le worker. Le code n’utilise aucune API de démarrage payant.
-7. Tester `/health`, puis une inférence de chaque moteur. Un environnement présent
-   ne prouve pas qu’un modèle se charge. Adapter les appels PaddleOCR/Transformers
-   aux versions réellement observées si nécessaire ; conserver les formats documentés.
-
-Les fichiers temporaires sont dans `/tmp`, les modèles dans `/workspace/doemo-studio`,
-les interpréteurs dans `/opt`. Après recréation du conteneur, relancer la sonde et
-restaurer seulement les environnements absents à partir de vos versions validées.
-Aucun script de restauration ne peut garantir ici les wheels CUDA sans accès au Pod.
-
-Le worker CPU sépare chaque résultat de l’état du projet. Un arrêt du Pod place le
-travail en attente GPU ; après rétablissement, cliquer **Réessayer**. Un worker CPU
-interrompu est détecté à expiration du bail (650 s). Le bouton de relance conserve
-le même identifiant de travail et incrémente le nombre de tentatives.
+Le dashboard propose le démarrage et l’arrêt aux administrateurs. Une analyse GPU
+peut démarrer automatiquement le Pod ; aucune tâche n’est transmise avant les trois
+sondes réussies. L’arrêt après 30 minutes exige une inactivité réelle des deux côtés
+et l’absence de toute tâche en attente. La gestion reste désactivée jusqu’à sa
+configuration sur OVH. Les essais de cette session simulent RunPod ; aucun Pod réel
+n’a été commandé.
 
 ## Apprentissage
 
@@ -171,9 +152,10 @@ en exploitation. Les fichiers clients ne sont pas requis pour les tests du dép�
 Choisir un utilisateur Unix dédié, un dossier privé de données, et un port loopback
 libre (8082 proposé, disponibilité à vérifier). Sauvegarder la base existante avant
 migration. Construire les assets, créer le compte administrateur, puis superviser
-l’API et le worker dans deux services distincts. Le backend autonome est
+l’API, le worker et le contrôleur GPU dans trois services distincts. Le backend autonome est
 `uvicorn doemo_releves.auth:standalone --factory --host 127.0.0.1 --port 8082` ;
-le worker est `python -m doemo_releves.queue`.
+le worker est `python -m doemo_releves.queue` et le contrôleur
+`python -m doemo_releves.gpu`.
 
 Configurer uniquement le vhost `studio.doemo.fr` décidé pour cette application,
 avec HTTPS, une limite d’upload de 64 Mio et le proxy vers le port local. Le Host et

@@ -8,6 +8,7 @@ import { wholePage, moveBox } from "./editorGeometry";
 import type { Annotation, Box, Library, Project, Review, State } from "./types";
 import { AdvancedApp } from "./main";
 import "./studio.css";
+import { GpuPanel, gpuLabels } from "./GpuPanel";
 
 type User = { login: string; role: string };
 type Entry = {
@@ -518,12 +519,7 @@ function Studio({
           )}
         </div>
         <span className="gpu-status">
-          ●{" "}
-          {gpu === "available"
-            ? "IA disponible"
-            : gpu === "unavailable"
-              ? "GPU indisponible"
-              : "Travail sans GPU"}
+          ● {gpuLabels[gpu] || "État GPU inconnu"}
         </span>
         <button onClick={() => setShowCatalogue(true)}>Référentiel</button>
         <span className="user-name">{user.login}</span>
@@ -630,6 +626,7 @@ function Studio({
           </button>
         </div>
       )}
+      <GpuPanel administrator={isAdmin} onStatus={setGpu} />
       {!p ? (
         <main className="dashboard">
           <div className="dashboard-intro">

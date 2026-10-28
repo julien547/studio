@@ -6,6 +6,7 @@ Le module comprend maintenant un tableau de bord, une connexion autonome optionn
 un éditeur de niveaux et d’annotations fonctionnant sans GPU, une sauvegarde automatique
 versionnée, les imports des sorties Qwen/PaddleOCR/RTMDet et une file de travaux persistante.
 
+- [Gestion du GPU RunPod et configuration de la clé sur OVH](docs/runpod-lifecycle.md)
 - [Démarrage et parcours utilisateur](docs/mvp-demarrage.md)
 - [Audit, fonctionnalités vérifiées et limites](docs/mvp-audit.md)
 
