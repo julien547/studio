@@ -162,3 +162,7 @@ GPU réelle par la session de déploiement ; aucune activation de poids en produ
 La [comparaison Qwen sur plan](docs/COMPARAISON-QWEN.md) permet de confronter les
 sorties avec/sans un référentiel versionné. Elle conserve un avis humain et ne
 publie aucun modèle. Installer la migration `005` et le gateway compatible ensemble.
+
+Le [pilote de reconnaissance PaddleOCR](docs/ENTRAINEMENT-PADDLEOCR.md) réutilise
+la file commune, avec profil accepté indépendant, checkpoints poids/optimiseur
+et métriques CER/WER. Recette GPU requise ; aucun poids actif n’est remplacé.

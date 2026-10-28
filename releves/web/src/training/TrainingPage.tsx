@@ -792,6 +792,14 @@ function Runs({
   return (
     <>
       <GpuPanel administrator onStatus={() => {}} />
+      {engine === "paddleocr" && (
+        <p className="training-card">
+          Cet entraînement améliore la lecture des textes recadrés et vérifiés.
+          Les résultats mesurent les erreurs de caractères (CER) et de mots
+          (WER) sur des exemples réservés. Le modèle obtenu reste un candidat à
+          valider avant utilisation dans les analyses.
+        </p>
+      )}
       {!capability.training && (
         <div className="training-warning">
           <h3>Entraînement non disponible</h3>

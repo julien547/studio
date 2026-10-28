@@ -18,13 +18,15 @@ import time
 import uuid
 from pathlib import Path
 from artifacts import sha256,verify
-from training_data import unpack,detection_splits
+from training_data import unpack,detection_splits,ocr_splits
 
 ID=re.compile(r'^[a-f0-9]{32}$')
 HASH=re.compile(r'^[a-f0-9]{64}$')
 TERMINAL=('completed','failed','cancelled')
 DRIVER=Path(__file__).with_name('rtmdet_pipeline.py')
 PYTHON='/opt/doemo-rtmdet-venv/bin/python'
+PADDLE_DRIVER=Path(__file__).with_name('paddle_pipeline.py')
+PADDLE_PYTHON='/opt/doemo-ocr-venv/bin/python'
 
 
 def encoded(value):return json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(',',':'))
@@ -32,7 +34,7 @@ def digest(value):return hashlib.sha256(encoded(value).encode()).hexdigest()
 
 
 def runtime_hash():
-    names=('training_service.py','rtmdet_pipeline.py','compute.py','training_data.py','artifacts.py','gateway.py','infer.py','readiness.py','qwen_prompt.py')
+    names=('training_service.py','rtmdet_pipeline.py','compute.py','training_data.py','artifacts.py','gateway.py','infer.py','readiness.py','qwen_prompt.py','paddle_pipeline.py','paddle_training.py')
     return digest({name:sha256(Path(__file__).with_name(name)) for name in names})
 
 
@@ -56,9 +58,30 @@ def load_profile():
     except (OSError,ValueError,KeyError,TypeError,AttributeError):return None
 
 
+def load_paddle_profile():
+    path=os.environ.get('DOEMO_PADDLE_TRAINING_PROFILE','')
+    if not path or not os.path.ismount('/workspace'):return None
+    try:
+        if Path(path).stat().st_size>65536:return None
+        value=json.loads(Path(path).read_text());keys=('driver_sha256','runtime_sha256','config_sha256','weights_sha256','source_sha256','dictionary_sha256')
+        if value.get('engine')!='paddleocr' or any(not HASH.fullmatch(value.get(k,'')) for k in keys):return None
+        evidence=value.get('acceptance',{})
+        if any(evidence.get(k) is not True for k in ('training_completed','resume_verified','inference_preemption_verified','cancel_verified')) or not HASH.fullmatch(evidence.get('report_sha256','')):return None
+        if sha256(PADDLE_DRIVER)!=value['driver_sha256'] or runtime_hash()!=value['runtime_sha256']:return None
+        from paddle_training import source_hash
+        for key in ('config','weights','dictionary','repository'):
+            local=Path(value[key]).resolve()
+            if not local.is_relative_to('/workspace/doemo-studio'):return None
+            if (source_hash(local) if key=='repository' else sha256(local))!=value['source_sha256' if key=='repository' else key+'_sha256']:return None
+        clean={k:value[k] for k in keys};clean.update(engine='paddleocr',driver='paddleocr.recognition/1',acceptance={k:evidence[k] for k in ('training_completed','resume_verified','inference_preemption_verified','cancel_verified','report_sha256')})
+        clean['id']=digest(clean)
+        return {'public':clean,**{k:value[k] for k in ('config','weights','dictionary','repository')}}
+    except (OSError,ValueError,KeyError,TypeError,AttributeError):return None
+
+
 def spec_valid(value,ident):
     if set(value)!={'id','engine','profile_id','parameters','dataset_id','dataset_sha256','archive_sha256'}:raise ValueError('Contrat de demande invalide')
-    if value['id']!=ident or not ID.fullmatch(ident) or value['engine']!='rtmdet':raise ValueError('Moteur ou identifiant invalide')
+    if value['id']!=ident or not ID.fullmatch(ident) or value['engine'] not in ('rtmdet','paddleocr'):raise ValueError('Moteur ou identifiant invalide')
     if not ID.fullmatch(value['dataset_id']) or any(not HASH.fullmatch(value[k]) for k in ('profile_id','dataset_sha256','archive_sha256')):raise ValueError('Empreintes invalides')
     p=value['parameters']
     if set(p)!={'epochs','batch_size','learning_rate'} or type(p['epochs']) is not int or type(p['batch_size']) is not int:raise ValueError('Paramètres invalides')
@@ -105,13 +128,15 @@ class JobStore:
                 if self.request(ident)!=spec:raise ValueError('Identifiant déjà associé à une autre demande')
                 return prior
             if not profile or spec['profile_id']!=profile['public']['id']:raise ValueError('Profil accepté incompatible')
+            if profile['public'].get('engine','rtmdet')!=spec['engine']:raise ValueError('Profil d’un autre moteur')
             if sha256(archive)!=spec['archive_sha256']:raise ValueError('Archive corrompue')
             # Validate complete splits on local POSIX disk before admission.
             with tempfile.TemporaryDirectory(prefix='doemo-dataset-check-',dir='/tmp') as tmp:
                 extracted=unpack(archive,Path(tmp)/'data')
                 snapshot=json.loads((extracted/'examples.json').read_text())
-                if digest(snapshot)!=spec['dataset_sha256'] or snapshot.get('engine')!='rtmdet':raise ValueError('Snapshot incompatible')
-                detection_splits(extracted)
+                if digest(snapshot)!=spec['dataset_sha256'] or snapshot.get('engine')!=spec['engine']:raise ValueError('Snapshot incompatible')
+                if spec['engine']=='rtmdet':detection_splits(extracted)
+                else:ocr_splits(extracted)
             folder=self.directory(ident);folder.mkdir(parents=True,exist_ok=False)
             import shutil
             shutil.copyfile(archive,folder/'dataset.zip')
@@ -142,13 +167,16 @@ class JobStore:
 
 
 class Manager:
-    def __init__(self,root,compute_lock,ready,draining,activity,environment,profile_loader=load_profile):
+    def __init__(self,root,compute_lock,ready,draining,activity,environment,profile_loader=load_profile,paddle_profile_loader=load_paddle_profile):
         self.store=JobStore(root);self.lock=compute_lock;self.ready=ready;self.draining=draining;self.activity=activity
         self.environment=environment;self.profile_loader=profile_loader;self.profile=None
+        self.paddle_profile_loader=paddle_profile_loader;self.paddle_profile=None
         self.active=None;self.control_file=None;self.proc=None;self.priority_until=0
     async def initialize(self):
         self.profile=await asyncio.to_thread(self.profile_loader)
+        self.paddle_profile=await asyncio.to_thread(self.paddle_profile_loader)
         await asyncio.to_thread(self.store.recover)
+    def profile_for(self,engine):return self.paddle_profile if engine=='paddleocr' else self.profile if engine=='rtmdet' else None
     async def control(self,ident,action):
         state=await asyncio.to_thread(self.store.state,ident)
         if action=='cancel':
@@ -182,7 +210,7 @@ class Manager:
     async def loop(self):
         try:
             while True:
-                if self.profile and self.ready() and not self.draining() and not self.lock.locked() and time.monotonic()>=self.priority_until:
+                if (self.profile or self.paddle_profile) and self.ready() and not self.draining() and not self.lock.locked() and time.monotonic()>=self.priority_until:
                     queued=[s for s in await asyncio.to_thread(self.store.all) if s['status']=='queued']
                     if queued:await self.run(queued[0]['id'])
                 await asyncio.sleep(1)
@@ -201,8 +229,9 @@ class Manager:
             if self.store.state(ident)['status']!='queued':return
             self.active=ident;self.activity()
             try:
-                current_profile=await asyncio.to_thread(self.profile_loader)
                 spec=self.store.request(ident)
+                paddle=spec['engine']=='paddleocr'
+                current_profile=await asyncio.to_thread(self.paddle_profile_loader if paddle else self.profile_loader)
                 if not current_profile or current_profile['public']['id']!=spec['profile_id']:raise ValueError('Profile changed')
                 folder=self.store.directory(ident)
                 if await asyncio.to_thread(sha256,folder/'dataset.zip')!=spec['archive_sha256']:raise ValueError('Dataset corrupted')
@@ -210,10 +239,11 @@ class Manager:
                 if state['status']!='queued':return
                 with tempfile.TemporaryDirectory(prefix='doemo-training-control-',dir='/tmp') as tmp:
                     self.control_file=Path(tmp)/'control';self.control_file.write_text('run')
-                    args=[PYTHON,str(DRIVER),'--dataset',str(folder/'dataset.zip'),'--config',current_profile['config'],'--weights',current_profile['weights'],
+                    args=[PADDLE_PYTHON if paddle else PYTHON,str(PADDLE_DRIVER if paddle else DRIVER),'--dataset',str(folder/'dataset.zip'),'--config',current_profile['config'],'--weights',current_profile['weights'],
                           '--output',str(self.store.root),'--authorize-gpu-training','--managed-job',ident,'--control',str(self.control_file),
                           '--dataset-sha256',spec['dataset_sha256'],'--profile-id',spec['profile_id'],
                           '--epochs',str(spec['parameters']['epochs']),'--batch-size',str(spec['parameters']['batch_size']),'--learning-rate',str(spec['parameters']['learning_rate'])]
+                    if paddle:args+=['--repository',current_profile['repository'],'--dictionary',current_profile['dictionary']]
                     if state.get('checkpoint'):args+=['--resume-manifest',str(self.store.artifact(ident,state['checkpoint']))]
                     self.store.append(ident,status='running',error=None,completion_received=False)
                     logs=self.store.root/'training/logs'/ident;logs.mkdir(parents=True,exist_ok=True)

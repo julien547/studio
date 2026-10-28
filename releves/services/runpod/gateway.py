@@ -211,14 +211,20 @@ async def infer(engine:str,file:UploadFile,x_doemo_job:str=Header(default=''),co
 
 @app.get('/training/capabilities',dependencies=[Depends(authorize)])
 async def training_capabilities():
-    return {'engine':'rtmdet','training':bool(training and training.profile),'profile_id':training.profile['public']['id'] if training and training.profile else None}
+    engines={engine:{'training':bool(training and training.profile_for(engine)),
+                     'profile_id':training.profile_for(engine)['public']['id'] if training and training.profile_for(engine) else None} for engine in ('rtmdet','paddleocr')}
+    return {'engine':'rtmdet',**engines['rtmdet'],'engines':engines}
 
 
 @app.post('/training/jobs/{ident}',dependencies=[Depends(authorize)])
 async def training_submit(ident:str,file:UploadFile,spec:str=Form(...)):
     global training_admissions,last_activity
-    if not training or not training.profile or not status['ready'] or draining:raise HTTPException(503,'Admission entraînement indisponible')
+    if not training or not status['ready'] or draining:raise HTTPException(503,'Admission entraînement indisponible')
     if len(spec)>16384:raise HTTPException(413,'Demande excessive')
+    try:
+        request=json.loads(spec);profile=training.profile_for(request['engine'])
+        if not profile:raise ValueError()
+    except (ValueError,KeyError,TypeError):raise HTTPException(422,'Profil du moteur indisponible')
     training_admissions+=1
     last_activity=time.monotonic()
     try:
@@ -232,7 +238,7 @@ async def training_submit(ident:str,file:UploadFile,spec:str=Form(...)):
             # The admission counter prevents quiescence during the verified copy;
             # accepting another queued job must not wait for a long GPU epoch.
             if draining:raise HTTPException(409,'Arrêt contrôlé en cours')
-            return await asyncio.to_thread(training.store.admit,ident,json.loads(spec),archive,training.profile)
+            return await asyncio.to_thread(training.store.admit,ident,request,archive,profile)
     except (ValueError,KeyError,TypeError,OSError):raise HTTPException(422,'Demande, dataset ou profil incompatible')
     finally:
         training_admissions-=1

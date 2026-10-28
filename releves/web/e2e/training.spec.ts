@@ -42,6 +42,9 @@ function start() {
         DOEMO_TRAINING_PROFILE: acceptedTrainingFixture
           ? root + "/fixture-profile.json"
           : "",
+        DOEMO_PADDLE_TRAINING_PROFILE: acceptedTrainingFixture
+          ? root + "/fixture-paddle-profile.json"
+          : "",
       },
       stdio: "pipe",
     },
@@ -674,4 +677,84 @@ with s.connect() as c:
     card.getByRole("button", { name: "Mettre en production", exact: true }),
   ).toBeDisabled();
   await card.screenshot({ path: "/tmp/doemo-qwen-preview.png" });
+});
+
+test("Paddle recognition uses its own accepted profile and persistent training queue", async ({
+  page,
+}) => {
+  await stop();
+  const data = JSON.parse(
+    execFileSync(
+      python,
+      [
+        "-c",
+        `
+import json,sys
+from pathlib import Path
+sys.path.insert(0,${JSON.stringify(resolve("../backend/tests"))})
+from test_training import source,example,label,validate,dataset
+from fastapi.testclient import TestClient
+from doemo_releves.api import create_app
+root=Path(${JSON.stringify(root)})
+profile={'engine':'paddleocr',**{k:'a'*64 for k in ('driver_sha256','runtime_sha256','config_sha256','weights_sha256','source_sha256','dictionary_sha256')},'acceptance':{'training_completed':True,'resume_verified':True,'inference_preemption_verified':True,'cancel_verified':True,'report_sha256':'b'*64}}
+(root/'fixture-paddle-profile.json').write_text(json.dumps(profile))
+c=TestClient(create_app(root),headers={'X-Doemo-User':'admin','X-Doemo-Role':'admin'})
+examples=[]
+for color in ('red','green','blue'):
+ p=source(c,color);_,e=example(c,'paddleocr',p,[dict(label(),text='H₂O')]);examples.append(validate(c,p,e))
+print(json.dumps(dataset(c,'paddleocr',examples)))
+`,
+      ],
+      { encoding: "utf8" },
+    ),
+  );
+  acceptedTrainingFixture = true;
+  server = start();
+  await ready();
+  await login(page);
+  await page
+    .getByRole("button", { name: "PaddleOCR Lire les écritures" })
+    .click();
+  await section(page, "Entraînements").click();
+  await expect(
+    page.getByText(/Cet entraînement améliore la lecture/),
+  ).toBeVisible();
+  await page.getByLabel("Version du dataset").selectOption(data.id);
+  await page.getByLabel("Époques", { exact: true }).fill("2");
+  page.on("dialog", (dialog) => dialog.accept());
+  await page
+    .getByRole("button", { name: "Lancer l’entraînement", exact: true })
+    .click();
+  await expect(
+    page.getByText("Entraînement demandé.", { exact: true }),
+  ).toBeVisible();
+  const url = origin + "/api/projects/training/runs?engine=paddleocr";
+  const runs = await (await page.request.get(url)).json();
+  expect(runs).toHaveLength(1);
+  expect(runs[0].engine).toBe("paddleocr");
+  expect(runs[0].profile.driver).toBe("paddleocr.recognition/1");
+  expect(runs[0].status).toBe("queued");
+  expect(runs[0].dispatched).toBe(0);
+  await stop();
+  server = start();
+  await ready();
+  await page.reload();
+  await page
+    .getByRole("button", { name: "PaddleOCR Lire les écritures" })
+    .click();
+  await section(page, "Entraînements").click();
+  await expect(
+    page.getByRole("heading", {
+      name: "En attente · " + runs[0].id.slice(0, 8),
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Interrompre proprement", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Annulé · " + runs[0].id.slice(0, 8) }),
+  ).toBeVisible();
+  expect((await (await page.request.get(url)).json())[0].status).toBe(
+    "cancelled",
+  );
 });

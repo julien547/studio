@@ -162,7 +162,7 @@ file : l’opérateur doit décider de la reprendre ou l’annuler.
   configuration, classes et métriques du lot test. Ces métriques ne comparent pas
   encore le candidat à la production. Aucun modèle actif n’est remplacé.
 - L’évaluation comparative, l’approbation, la publication et le rollback des poids
-  restent indisponibles. Le fine-tuning Qwen/PaddleOCR et le réseau architectural
+  restent indisponibles. Le fine-tuning Qwen et le réseau architectural
   restent à développer. Le référentiel Qwen existant est distinct de ses poids.
 
 ## Validation locale de cette livraison
@@ -173,3 +173,9 @@ gateway emploient des sous-processus CPU et des artefacts de fixture expliciteme
 identifiés ; ils ne constituent pas une recette GPU. Ils vérifient déduplication,
 perte de réponse, annulation concurrente, priorité, checkpoints, arrêt du processus,
 intégrité des artefacts, révocation et refus d’activation en production.
+
+## Ajout du moteur PaddleOCR
+
+Le [pilote PaddleOCR](ENTRAINEMENT-PADDLEOCR.md) utilise la même file et un profil
+indépendant. Cette livraison change le runtime partagé : les profils RTMDet
+antérieurs doivent également être recettés à nouveau avant activation.

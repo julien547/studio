@@ -83,14 +83,15 @@ Les classes COCO RTMDet ne sont jamais automatiquement assimilées aux catégori
 ## Ce qui reste indisponible
 
 Le frontend appelle les routes existantes et lit `/projects/training/capabilities`.
-L’entraînement RTMDet est raccordé au worker OVH et au gateway, mais reste désactivé
-sans profil produit par une recette GPU réelle. Voir [la procédure RTMDet](ENTRAINEMENT-RTMDET.md)
+Les entraînements RTMDet et PaddleOCR sont raccordés au worker OVH et au gateway, mais restent désactivés
+sans profil propre au moteur produit par une recette GPU réelle. Voir les procédures
+[RTMDet](ENTRAINEMENT-RTMDET.md) et [PaddleOCR](ENTRAINEMENT-PADDLEOCR.md)
 pour installer le worker et réaliser cette recette avec la session de déploiement.
 Lancement confirmé et dédupliqué, suivi, annulation et reprise depuis checkpoint
 sont disponibles lorsque cette capacité est acceptée. L’enregistrement de poids
 exige une tâche réellement terminée et des artefacts vérifiés ; il crée un candidat.
 
-Les pilotes de fine-tuning Qwen/PaddleOCR, l’évaluation comparative des poids et
+Le pilote de fine-tuning Qwen, l’évaluation comparative des poids et
 l’activation de versions GPU restent à implémenter. `evaluation=false` et
 `deployment=false` restent donc explicites. Ne pas forcer les flags pour les activer.
 Un serveur GPU allumé ne suffit pas à rendre l’entraînement disponible.
@@ -103,15 +104,15 @@ les inférences et la santé du gateway avec la configuration privée existante.
 
 - `npm run build` : TypeScript et bundle validés.
 - `npm test` : 8 tests de géométrie.
-- Backend `python -m pytest -q` : 126 tests.
-- `npm run test:e2e` : 7 parcours, dont l’atelier existant, avec authentification
+- Backend `python -m pytest -q` : 132 tests.
+- `npm run test:e2e` : 8 parcours, dont l’atelier existant, avec authentification
   et une base temporaire réelle ; aucun remplacement des API d’apprentissage.
 - Redémarrage du processus backend pendant le test OCR : données retrouvées.
 - Test RTMDet : sortie de détection **rejouée dans la base de test**, sans GPU,
   pour vérifier superposition et copie explicite. Cela ne prouve pas l’inférence GPU.
 - Syntaxe des deux entrées PHP vérifiée.
 
-- Nouveau parcours d’admission : profil de recette fictif explicitement limité au
+- Parcours d’admission RTMDet et PaddleOCR : profils de recette fictifs limités au
   test, lancement confirmé via le navigateur et la vraie API locale, conservation
   après redémarrage puis annulation. Aucun worker GPU ou fournisseur n’est démarré.
 

@@ -28,30 +28,31 @@ def encoded(value):return json.dumps(value,ensure_ascii=False,sort_keys=True,sep
 def digest(value):return hashlib.sha256(encoded(value).encode()).hexdigest()
 
 
-def profile():
+def profile(engine="rtmdet"):
     """Operator-installed acceptance record, never supplied by a browser."""
-    path=os.environ.get('DOEMO_TRAINING_PROFILE','')
+    if engine not in ('rtmdet','paddleocr'):return None
+    path=os.environ.get('DOEMO_PADDLE_TRAINING_PROFILE' if engine=='paddleocr' else 'DOEMO_TRAINING_PROFILE','')
     if not path:return None
     try:
         p=Path(path)
         if p.stat().st_size>64*1024:return None
         value=json.loads(p.read_text())
-        keys=('driver_sha256','runtime_sha256','config_sha256','weights_sha256')
-        if value.get('engine')!='rtmdet' or any(not HEX.fullmatch(value.get(k,'')) for k in keys):return None
+        keys=('driver_sha256','runtime_sha256','config_sha256','weights_sha256')+(('source_sha256','dictionary_sha256') if engine=='paddleocr' else ())
+        if value.get('engine')!=engine or any(not HEX.fullmatch(value.get(k,'')) for k in keys):return None
         evidence=value.get('acceptance',{})
         if any(evidence.get(k) is not True for k in ('training_completed','resume_verified','inference_preemption_verified','cancel_verified')):return None
         if not HEX.fullmatch(evidence.get('report_sha256','')):return None
-        clean={k:value[k] for k in keys};clean.update(engine='rtmdet',driver='rtmdet.training/1',acceptance={k:evidence[k] for k in ('training_completed','resume_verified','inference_preemption_verified','cancel_verified','report_sha256')})
+        clean={k:value[k] for k in keys};clean.update(engine=engine,driver='paddleocr.recognition/1' if engine=='paddleocr' else 'rtmdet.training/1',acceptance={k:evidence[k] for k in ('training_completed','resume_verified','inference_preemption_verified','cancel_verified','report_sha256')})
         clean['id']=digest(clean)
         return clean
     except (OSError,ValueError,TypeError,AttributeError):return None
 
 
 def capability(engine):
-    p=profile()
-    enabled=p is not None and engine=='rtmdet' and gpu.configured()
-    return {'training':enabled,'register_weights':engine=='rtmdet','driver_status':'accepted_profile' if enabled else 'async_adapter_acceptance_required' if engine=='rtmdet' else 'not_implemented',
-            'reason':('' if enabled else 'Entraînement non disponible : profil RTMDet recetté et orchestration OVH requis.' if engine=='rtmdet' else 'Entraînement non disponible : pilote compatible non raccordé.'),
+    p=profile(engine)
+    enabled=p is not None and engine in ('rtmdet','paddleocr') and gpu.configured()
+    return {'training':enabled,'register_weights':engine in ('rtmdet','paddleocr'),'driver_status':'accepted_profile' if enabled else 'async_adapter_acceptance_required' if engine in ('rtmdet','paddleocr') else 'not_implemented',
+            'reason':('' if enabled else 'Entraînement non disponible : profil du moteur recetté et orchestration OVH requis.' if engine in ('rtmdet','paddleocr') else 'Entraînement non disponible : pilote compatible non raccordé.'),
             'profile_id':p['id'] if enabled else None,'batch_size_max':4,'learning_rate_max':.001}
 
 
@@ -90,12 +91,12 @@ def launch(store,actor,data):
         if not cap['training']:
             from fastapi import HTTPException
             raise HTTPException(503,cap['reason'])
-        if data.batch_size>4 or data.learning_rate>.001:raise ValueError('Paramètres hors limites du pilote RTMDet')
+        if data.batch_size>4 or data.learning_rate>.001:raise ValueError('Paramètres hors limites du pilote')
         examples=dataset['snapshot']['examples']
         if any(not any(e['split']==split for e in examples) for split in ('train','validation','test')):raise ValueError('Lots indépendants train, validation et test requis')
         train={a['category'] for e in examples if e['split']=='train' for a in e['data']['labels']}
-        if train!={a['category'] for e in examples for a in e['data']['labels']}:raise ValueError('Chaque classe doit être représentée en entraînement')
-        p=profile();ident=uuid.uuid4().hex
+        if data.engine=='rtmdet' and train!={a['category'] for e in examples for a in e['data']['labels']}:raise ValueError('Chaque classe doit être représentée en entraînement')
+        p=profile(data.engine);ident=uuid.uuid4().hex
         c.execute("INSERT INTO training_runs(id,engine,dataset_id,parameters,status,author,request_key,request_sha256,profile,pod_id,updated) VALUES(?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP)",
                   (ident,data.engine,data.dataset_id,encoded(params),'queued',actor,data.request_key,fingerprint,encoded(p),os.environ['DOEMO_RUNPOD_POD_ID']))
         c.execute('UPDATE gpu_control SET last_activity=?,next_poll=0 WHERE id=1',(time.time(),))
@@ -122,7 +123,7 @@ def retry(store,actor,ident,confirmed):
         if job['pod_id']!=os.environ.get('DOEMO_RUNPOD_POD_ID'):raise Conflict('Le Pod configuré a changé : reprise à contrôler')
         from .training import row_dataset
         row_dataset(c,job['dataset_id'])
-        if job['profile']!=profile():raise Conflict('Profil d’entraînement modifié')
+        if job['profile']!=profile(job['engine']):raise Conflict('Profil d’entraînement modifié')
         c.execute("UPDATE training_runs SET resume_requested=1,cancel_requested=0,retry_at=0,updated=CURRENT_TIMESTAMP WHERE id=?",(ident,))
         event(c,actor,'training.resume_requested',ident);return record(c,ident)
 
@@ -155,7 +156,7 @@ def valid_result(job,dataset,response):
     if not isinstance(meta,dict):raise ValueError('Métadonnées invalides')
     if meta.get('id')!=job['id'] or meta.get('engine')!=job['engine'] or meta.get('dataset_sha256')!=dataset['sha256'] or meta.get('profile_id')!=job['profile']['id'] or meta.get('parameters')!=job['parameters']:raise ValueError('Résultat incompatible avec la demande')
     if response.get('artifacts_verified') is not True or not isinstance(meta.get('metrics'),dict) or not meta['metrics'] or meta.get('status')!='completed':raise ValueError('Artefacts ou métriques non vérifiés')
-    expected={'weights.pth','model_config.py','classes.json','metrics.json'}
+    expected=({'weights.pdparams','training_config.yaml','dictionary.txt','metrics.json','predictions.json'} if job['engine']=='paddleocr' else {'weights.pth','model_config.py','classes.json','metrics.json'})
     if not isinstance(files,list) or any(not isinstance(f,dict) for f in files) or {f.get('name') for f in files}!=expected or len(files)!=len(expected):raise ValueError('Artefacts manquants')
     for f in files:
         if not HEX.fullmatch(f.get('sha256','')) or type(f.get('bytes')) is not int or f['bytes']<=0:raise ValueError('Empreinte ou taille invalide')
@@ -216,7 +217,7 @@ def _tick(store,transport_factory):
         if not job['dispatched']:
             if current['cancel_requested'] or current['status']=='cancelled':return True
             if inference:update('queued',retry_at=now+5);return True
-            if job['profile']!=profile():update('failed',error='Profil modifié avant démarrage.');return True
+            if job['profile']!=profile(job['engine']):update('failed',error='Profil modifié avant démarrage.');return True
             bundle=bundle_for(dataset)
             # Intent must be durable before the first byte leaves OVH.
             with gpu.lifecycle_lock(store),store.connect() as c:
@@ -231,7 +232,7 @@ def _tick(store,transport_factory):
                 response=transport.control(job['id'],'cancel')
             elif response is None:
                 if inference:update(job['status'],retry_at=now+5);return True
-                if job['profile']!=profile():raise ValueError('Profil modifié')
+                if job['profile']!=profile(job['engine']):raise ValueError('Profil modifié')
                 # Same ID, same archive and same request. A late original upload
                 # is deduplicated by the gateway; cancellation creates a tombstone.
                 response=transport.submit(job,dataset['snapshot'],bundle_for(dataset))

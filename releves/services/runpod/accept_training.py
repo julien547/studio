@@ -17,7 +17,7 @@ import uuid
 from pathlib import Path
 from artifacts import sha256,verify
 from compute import exclusive,require_idle_gpu
-from training_service import Manager,DRIVER,runtime_hash,digest,encoded
+from training_service import Manager,DRIVER,PADDLE_DRIVER,runtime_hash,digest,encoded
 
 
 async def acceptance(args):
@@ -26,21 +26,32 @@ async def acceptance(args):
     if not os.path.ismount('/workspace') or not root.is_relative_to('/workspace/doemo-studio'):raise ValueError('Volume persistant requis')
     destination=Path(args.profile_output)
     if destination.exists():raise ValueError('Le profil de sortie existe déjà ; choisir un fichier neuf')
+    engine=getattr(args,'engine','rtmdet');paddle=engine=='paddleocr'
+    if engine not in ('rtmdet','paddleocr'):raise ValueError('Moteur non pris en charge')
     # Same canonical profile fingerprint as OVH/gateway, with no secrets.
-    public={'engine':'rtmdet','driver':'rtmdet.training/1','driver_sha256':sha256(DRIVER),'runtime_sha256':runtime_hash(),
+    public={'engine':engine,'driver':'paddleocr.recognition/1' if paddle else 'rtmdet.training/1','driver_sha256':sha256(PADDLE_DRIVER if paddle else DRIVER),'runtime_sha256':runtime_hash(),
             'config_sha256':sha256(args.config),'weights_sha256':sha256(args.weights),
             'acceptance':{'training_completed':False,'resume_verified':False,'inference_preemption_verified':False,'cancel_verified':False,'report_sha256':'0'*64}}
     for p in (args.config,args.weights):
         if not Path(p).resolve().is_relative_to('/workspace/doemo-studio'):raise ValueError('Profil et poids persistants requis')
-    public['id']=digest(public)
     profile={'public':public,'config':str(Path(args.config).resolve()),'weights':str(Path(args.weights).resolve())}
+    if paddle:
+        from paddle_training import source_hash
+        if not args.repository or not args.dictionary:raise ValueError('Dépôt source et dictionnaire requis pour PaddleOCR')
+        for key in ('repository','dictionary'):
+            local=Path(getattr(args,key)).resolve()
+            if not local.is_relative_to('/workspace/doemo-studio'):raise ValueError('Sources OCR persistantes requises')
+            profile[key]=str(local)
+        public.update(source_sha256=source_hash(profile['repository']),dictionary_sha256=sha256(profile['dictionary']))
+    public['id']=digest(public)
     environment=lambda:dict({k:v for k,v in os.environ.items() if k!='RUNPOD_API_KEY'},HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1')
-    manager=Manager(root,asyncio.Lock(),lambda:True,lambda:False,lambda:None,environment,lambda:profile)
+    manager=Manager(root,asyncio.Lock(),lambda:True,lambda:False,lambda:None,environment,
+                    lambda:None if paddle else profile,lambda:profile if paddle else None)
     # Validate the snapshot and all files without relying on archive paths.
     from training_data import unpack
     with tempfile.TemporaryDirectory(prefix='doemo-acceptance-data-',dir='/tmp') as tmp:
         data=unpack(args.dataset,Path(tmp)/'data');snapshot=json.loads((data/'examples.json').read_text())
-    def spec():return {'id':uuid.uuid4().hex,'engine':'rtmdet','profile_id':public['id'],'parameters':{'epochs':2,'batch_size':1,'learning_rate':.0001},
+    def spec():return {'id':uuid.uuid4().hex,'engine':engine,'profile_id':public['id'],'parameters':{'epochs':2,'batch_size':1,'learning_rate':.0001},
                        'dataset_id':uuid.uuid4().hex,'dataset_sha256':digest(snapshot),'archive_sha256':sha256(args.dataset)}
     async def controlled_run(ident,action):
         task=asyncio.create_task(manager.run(ident))
@@ -78,14 +89,16 @@ async def acceptance(args):
     await controlled_run(second['id'],'cancel')
     if manager.store.state(second['id'])['status']!='cancelled' or manager.lock.locked():raise ValueError('Annulation non vérifiée')
     with exclusive():require_idle_gpu()
-    report={'schema':'doemo.training-acceptance/1','created':time.time(),'engine':'rtmdet','training_job':first['id'],'cancel_job':second['id'],
+    report={'schema':'doemo.training-acceptance/1','created':time.time(),'engine':engine,'training_job':first['id'],'cancel_job':second['id'],
             'runtime_sha256':public['runtime_sha256'],'driver_sha256':public['driver_sha256'],'config_sha256':public['config_sha256'],'weights_sha256':public['weights_sha256'],
             'checks':{'training_completed':True,'resume_verified':True,'inference_preemption_verified':True,'cancel_verified':True},
             'result_manifest':completed['result_manifest'],'metrics':completed['result']['metadata']['metrics']}
+    if paddle:report.update(source_sha256=public['source_sha256'],dictionary_sha256=public['dictionary_sha256'])
     evidence=root/'training/acceptance'/uuid.uuid4().hex;evidence.mkdir(parents=True,exist_ok=False)
     report_file=evidence/'report.json';report_file.write_text(encoded(report))
     accepted={k:public[k] for k in ('engine','driver_sha256','runtime_sha256','config_sha256','weights_sha256')}
     accepted.update(config=profile['config'],weights=profile['weights'],acceptance=dict(report['checks'],report_sha256=sha256(report_file)))
+    if paddle:accepted.update(repository=profile['repository'],dictionary=profile['dictionary'],source_sha256=public['source_sha256'],dictionary_sha256=public['dictionary_sha256'])
     destination.parent.mkdir(parents=True,exist_ok=True)
     with destination.open('x') as out:out.write(encoded(accepted))
     return {'profile':str(destination),'report':str(report_file)}
@@ -94,6 +107,7 @@ async def acceptance(args):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for field in ('dataset','config','weights','profile-output'):p.add_argument('--'+field,required=True)
+    p.add_argument('--engine',choices=['rtmdet','paddleocr'],default='rtmdet');p.add_argument('--repository');p.add_argument('--dictionary')
     p.add_argument('--output',default='/workspace/doemo-studio');p.add_argument('--timeout',type=int,default=3600)
     p.add_argument('--authorize-gpu-training',action='store_true');p.add_argument('--maintenance-confirmed',action='store_true')
     args=p.parse_args()

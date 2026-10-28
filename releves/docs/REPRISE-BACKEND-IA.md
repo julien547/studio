@@ -88,10 +88,10 @@ sont celles du lot test ; elles ne valent pas comparaison à la production.
 ## PaddleOCR, Qwen, architecture
 
 - `training_data.ocr_splits` convertit les images/transcriptions en labels PaddleOCR.
-  `ocr_metrics` calcule CER/WER sans normalisation silencieuse. Auditer le dépôt
-  d’entraînement et le YAML de reconnaissance réels avant d’écrire le trainer.
-  Le package d’inférence n’implique pas la présence de `tools/train.py`. Ne pas
-  remplacer le détecteur de texte quand seule la reconnaissance doit changer.
+  Le pilote de reconnaissance CTC et sa file sont maintenant raccordés. Voir
+  [ENTRAINEMENT-PADDLEOCR.md](ENTRAINEMENT-PADDLEOCR.md) pour les profils compatibles,
+  la recette GPU obligatoire et la nouvelle variable privée. Les poids candidats
+  ne sont pas un export de service ; le détecteur existant reste distinct.
 - Qwen : référentiel persistant versionné et recherche lexicale disponibles ; le
   test actuel ne vérifie pas l’inférence du modèle. Auditer Transformers, PEFT,
   quantification et VRAM avant un LoRA/QLoRA. Distinguer référentiel, prompts et poids.
@@ -116,8 +116,8 @@ poids persistants et des inférences sur GPU. Enregistrer son digest après rece
 Les routes de promotion refusent l’activation tant que les adaptateurs réels ne
 sont pas raccordés. Ne pas contourner les contrôles en changeant les statuts SQL.
 Le raccordement RTMDet, la priorité, les reprises et les artefacts sont maintenant
-implémentés et testés localement. Restent la recette GPU complète, les pilotes
-Qwen/PaddleOCR, l’évaluation comparative indépendante, l’approbation administrative,
+implémentés et testés localement. Restent la recette GPU complète, le pilote
+Qwen, l’évaluation comparative indépendante, l’approbation administrative,
 les pointeurs de production transactionnels par moteur, la version figée par
 inférence et le rollback. Aucun candidat n’est automatiquement mis en production.
 

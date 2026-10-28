@@ -114,10 +114,9 @@ la recette. Une évaluation comparative reproductible avec poids attestés, puis
 l’approbation/publication/rollback restent à développer. Les capacités de promotion
 restent désactivées même après un avis humain favorable.
 
-Le fine-tuning Qwen/PaddleOCR et le réseau architectural restent également à
-implémenter. Les packages d’inférence PaddleOCR ne suffisent pas à identifier un
-trainer de reconnaissance compatible : sa configuration/dépôt d’entraînement doivent
-être établis par la session de déploiement avant d’écrire cet adaptateur spécifique.
+Le fine-tuning Qwen et le réseau architectural restent à implémenter. Le pilote
+[PaddleOCR de reconnaissance](ENTRAINEMENT-PADDLEOCR.md) est maintenant raccordé,
+avec une recette GPU obligatoire avant activation.
 
 ## Vérifications locales
 
