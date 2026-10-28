@@ -1,0 +1,153 @@
+{
+  "schema": "doemo.qwen-source-proposals/1",
+  "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+  "group_scope": "Bâtiments A et B, niveaux 0 et 1 : même dossier et mêmes PDF",
+  "reference_validated_by_user": false,
+  "reference_status": "awaiting_confirmation_specimen",
+  "examples": [
+    {
+      "id": "cotonniere-df-rdc-a-sud",
+      "page": 1,
+      "center": [
+        0.396,
+        0.371
+      ],
+      "equipment_type": "Commande de désenfumage",
+      "observed": "DF",
+      "reference_evidence": "Légende du plan mis au propre : DF = COMMANDE DE DÉSENFUMAGE.",
+      "context": ""
+    },
+    {
+      "id": "cotonniere-df-rdc-a-nord",
+      "page": 1,
+      "center": [
+        0.327,
+        0.832
+      ],
+      "equipment_type": "Commande de désenfumage",
+      "observed": "DF",
+      "reference_evidence": "Légende du plan mis au propre : DF = COMMANDE DE DÉSENFUMAGE.",
+      "context": ""
+    },
+    {
+      "id": "cotonniere-df-r1-a",
+      "page": 2,
+      "center": [
+        0.266,
+        0.846
+      ],
+      "equipment_type": "Commande de désenfumage",
+      "observed": "DF",
+      "reference_evidence": "Légende du plan mis au propre : DF = COMMANDE DE DÉSENFUMAGE.",
+      "context": ""
+    },
+    {
+      "id": "cotonniere-bt-rdc-entree1",
+      "page": 1,
+      "center": [
+        0.179,
+        0.149
+      ],
+      "equipment_type": "Coupure de l’électricité",
+      "observed": "BT",
+      "reference_evidence": "Légende : BT = COUPURE DE L’ÉLECTRICITÉ ; un symbole BT figure près de l’entrée 1.",
+      "context": ""
+    },
+    {
+      "id": "cotonniere-bt-rdc-general",
+      "page": 1,
+      "center": [
+        0.397,
+        0.921
+      ],
+      "equipment_type": "Coupure de l’électricité",
+      "observed": "BT générale",
+      "reference_evidence": "Légende : BT = COUPURE DE L’ÉLECTRICITÉ ; repère général sur le niveau 0.",
+      "context": ""
+    },
+    {
+      "id": "cotonniere-bt-r1-b",
+      "page": 2,
+      "center": [
+        0.613,
+        0.527
+      ],
+      "equipment_type": "Coupure de l’électricité",
+      "observed": "BT",
+      "reference_evidence": "Légende : BT = COUPURE DE L’ÉLECTRICITÉ ; un symbole BT figure au niveau 1.",
+      "context": ""
+    },
+    {
+      "id": "cotonniere-poubelles-rdc",
+      "page": 1,
+      "center": [
+        0.422,
+        0.548
+      ],
+      "equipment_type": "Local poubelles",
+      "observed": "Poubelles",
+      "reference_evidence": "Légende : LOCAL POUBELLES ; plusieurs repères de conteneurs apparaissent dans le préau. Quantité non enseignée ici.",
+      "context": ""
+    },
+    {
+      "id": "cotonniere-menage-rdc",
+      "page": 1,
+      "center": [
+        0.777,
+        0.369
+      ],
+      "equipment_type": "Local ménage",
+      "observed": "Local ménage",
+      "reference_evidence": "Le plan mis au propre nomme LOCAL MENAGE dans le bâtiment B. C’est une désignation de local, pas un pictogramme SAI identifié.",
+      "context": ""
+    },
+    {
+      "id": "cotonniere-pharmacie-rdc",
+      "page": 1,
+      "center": [
+        0.755,
+        0.976
+      ],
+      "equipment_type": "Armoire pharmacie",
+      "observed": "Armoire pharmacie",
+      "reference_evidence": "Légende : ARMOIRE PHARMACIE ; croix blanche sur fond vert présente dans le bâtiment B.",
+      "context": ""
+    },
+    {
+      "id": "cotonniere-pi-entree1",
+      "page": 1,
+      "center": [
+        0.214,
+        0.275
+      ],
+      "equipment_type": "VEI",
+      "observed": "PI",
+      "reference_evidence": "Le repère PI de l’entrée 1 est représenté par une pastille VOUS ETES ICI avec un trait de rappel dans le plan mis au propre.",
+      "context": "Pour ce dossier, restituer le repère PI par VEI selon le plan corrigé ; conserver cette règle propre au dossier."
+    },
+    {
+      "id": "cotonniere-pi-entree2",
+      "page": 1,
+      "center": [
+        0.637,
+        0.652
+      ],
+      "equipment_type": "VEI",
+      "observed": "PI",
+      "reference_evidence": "Le repère PI de l’entrée 2/accueil est représenté par une pastille VOUS ETES ICI dans le plan mis au propre.",
+      "context": "Pour ce dossier, restituer le repère PI par VEI selon le plan corrigé ; conserver cette règle propre au dossier."
+    },
+    {
+      "id": "cotonniere-pmr-rdc",
+      "page": 1,
+      "center": [
+        0.131,
+        0.278
+      ],
+      "equipment_type": "Sanitaires PMR",
+      "observed": "PMR",
+      "reference_evidence": "Légende : SANITAIRES PMR ; vérifier le rattachement du trait de rappel avant tout placement.",
+      "context": ""
+    }
+  ]
+}

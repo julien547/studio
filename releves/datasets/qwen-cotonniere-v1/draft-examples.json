@@ -1,0 +1,667 @@
+{
+  "schema": "doemo.qwen-draft-pack/1",
+  "engine": "qwen",
+  "ready_for_training": false,
+  "building_groups": 1,
+  "split_counts": {
+    "train": 0,
+    "validation": 12,
+    "test": 0
+  },
+  "reference_validated_by_user": false,
+  "examples": [
+    {
+      "id": "cotonniere-df-rdc-a-sud",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "validation",
+      "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+      "original_document_sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "source_page": 1,
+      "crop_pixels": [
+        632,
+        364,
+        952,
+        684
+      ],
+      "crop_source_size": [
+        2000,
+        1415
+      ],
+      "image": "images/cotonniere-df-rdc-a-sud.png",
+      "image_sha256": "4499534632bed54630b5f8d2d7b9470b252d4d69dd56995e2b3d55f0d1582e10",
+      "image_size": [
+        320,
+        320
+      ],
+      "reference_pdf_sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "reference_page": 1,
+      "reference_evidence": "Légende du plan mis au propre : DF = COMMANDE DE DÉSENFUMAGE.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "geometry_reviewed": false,
+      "human_review_required": true,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "convention": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. ",
+        "observed": "DF",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Commande de désenfumage\",\"quantity\":null}",
+        "notes": "Source 333333.pdf page 1 ; cotonniere-df-rdc-a-sud ; proposition à relire."
+      },
+      "conversation": {
+        "image": "images/cotonniere-df-rdc-a-sud.png",
+        "split": "validation",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. "
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Commande de désenfumage\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cotonniere-df-rdc-a-nord",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "validation",
+      "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+      "original_document_sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "source_page": 1,
+      "crop_pixels": [
+        494,
+        1017,
+        814,
+        1337
+      ],
+      "crop_source_size": [
+        2000,
+        1415
+      ],
+      "image": "images/cotonniere-df-rdc-a-nord.png",
+      "image_sha256": "a0f1079cf9e9704ba6254e092ddb1991321c7dbc04014c454dd088d81f2f77df",
+      "image_size": [
+        320,
+        320
+      ],
+      "reference_pdf_sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "reference_page": 1,
+      "reference_evidence": "Légende du plan mis au propre : DF = COMMANDE DE DÉSENFUMAGE.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "geometry_reviewed": false,
+      "human_review_required": true,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "convention": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. ",
+        "observed": "DF",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Commande de désenfumage\",\"quantity\":null}",
+        "notes": "Source 333333.pdf page 1 ; cotonniere-df-rdc-a-nord ; proposition à relire."
+      },
+      "conversation": {
+        "image": "images/cotonniere-df-rdc-a-nord.png",
+        "split": "validation",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. "
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Commande de désenfumage\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cotonniere-df-r1-a",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "validation",
+      "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+      "original_document_sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "source_page": 2,
+      "crop_pixels": [
+        372,
+        1037,
+        692,
+        1357
+      ],
+      "crop_source_size": [
+        2000,
+        1415
+      ],
+      "image": "images/cotonniere-df-r1-a.png",
+      "image_sha256": "ed87dfddd8657372eb54c9a5916000670880b75ae680fdc7d3d12f3ba66a2e85",
+      "image_size": [
+        320,
+        320
+      ],
+      "reference_pdf_sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "reference_page": 1,
+      "reference_evidence": "Légende du plan mis au propre : DF = COMMANDE DE DÉSENFUMAGE.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "geometry_reviewed": false,
+      "human_review_required": true,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "convention": "Cotonnière, R+1. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. ",
+        "observed": "DF",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Commande de désenfumage\",\"quantity\":null}",
+        "notes": "Source 333333.pdf page 2 ; cotonniere-df-r1-a ; proposition à relire."
+      },
+      "conversation": {
+        "image": "images/cotonniere-df-r1-a.png",
+        "split": "validation",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Cotonnière, R+1. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. "
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Commande de désenfumage\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cotonniere-bt-rdc-entree1",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "validation",
+      "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+      "original_document_sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "source_page": 1,
+      "crop_pixels": [
+        198,
+        50,
+        518,
+        370
+      ],
+      "crop_source_size": [
+        2000,
+        1415
+      ],
+      "image": "images/cotonniere-bt-rdc-entree1.png",
+      "image_sha256": "f7b93964b0b65353f88f6070c96f5ff3bea0496646f06e0866e4d9b7aa4570da",
+      "image_size": [
+        320,
+        320
+      ],
+      "reference_pdf_sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "reference_page": 1,
+      "reference_evidence": "Légende : BT = COUPURE DE L’ÉLECTRICITÉ ; un symbole BT figure près de l’entrée 1.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "geometry_reviewed": false,
+      "human_review_required": true,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "convention": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. ",
+        "observed": "BT",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Coupure de l’électricité\",\"quantity\":null}",
+        "notes": "Source 333333.pdf page 1 ; cotonniere-bt-rdc-entree1 ; proposition à relire."
+      },
+      "conversation": {
+        "image": "images/cotonniere-bt-rdc-entree1.png",
+        "split": "validation",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. "
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Coupure de l’électricité\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cotonniere-bt-rdc-general",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "validation",
+      "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+      "original_document_sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "source_page": 1,
+      "crop_pixels": [
+        634,
+        1095,
+        954,
+        1415
+      ],
+      "crop_source_size": [
+        2000,
+        1415
+      ],
+      "image": "images/cotonniere-bt-rdc-general.png",
+      "image_sha256": "7c39de8751389ae37ce939ac5a2a90eceaf2d3a73da642326e3419f7be91f2fa",
+      "image_size": [
+        320,
+        320
+      ],
+      "reference_pdf_sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "reference_page": 1,
+      "reference_evidence": "Légende : BT = COUPURE DE L’ÉLECTRICITÉ ; repère général sur le niveau 0.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "geometry_reviewed": false,
+      "human_review_required": true,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "convention": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. ",
+        "observed": "BT générale",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Coupure de l’électricité\",\"quantity\":null}",
+        "notes": "Source 333333.pdf page 1 ; cotonniere-bt-rdc-general ; proposition à relire."
+      },
+      "conversation": {
+        "image": "images/cotonniere-bt-rdc-general.png",
+        "split": "validation",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. "
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Coupure de l’électricité\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cotonniere-bt-r1-b",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "validation",
+      "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+      "original_document_sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "source_page": 2,
+      "crop_pixels": [
+        1066,
+        585,
+        1386,
+        905
+      ],
+      "crop_source_size": [
+        2000,
+        1415
+      ],
+      "image": "images/cotonniere-bt-r1-b.png",
+      "image_sha256": "33dc2d3875b22d0099b496bb91243d65913f6a23f74478fe3990692b28551fc2",
+      "image_size": [
+        320,
+        320
+      ],
+      "reference_pdf_sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "reference_page": 1,
+      "reference_evidence": "Légende : BT = COUPURE DE L’ÉLECTRICITÉ ; un symbole BT figure au niveau 1.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "geometry_reviewed": false,
+      "human_review_required": true,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "convention": "Cotonnière, R+1. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. ",
+        "observed": "BT",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Coupure de l’électricité\",\"quantity\":null}",
+        "notes": "Source 333333.pdf page 2 ; cotonniere-bt-r1-b ; proposition à relire."
+      },
+      "conversation": {
+        "image": "images/cotonniere-bt-r1-b.png",
+        "split": "validation",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Cotonnière, R+1. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. "
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Coupure de l’électricité\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cotonniere-poubelles-rdc",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "validation",
+      "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+      "original_document_sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "source_page": 1,
+      "crop_pixels": [
+        684,
+        615,
+        1004,
+        935
+      ],
+      "crop_source_size": [
+        2000,
+        1415
+      ],
+      "image": "images/cotonniere-poubelles-rdc.png",
+      "image_sha256": "05f742c4fbf903d912587923d9ecc62ffbef2840507a530ddb1aab0e279f516b",
+      "image_size": [
+        320,
+        320
+      ],
+      "reference_pdf_sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "reference_page": 1,
+      "reference_evidence": "Légende : LOCAL POUBELLES ; plusieurs repères de conteneurs apparaissent dans le préau. Quantité non enseignée ici.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "geometry_reviewed": false,
+      "human_review_required": true,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "convention": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. ",
+        "observed": "Poubelles",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Local poubelles\",\"quantity\":null}",
+        "notes": "Source 333333.pdf page 1 ; cotonniere-poubelles-rdc ; proposition à relire."
+      },
+      "conversation": {
+        "image": "images/cotonniere-poubelles-rdc.png",
+        "split": "validation",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. "
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Local poubelles\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cotonniere-menage-rdc",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "validation",
+      "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+      "original_document_sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "source_page": 1,
+      "crop_pixels": [
+        1394,
+        362,
+        1714,
+        682
+      ],
+      "crop_source_size": [
+        2000,
+        1415
+      ],
+      "image": "images/cotonniere-menage-rdc.png",
+      "image_sha256": "ccd02e5a9dbfbc77dc035e4131bb8217e81c9dff33ef972e5ba3e49db7a30291",
+      "image_size": [
+        320,
+        320
+      ],
+      "reference_pdf_sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "reference_page": 1,
+      "reference_evidence": "Le plan mis au propre nomme LOCAL MENAGE dans le bâtiment B. C’est une désignation de local, pas un pictogramme SAI identifié.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "geometry_reviewed": false,
+      "human_review_required": true,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "convention": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. ",
+        "observed": "Local ménage",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Local ménage\",\"quantity\":null}",
+        "notes": "Source 333333.pdf page 1 ; cotonniere-menage-rdc ; proposition à relire."
+      },
+      "conversation": {
+        "image": "images/cotonniere-menage-rdc.png",
+        "split": "validation",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. "
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Local ménage\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cotonniere-pharmacie-rdc",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "validation",
+      "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+      "original_document_sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "source_page": 1,
+      "crop_pixels": [
+        1350,
+        1095,
+        1670,
+        1415
+      ],
+      "crop_source_size": [
+        2000,
+        1415
+      ],
+      "image": "images/cotonniere-pharmacie-rdc.png",
+      "image_sha256": "e28520afa51221e314bf454b1cb7f46ce3a97973d3047fc3c1bf89fd65080095",
+      "image_size": [
+        320,
+        320
+      ],
+      "reference_pdf_sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "reference_page": 1,
+      "reference_evidence": "Légende : ARMOIRE PHARMACIE ; croix blanche sur fond vert présente dans le bâtiment B.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "geometry_reviewed": false,
+      "human_review_required": true,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "convention": "Cotonnière, RDC. Interpréter la note manuscrite verte en bas du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. ",
+        "observed": "Armoire pharmacie",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Armoire pharmacie\",\"quantity\":null}",
+        "notes": "Source 333333.pdf page 1 ; cotonniere-pharmacie-rdc ; proposition à relire."
+      },
+      "conversation": {
+        "image": "images/cotonniere-pharmacie-rdc.png",
+        "split": "validation",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Cotonnière, RDC. Interpréter la note manuscrite verte en bas du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. "
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Armoire pharmacie\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cotonniere-pi-entree1",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "validation",
+      "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+      "original_document_sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "source_page": 1,
+      "crop_pixels": [
+        268,
+        229,
+        588,
+        549
+      ],
+      "crop_source_size": [
+        2000,
+        1415
+      ],
+      "image": "images/cotonniere-pi-entree1.png",
+      "image_sha256": "89b917bfb16f17ecbd43c6c5680624e07f5e62ba08d61d2e9ef3ccfc5dd2fa8f",
+      "image_size": [
+        320,
+        320
+      ],
+      "reference_pdf_sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "reference_page": 1,
+      "reference_evidence": "Le repère PI de l’entrée 1 est représenté par une pastille VOUS ETES ICI avec un trait de rappel dans le plan mis au propre.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "geometry_reviewed": false,
+      "human_review_required": true,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "convention": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. Pour ce dossier, restituer le repère PI par VEI selon le plan corrigé ; conserver cette règle propre au dossier.",
+        "observed": "PI",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}",
+        "notes": "Source 333333.pdf page 1 ; cotonniere-pi-entree1 ; proposition à relire."
+      },
+      "conversation": {
+        "image": "images/cotonniere-pi-entree1.png",
+        "split": "validation",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. Pour ce dossier, restituer le repère PI par VEI selon le plan corrigé ; conserver cette règle propre au dossier."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cotonniere-pi-entree2",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "validation",
+      "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+      "original_document_sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "source_page": 1,
+      "crop_pixels": [
+        1114,
+        762,
+        1434,
+        1082
+      ],
+      "crop_source_size": [
+        2000,
+        1415
+      ],
+      "image": "images/cotonniere-pi-entree2.png",
+      "image_sha256": "0c20e7b8cab431561374d9910aa26eb927f45a3dbebc2f0c9b81a417134daab6",
+      "image_size": [
+        320,
+        320
+      ],
+      "reference_pdf_sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "reference_page": 1,
+      "reference_evidence": "Le repère PI de l’entrée 2/accueil est représenté par une pastille VOUS ETES ICI dans le plan mis au propre.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "geometry_reviewed": false,
+      "human_review_required": true,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "convention": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. Pour ce dossier, restituer le repère PI par VEI selon le plan corrigé ; conserver cette règle propre au dossier.",
+        "observed": "PI",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}",
+        "notes": "Source 333333.pdf page 1 ; cotonniere-pi-entree2 ; proposition à relire."
+      },
+      "conversation": {
+        "image": "images/cotonniere-pi-entree2.png",
+        "split": "validation",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. Pour ce dossier, restituer le repère PI par VEI selon le plan corrigé ; conserver cette règle propre au dossier."
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"VEI\",\"quantity\":null}"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cotonniere-pmr-rdc",
+      "engine": "qwen",
+      "status": "draft",
+      "split": "validation",
+      "building_key": "bureaux-cotonniere-18-rue-de-la-cotonniere-14000-caen",
+      "original_document_sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "source_page": 1,
+      "crop_pixels": [
+        102,
+        233,
+        422,
+        553
+      ],
+      "crop_source_size": [
+        2000,
+        1415
+      ],
+      "image": "images/cotonniere-pmr-rdc.png",
+      "image_sha256": "6c4e88a54b8deeb4ef41ac9c4b824a8f72c7d11d0ff25f6130b9911a224bb50e",
+      "image_size": [
+        320,
+        320
+      ],
+      "reference_pdf_sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "reference_page": 1,
+      "reference_evidence": "Légende : SANITAIRES PMR ; vérifier le rattachement du trait de rappel avant tout placement.",
+      "interpretation_origin": "assistant_reading_of_survey_and_reference",
+      "geometry_reviewed": false,
+      "human_review_required": true,
+      "example_fields": {
+        "engine": "qwen",
+        "page": 1,
+        "labels": [],
+        "convention": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. ",
+        "observed": "PMR",
+        "interpretation": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Sanitaires PMR\",\"quantity\":null}",
+        "notes": "Source 333333.pdf page 1 ; cotonniere-pmr-rdc ; proposition à relire."
+      },
+      "conversation": {
+        "image": "images/cotonniere-pmr-rdc.png",
+        "split": "validation",
+        "messages": [
+          {
+            "role": "user",
+            "content": "Cotonnière, RDC. Interpréter l’annotation au centre du détail. JSON : equipment_type, decision, quantity, anchor. Désignation seulement : anchor=null, quantity=null. "
+          },
+          {
+            "role": "assistant",
+            "content": "{\"anchor\":null,\"decision\":\"classify\",\"equipment_type\":\"Sanitaires PMR\",\"quantity\":null}"
+          }
+        ]
+      }
+    }
+  ],
+  "blockers": [
+    "Confirmation du plan de référence marqué SPÉCIMEN.",
+    "Relecture et validation des propositions dans DOEMO.",
+    "Autorisation du projet enregistrée et troisième site indépendant pour le test."
+  ]
+}

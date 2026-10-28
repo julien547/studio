@@ -1,0 +1,116 @@
+{
+  "schema": "doemo.qwen-draft-manifest/1",
+  "ready_for_training": false,
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "871e8c858d4d40b97d51c6aed101767656f221dc3f52f3af17d9cd502888d78a",
+      "size": 3480
+    },
+    {
+      "path": "draft-examples.json",
+      "sha256": "41a7ebac459bee28c21fc8fe862ac76d16f00b4e39ac04771f4b2ab13bdbed1f",
+      "size": 27606
+    },
+    {
+      "path": "images/cotonniere-bt-r1-b.png",
+      "sha256": "33dc2d3875b22d0099b496bb91243d65913f6a23f74478fe3990692b28551fc2",
+      "size": 25103
+    },
+    {
+      "path": "images/cotonniere-bt-rdc-entree1.png",
+      "sha256": "f7b93964b0b65353f88f6070c96f5ff3bea0496646f06e0866e4d9b7aa4570da",
+      "size": 38428
+    },
+    {
+      "path": "images/cotonniere-bt-rdc-general.png",
+      "sha256": "7c39de8751389ae37ce939ac5a2a90eceaf2d3a73da642326e3419f7be91f2fa",
+      "size": 44317
+    },
+    {
+      "path": "images/cotonniere-df-r1-a.png",
+      "sha256": "ed87dfddd8657372eb54c9a5916000670880b75ae680fdc7d3d12f3ba66a2e85",
+      "size": 29264
+    },
+    {
+      "path": "images/cotonniere-df-rdc-a-nord.png",
+      "sha256": "a0f1079cf9e9704ba6254e092ddb1991321c7dbc04014c454dd088d81f2f77df",
+      "size": 47136
+    },
+    {
+      "path": "images/cotonniere-df-rdc-a-sud.png",
+      "sha256": "4499534632bed54630b5f8d2d7b9470b252d4d69dd56995e2b3d55f0d1582e10",
+      "size": 41543
+    },
+    {
+      "path": "images/cotonniere-menage-rdc.png",
+      "sha256": "ccd02e5a9dbfbc77dc035e4131bb8217e81c9dff33ef972e5ba3e49db7a30291",
+      "size": 14314
+    },
+    {
+      "path": "images/cotonniere-pharmacie-rdc.png",
+      "sha256": "e28520afa51221e314bf454b1cb7f46ce3a97973d3047fc3c1bf89fd65080095",
+      "size": 62325
+    },
+    {
+      "path": "images/cotonniere-pi-entree1.png",
+      "sha256": "89b917bfb16f17ecbd43c6c5680624e07f5e62ba08d61d2e9ef3ccfc5dd2fa8f",
+      "size": 65088
+    },
+    {
+      "path": "images/cotonniere-pi-entree2.png",
+      "sha256": "0c20e7b8cab431561374d9910aa26eb927f45a3dbebc2f0c9b81a417134daab6",
+      "size": 85212
+    },
+    {
+      "path": "images/cotonniere-pmr-rdc.png",
+      "sha256": "6c4e88a54b8deeb4ef41ac9c4b824a8f72c7d11d0ff25f6130b9911a224bb50e",
+      "size": 48688
+    },
+    {
+      "path": "images/cotonniere-poubelles-rdc.png",
+      "sha256": "05f742c4fbf903d912587923d9ecc62ffbef2840507a530ddb1aab0e279f516b",
+      "size": 27779
+    },
+    {
+      "path": "images/reference-1.png",
+      "sha256": "99ea9a509dc51659a4711f79376f9bd5f5f937970aed50abd66c53f89b8fe94b",
+      "size": 533464
+    },
+    {
+      "path": "images/releve-1.png",
+      "sha256": "4da58c1053969077cb5e223ecba9ae9b1cec32980826ae321afda534fc155ecd",
+      "size": 1067120
+    },
+    {
+      "path": "images/releve-2.png",
+      "sha256": "e73b0e95449f0c4bf787fffa9d9987fee4238820f637cc9a257876abdc34a88a",
+      "size": 631542
+    },
+    {
+      "path": "propositions.json",
+      "sha256": "953dd11d92849e2722af38942630e5e25c8602f67eeb5f39980c73f7327c20d7",
+      "size": 4672
+    },
+    {
+      "path": "qwen-draft.jsonl",
+      "sha256": "b3917b1c0daa1580ca150604a8fb49a3f14e5c8ffbc8a562c28947891e8ad325",
+      "size": 5256
+    },
+    {
+      "path": "revue.html",
+      "sha256": "56747ecbc04d714d78929a33351ecbe0ae4084bbc1667379af27a0b99a3ff345",
+      "size": 9276
+    },
+    {
+      "path": "sources/333333.pdf",
+      "sha256": "8b123790623972e9e2415870cd6ba8a682731cc1ee52eb381ca9420b281c0813",
+      "size": 1365405
+    },
+    {
+      "path": "sources/CO26100349-1.pdf",
+      "sha256": "e1e5f01b3187b5bba39c5367f2225d61c8df019d7c5a13b8bf9d4341d70038aa",
+      "size": 230689
+    }
+  ]
+}
