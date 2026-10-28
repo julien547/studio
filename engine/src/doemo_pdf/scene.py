@@ -51,10 +51,17 @@ def cmyk_color(space,values,resources):
     """Read CMYK equivalents for identification only; preserve PDF colour ops."""
     if isinstance(space,pikepdf.Name):
         if str(space)=='/DeviceCMYK':return tuple(map(float,values)) if len(values)==4 else None
+        if str(space)=='/DeviceGray' and len(values)==1:return (0.,0.,0.,1-float(values[0]))
+        if str(space)=='/DeviceRGB' and len(values)==3:
+            if all(float(v)>=.999 for v in values):return (0.,0.,0.,0.)
+            if all(float(v)<=.001 for v in values):return (0.,0.,0.,1.)
+            return None
         space=resources.get('/ColorSpace',{}).get(space)
     if not isinstance(space,pikepdf.Array):return None
     if str(space[0])=='/ICCBased' and int(space[1].get('/N',0))==4:
         return tuple(map(float,values)) if len(values)==4 else None
+    if str(space[0])=='/ICCBased' and int(space[1].get('/N',0)) in (1,3):
+        return cmyk_color(pikepdf.Name.DeviceGray if int(space[1]['/N'])==1 else pikepdf.Name.DeviceRGB,values,resources)
     if str(space[0])=='/Separation' and len(values)==1:
         fn=space[3]
         if not isinstance(fn,pikepdf.Dictionary) or int(fn.get('/FunctionType',-1))!=2:return None
@@ -220,7 +227,7 @@ class Paint:
 class Scene:
     def __init__(self, container):
         self.resources=container.obj.Resources if isinstance(container,pikepdf.Page) else container.Resources
-        self.ops=list(pikepdf.parse_content_stream(container));self.items=[];self.fonts={}
+        self.ops=list(pikepdf.parse_content_stream(container));self.items=[];self.fonts={};self.guides=[]
         if len(self.ops)>200000:raise ValueError('Document trop complexe pour cet import.')
         self._parse()
 
@@ -266,6 +273,9 @@ class Scene:
             elif op in PATH:path.append(ins)
             elif op in ('W','W*'):clip=ins
             elif op in PAINT or op=='n':
+                if op=='n' and path and clip is None:
+                    shape,_=path_geometry(path,state['ctm'])
+                    self.guides.append({'layer':layer,'bounds':tuple(shape.bounds)})
                 if op!='n':
                     shape,geometry=path_geometry(path,state['ctm'])
                     if op in ('S','s','B','B*','b','b*'):

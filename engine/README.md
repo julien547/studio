@@ -1,4 +1,4 @@
-# Moteur PDF Linux 0.3.3
+# Moteur PDF Linux 0.3.4
 
 Génération de lots de test, identification native Illustrator et découpage vectoriel
 pour `https://studio.doemo.fr/app/orientation`. Aucun runtime Adobe n'est requis.

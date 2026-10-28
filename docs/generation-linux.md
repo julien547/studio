@@ -1,4 +1,4 @@
-# Génération Linux 0.3.3 — lots de test
+# Génération Linux 0.3.4 — lots de test
 
 Le bouton **Générer tous les plans** produit maintenant les PDF puis un ZIP,
 sans Illustrator, pour le profil de BAT pris en charge. Il devient disponible
@@ -90,9 +90,36 @@ qu'il faut installer cette trame horizontale dans la collection choisie ; le
 moteur ne la remplace jamais automatiquement par une trame verticale.
 L'éditeur de niveaux et ses aperçus continuent à prendre en charge plusieurs pages.
 
-La zone de trame est actuellement identifiée par un unique grand rectangle blanc
-sur le calque Date, présent dans les deux trames fournies. Une trame personnalisée
-sans cette convention est refusée. Les trames d'essai contiennent SPECIMEN,
+La zone de trame est détectée dans cet ordre :
+
+1. Bornes géométriques d'un repère sur un calque `ZONE`, `ZONE_PLAN`,
+   `DOEMO_ZONE`, etc., y compris un tracé non peint.
+2. Grand rectangle blanc, quel que soit le nom du calque, avec préférence pour
+   le calque Date historique. Le blanc CMJN, RVB, gris et ICC est reconnu.
+   Les rectangles superposés identiques et les chemins fermés par retour au
+   premier sommet sont acceptés.
+3. Plus grande zone libre entre les objets visibles : bandeau, consignes,
+   cadres et autres éléments fixes. Les champs d'exemple Adresse/Date/Légende
+   sont exclus de l'habillage et le filigrane ne constitue pas un obstacle.
+   Les cadres laissent leur intérieur disponible. Deux zones de surface
+   équivalente à 5 % près restent ambiguës ; le moteur ne choisit pas au hasard.
+
+Cette détection utilise les objets vectoriels, sans rasterisation. Le dessin
+réserve ensuite l'espace de l'adresse et du logo client. `layout.zone_detection`
+indique la méthode et les coordonnées détectées ; `layout.zone` donne la zone
+après ces réservations. La limite de recherche est de 256 régions, avec une
+surface minimale de 20 % de la page pour la détection automatique d'espace libre.
+La reconnaissance des noms concerne les calques PDF ; un nom d'objet Illustrator
+non exporté dans le PDF n'est pas présenté comme un repère nommé reconnu.
+
+Les erreurs précisent désormais le nom de la trame concernée. Pour contrôler
+une trame directement sur le serveur, sans BAT :
+
+```sh
+/opt/doemo-studio/venv-pdf/bin/doemo-pdf inspect-template /var/lib/doemo-studio/templates/doemo/PI-A3-H.pdf
+```
+
+Les trames d'essai contiennent SPECIMEN,
 conservé dans les sorties. Les groupes de transparence sont préservés ; des
 espaces de fusion non CMJN incompatibles ou des OutputIntents à harmoniser sont
 refusés. Si un BAT utilise un profil ICC CMJN et la trame DeviceCMYK, la trame
@@ -105,6 +132,10 @@ générées avec les trames disponibles dans l'environnement de test. Les deux
 horizontales demandent `PI-A3-H.pdf` et `PE-A3-H.pdf`, déjà présentes sur le serveur
 selon Julien. Le PDF exporté joint à ce BAT ne contient plus les données natives :
 utiliser le `.ai` pour la génération. Le message d'import le précise désormais.
+La 0.3.4 a aussi été testée sur le lot des cinq VEI, avec les deux vraies trames
+verticales et deux trames horizontales synthétiques sans repère blanc : cinq PDF
+et ZIP générés. Ce test valide le traitement complet et la détection d'espace
+libre, pas le placement dans les trames horizontales privées du serveur.
 
 Un contour qui masque la zone occupée par le VEI actif est refusé : la pastille
 et sa flèche doivent rester visibles. Élargir explicitement le contour dans ce
@@ -136,7 +167,7 @@ Ce fonctionnement est synchrone ; il n'y a pas encore de file persistante de wor
 
 ```text
 /opt/doemo-studio/src/engine/                 code moteur
-/opt/doemo-studio/venv-pdf/                   environnement Python 0.3.3
+/opt/doemo-studio/venv-pdf/                   environnement Python 0.3.4
 /var/www/studio/api/                         PHP, dont les deux routeurs internes
 /var/www/studio/app/                         build doemo-app, branche feat/studio-host
 /var/lib/doemo-studio/templates/doemo/        trames DOEMO

@@ -10,7 +10,7 @@ from .ai_metadata import inspect_ai_metadata
 from .settings import templates_dir
 from .batch import plan_batch
 from .levels import new_document, read_document, validate_document, clip_preview
-from .generate import inspect_generation, generate_batch
+from .generate import inspect_generation, generate_batch, inspect_template
 
 
 def main(argv=None):
@@ -20,6 +20,8 @@ def main(argv=None):
     directory.add_argument("--client", default="doemo", help="Identifiant de collection, doemo par défaut.")
     inspect = commands.add_parser("inspect")
     inspect.add_argument("source")
+    template = commands.add_parser('inspect-template', help='Détecter la zone de placement d’une trame sans BAT.')
+    template.add_argument('source')
     native = commands.add_parser("inspect-ai", help="Lire les noms et matrices natives sans exécuter Illustrator.")
     native.add_argument("source")
     batch = commands.add_parser("plan-batch", help="Préparer tous les candidats VEI et associer les trames automatiquement, sans générer de PDF.")
@@ -61,6 +63,8 @@ def main(argv=None):
             result = {"client": args.client, "templates_dir": str(directory), "exists": directory.is_dir()}
         elif args.command == "inspect":
             result = inspect_pdf(args.source)
+        elif args.command == 'inspect-template':
+            result = inspect_template(args.source)
         elif args.command == "inspect-ai":
             result = inspect_ai_metadata(args.source)
         elif args.command == "plan-batch":

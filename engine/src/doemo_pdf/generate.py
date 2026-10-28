@@ -25,6 +25,7 @@ from .geometry import Matrix, component_transform, rotation_to_up
 from .batch import template_index, check_template
 from .settings import templates_dir
 from .levels import validate_document, level_path, pdf_path
+from .template_zones import detect_zone, named as zone_name
 
 
 def rotation(angle, anchor=(0,0)):
@@ -74,21 +75,20 @@ def footer_label(scene, indices, number, generated_on):
 def template_scene(pdf):
     pg=selected_page(pdf,0)
     if len(pdf.pages)!=1:raise ValueError('Trame multipage non prise en charge.')
-    scene=Scene(pg);box=tuple(map(float,pg.cropbox));area=(box[2]-box[0])*(box[3]-box[1]);zones=[]
-    for it in scene.items:
-        if it.kind!='path' or len(it.geometry)!=5 or it.geometry[-1][0]!='h':continue
-        pts=[r[1:] for r in it.geometry[:-1]]
-        if len({round(p[0],3) for p in pts})!=2 or len({round(p[1],3) for p in pts})!=2:continue
-        b=geometry_path(it.geometry).bounds
-        a=(b[2]-b[0])*(b[3]-b[1])
-        if .3*area<a<.8*area and role(it.layer)=='footer' and it.stroke==(0.,0.,0.,0.):zones.append((it,b))
-    if len(zones)!=1:raise ValueError('ZONE de trame absente ou ambiguë : un rectangle de placement blanc unique est requis.')
-    zone_item,zone=zones[0]
+    scene=Scene(pg);box=tuple(map(float,pg.cropbox))
     defaults=pdf.Root.get('/OCProperties',{}).get('/D',{})
     off={x.objgen for x in defaults.get('/OFF',[])}
     layers={str(v.get('/Name')):v.objgen not in off for v in scene.resources.get('/Properties',{}).values()}
-    selected=[it.index for it in scene.items if layers.get(it.layer,True) and it.index!=zone_item.index and role(it.layer) not in ('footer','legend')]
+    zone,scene.zone_detection=detect_zone(scene,box,layers,role)
+    selected=[it.index for it in scene.items if layers.get(it.layer,True) and not zone_name(it.layer) and role(it.layer) not in ('header','footer','legend')]
     return scene,box,tuple(zone),selected
+
+
+def inspect_template(path):
+    try:
+        with open_pdf(path) as pdf:scene,box,zone,_=template_scene(pdf)
+    except ValueError as error:raise ValueError(f'Trame {Path(path).name} : {error}') from error
+    return {'file':Path(path).name,'sha256':file_hash(path),'page_box':list(box),'zone':list(zone),'zone_detection':scene.zone_detection}
 
 
 def inspect_generation(source, client='doemo'):
@@ -102,14 +102,14 @@ def inspect_generation(source, client='doemo'):
             found=index.get(key,[])
             if len(found)!=1:raise ValueError('Trame '+ '-'.join(key)+' absente ou ambiguë dans le dossier client.')
             path=found[0];sha=check_template(path,key)
-            with open_pdf(path) as template:_,_,zone,_=template_scene(template)
-            templates[key]={'reference':f'{client}/{path.relative_to(directory).as_posix()}','sha256':sha,'zone':zone}
+            details=inspect_template(path)
+            templates[key]={'reference':f'{client}/{path.relative_to(directory).as_posix()}','sha256':sha,'zone':details['zone'],'zone_detection':details['zone_detection']}
         return {'status':'ready_for_test_generation','generation_available':True,'production_ready':False,
                 'source_sha256':file_hash(source),'client':client,'marker_count':len(markers),'symbol_count':len(symbols),
                 'profile':'illustrator-ai24-single-page','markers':[{'id':m.id,'index':m.index,'type':m.kind,'paper':m.paper,'orientation':m.orientation,
                 'direction':list(m.direction),'point':list(center(m.symbol.bounds)),'template':templates[(m.kind,m.paper,m.orientation)]['reference']} for m in markers],
                 'templates':list(templates.values()),'warnings':['PDF de test : contrôle visuel requis.',
-                'Zones des trames détectées par leur rectangle blanc ; vérifier le placement.',
+                'Zones des trames détectées automatiquement ; vérifier le placement.',
                 'Les équipements des calques natifs visibles sont inclus, même si leur impression était désactivée.']}
 
 
@@ -142,7 +142,8 @@ def make_group(pdf,forms,indices,page_box,transforms=None,clip=None):
 def build_plan(source, scene, symbols, markers, visible, marker, template_path, output, levels=None, generated_on=None):
     source_page=source.pages[0];source_box=tuple(map(float,source_page.mediabox))
     with open_pdf(template_path) as template:
-        ts,ab,zone,template_ids=template_scene(template)
+        try:ts,ab,zone,template_ids=template_scene(template)
+        except ValueError as error:raise ValueError(f'Trame {Path(template_path).name} : {error}') from error
         out=pikepdf.Pdf.new();page=out.add_blank_page(page_size=(ab[2]-ab[0],ab[3]-ab[1]));page.MediaBox=pikepdf.Array(ab)
         source_group=source_page.obj.get('/Group');template_group=template.pages[0].obj.get('/Group')
         separate_template_group=source_group is not None and template_group is not None and str(source_group.get('/CS'))!=str(template_group.get('/CS'))
@@ -171,6 +172,14 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
             # A BAT with several level labels keeps them at their source
             # positions; collecting them in one footer would reorder levels.
             groups['plan']=sorted(groups['plan']+groups['level']);groups['level']=[]
+        # Auto-detected free space can extend up to the banner. Reserve room
+        # for the source address before fitting the plan, rather than letting
+        # it overlap the banner or creating an inverted header slot.
+        header_top=ab[3]-96
+        if groups['header']:
+            hb=union(scene.items[i].bounds for i in groups['header'])
+            header_height=(hb[3]-hb[1])*min(1,(zone[2]-zone[0]-24)/(hb[2]-hb[0]))
+            zone=(zone[0],zone[1],zone[2],min(zone[3],header_top-header_height-16))
         # The one isolated image in the footer is the client logo; a scan of the
         # building must never be guessed to be a logo or quietly discarded.
         images=[scene.items[i] for i in groups['plan'] if scene.items[i].kind=='image']
@@ -178,6 +187,10 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
               it.bounds[2]-it.bounds[0]<.35*(source_box[2]-source_box[0])]
         if images and (len(images)!=1 or len(logo)!=1):raise ValueError('Image de plan ou logo ambigu : préparation requise.')
         for it in logo:groups['plan'].remove(it.index);groups['logo'].append(it.index)
+        if marker.kind=='PI' and groups['logo']:
+            lb=union(scene.items[i].bounds for i in groups['logo'])
+            logo_scale=min(1,.30*(ab[2]-ab[0])/(lb[2]-lb[0]),(.12*(ab[3]-ab[1])-10)/(lb[3]-lb[1]))
+            zone=(zone[0],max(zone[1],ab[1]+22+(lb[3]-lb[1])*logo_scale+10),zone[2],zone[3])
         if not groups['plan']:raise ValueError('Dessin architectural absent.')
         all_labels={m.label for m in markers};hidden=set(all_labels)
         for m in markers:
@@ -231,7 +244,7 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
             b=union(scene.items[i].bounds for i in ids);m=fit_box(b,slot,upscale,align)
             writer.place(make_group(out,sf,ids,source_box),m)
         # Header stays in the free band under the template banner.
-        block(groups['header'],(useful[0],zone[3]+16,useful[2],ab[3]-96))
+        block(groups['header'],(useful[0],zone[3]+16,useful[2],header_top))
         block(groups['level'],(useful[0],placed[1]-30,useful[2],placed[1]-8))
         footer,reference=footer_label(scene,groups['footer'],marker.index,generated_on or batch_date())
         selfont=out.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Font,Subtype=pikepdf.Name.Type1,BaseFont=pikepdf.Name.Helvetica,Encoding=pikepdf.Name.WinAnsiEncoding))
@@ -325,7 +338,7 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
         return {'vei':marker.index,'id':marker.id,'type':marker.kind,'file':Path(output).name,'sha256':file_hash(output),
           'angle':angle,'scale':fit[0],'direction_after':list(direction),'active_vei_count':1,'hidden_vei_count':len(markers)-1,
           'level':level_id,'plan_reference':reference,'footer_text':footer,
-          'layout':{'zone':list(zone),'plan_bounds':list(placed),'legend_frame':legend_frame,'legend_color_cmyk':legend_color,'footer_bounds':footer_bounds},
+          'layout':{'zone':list(zone),'zone_detection':ts.zone_detection,'plan_bounds':list(placed),'legend_frame':legend_frame,'legend_color_cmyk':legend_color,'footer_bounds':footer_bounds},
           'source_fragments_unchanged':True,'publication_metadata_rewritten':bool(footer),
           'embedded_resources_unchanged':True,'production_ready':False,'status':'test_pdf_generated'}
 
@@ -355,7 +368,7 @@ def generate_batch(source, destination, client='doemo', levels=None, basename=No
                 result['template']=f'{client}/{template.relative_to(directory).as_posix()}';results.append(result)
                 if sum(p.stat().st_size for p in temporary.iterdir())>256*1024*1024:raise ValueError('Lot supérieur à 256 Mio.')
         if file_hash(source)!=initial or any(file_hash(p)!=h for p,h in template_hashes.items()):raise ValueError('Une source a changé pendant la génération.')
-        report={'schema_version':1,'engine_version':'0.3.3','generation_date':generated_on.isoformat(),'status':'test_batch_complete','production_ready':False,'source_sha256':initial,
+        report={'schema_version':1,'engine_version':'0.3.4','generation_date':generated_on.isoformat(),'status':'test_batch_complete','production_ready':False,'source_sha256':initial,
                 'source_unchanged':True,'client':client,'count':len(results),'results':results,
                 'warnings':['Contrôler visuellement les PDF avant utilisation.',
                 'Les zones de trames sont détectées automatiquement ; ce profil prend en charge les BAT Illustrator AI24 à une page.',
