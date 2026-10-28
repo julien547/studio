@@ -1,0 +1,15 @@
+# Insert only in the existing studio.doemo.fr vhost after inspecting the actual DocumentRoot.
+# This example assumes /var/www/studio; adapt to the inspected server.
+<Directory /var/www/studio/redessin>
+    DirectoryIndex index.php
+    Options -Indexes
+    FallbackResource disabled
+</Directory>
+# Keep the existing session and CSP. All scripts are external and same-origin.
+# Existing CSP must allow style-src 'self' 'unsafe-inline' and img-src 'self' data:,
+# as in the repository vhost. No frame, external script, eval or inline script is required.
+# In the existing PHP configuration/pool for Studio (not all hosted applications):
+# upload_max_filesize = 20M
+# post_max_size = 32M
+# memory_limit = 256M
+# Keep max_execution_time >= 35 for the local bridge; long tasks run in systemd, not PHP.

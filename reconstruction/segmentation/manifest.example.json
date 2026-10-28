@@ -1,0 +1,12 @@
+{
+  "sha256": "REPLACE_WITH_SHA256_OF_AUTHORIZED_ONNX_FILE",
+  "input_contract": "rgb_nchw_0_1",
+  "output_contract": "nchw_logits",
+  "input_size": [1024, 1024],
+  "classes": ["background", "wall", "partition", "door", "window", "stairs", "text", "annotation", "furniture", "symbol", "room"],
+  "rights": {
+    "code": {"commercial_use": false, "evidence_url": "", "reviewed_by": ""},
+    "weights": {"commercial_use": false, "evidence_url": "", "reviewed_by": ""},
+    "training_data": {"commercial_use": false, "evidence_url": "", "reviewed_by": ""}
+  }
+}

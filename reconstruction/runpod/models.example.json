@@ -1,0 +1,5 @@
+{
+  "qwen": {"model": "/workspace/doemo-studio/models/qwen/Qwen3.5-9B", "version": "Qwen3.5-9B-local-snapshot-to-verify"},
+  "paddleocr": {"detection_model": "/root/.paddlex/official_models/REPLACE_WITH_EXISTING_DETECTION_MODEL", "recognition_model": "/root/.paddlex/official_models/REPLACE_WITH_EXISTING_RECOGNITION_MODEL", "version": "existing-local-models-to-verify", "language": "fr"},
+  "rtmdet": {"config": "/workspace/doemo-studio/models/rtmdet/REPLACE_WITH_EXISTING_CONFIG.py", "checkpoint": "/workspace/doemo-studio/models/rtmdet/REPLACE_WITH_EXISTING_CHECKPOINT.pth", "version": "rtmdet_tiny_8xb32-300e_coco", "score_threshold": 0.15}
+}
