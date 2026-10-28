@@ -1,4 +1,4 @@
-# Moteur PDF Linux 0.3.4
+# Moteur PDF Linux 0.3.5
 
 Génération de lots de test, identification native Illustrator et découpage vectoriel
 pour `https://studio.doemo.fr/app/orientation`. Aucun runtime Adobe n'est requis.
@@ -46,6 +46,10 @@ doemo-pdf levels-preview BAT.ai niveaux.json selection.pdf --mode PE --level IDE
 doit être nouvelle. Sans `--levels`, le dessin entier est utilisé, même si des
 sélections ont été sauvegardées ailleurs. Avec cette option, chaque VEI PE doit
 être associé à un niveau ; le PI ne reçoit jamais le clip d'un niveau isolé.
+Les titres de niveaux sont placés sous leur dessin, avec repli sur le côté si
+nécessaire. Le logo des PE horizontaux occupe l'espace blanc à gauche sous
+Prévention ; celui des PE verticaux reste sous Prévention à droite. La légende
+et le logo disposent d'espaces distincts.
 
 Les coordonnées sont en points PDF, origine en bas à gauche, Y vers le haut.
 Les angles positifs sont antihoraires. Les trames sont dans

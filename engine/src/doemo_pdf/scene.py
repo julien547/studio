@@ -251,9 +251,20 @@ class Scene:
                 if not stack:raise ValueError('Pile graphique PDF déséquilibrée.')
                 history,state=stack.pop()
             elif op=='BDC':
-                if str(v[0])!='/OC' or str(v[1]) not in self.resources.get('/Properties',{}):
+                if len(v)!=2 or str(v[1]) not in self.resources.get('/Properties',{}):
                     raise ValueError('Contenu marqué PDF non pris en charge.')
-                marks.append(layer);layer=str(self.resources.Properties[v[1]].get('/Name',''))
+                props=self.resources.Properties[v[1]];tag=str(v[0]);previous=layer
+                if tag=='/OC':layer=str(props.get('/Name',''))
+                elif tag=='/Layer' and '/Title' in props:
+                    title=props.Title
+                    try:layer=bytes(title).decode('utf-8')
+                    except UnicodeDecodeError:layer=str(title)
+                elif tag=='/AltAI8' and str(props.get('/AIType'))=='/HiddenLayer':
+                    # Illustrator's alternate hidden-layer stream is metadata,
+                    # not a painting operation. Never execute it as page ink.
+                    pass
+                else:raise ValueError('Contenu marqué PDF non pris en charge : '+tag)
+                marks.append(previous)
             elif op=='EMC':
                 if not marks:raise ValueError('Calques PDF déséquilibrés.')
                 layer=marks.pop()

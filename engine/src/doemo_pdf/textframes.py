@@ -1,4 +1,4 @@
-"""Bind multiline SourceSans text to native stories without rewriting glyphs."""
+"""Bind multiline text to native glyph sequences or decoded Unicode stories."""
 import base64
 import math
 import re
@@ -21,7 +21,13 @@ def bind_text_frames(raw, block, items):
     def runs(obj,depth=0):
         if depth>40:raise ValueError('Document texte natif trop imbriqué.')
         if isinstance(obj,pikepdf.Dictionary):
-            if str(obj.get('/99'))=='/G':return [tuple(map(int,obj['/5']))]
+            if str(obj.get('/99'))=='/G':
+                glyphs=obj.get('/5')
+                # Older Illustrator records store the same glyph sequence in
+                # the expanded run table, alongside per-glyph positions.
+                if glyphs is None:glyphs=obj.get('/21',{}).get('/0')
+                if glyphs is None:raise ValueError('Séquence de glyphes native absente.')
+                return [tuple(map(int,glyphs))]
             return [run for value in obj.values() for run in runs(value,depth+1)]
         if isinstance(obj,pikepdf.Array):return [run for value in obj for run in runs(value,depth+1)]
         return []
@@ -36,7 +42,9 @@ def bind_text_frames(raw, block, items):
         index=int(refs[0])
         if index>=len(stories):raise ValueError('Référence du bloc texte natif invalide.')
         story=stories[index];lines=str(story['/0']['/0']).rstrip('\n').split('\n');glyphs=runs(story['/1'])
-        if len(glyphs)!=len(lines) or any(len(g)!=len(line)+1 or g[-1]!=1 for g,line in zip(glyphs,lines)):
+        # The final glyph represents the native line terminator; its ID varies
+        # with the font (e.g. 1 in SourceSans, 3 in Montserrat).
+        if len(glyphs)!=len(lines) or any(len(g)!=len(line)+1 for g,line in zip(glyphs,lines)):
             raise ValueError('Structure du libellé natif non prise en charge.')
         patterns.append((tuple(g[:-1] for g in glyphs),lines))
     candidates=[]
@@ -44,7 +52,8 @@ def bind_text_frames(raw, block, items):
         choices=[]
         for start in range(len(items)-len(pattern)+1):
             subset=items[start:start+len(pattern)]
-            if tuple(it.glyph_ids for it in subset)!=pattern:continue
+            if not all((it.glyph_ids==glyphs if it.glyph_ids else it.text==line)
+                       for it,glyphs,line in zip(subset,pattern,lines)):continue
             first=subset[0]
             if any(max(abs(a-b) for a,b in zip(first.matrix[:4],it.matrix[:4]))>1e-6 for it in subset):continue
             # This profile is horizontal, centre-aligned multiline point text.
@@ -58,6 +67,13 @@ def bind_text_frames(raw, block, items):
         candidates.append(choices)
     # Require a unique, disjoint assignment covering every text operation.
     order=sorted(range(len(candidates)),key=lambda n:len(candidates[n]));solutions=[];visits=0
+    # Repeated identical one-line labels (BUREAU, etc.) are interchangeable
+    # native records, not different geometrical groupings. Canonical ordering
+    # avoids factorial searches while retaining ambiguity checks on partitions.
+    previous={};last={}
+    for n in order:
+        key=(patterns[n][0],tuple(patterns[n][1]))
+        previous[n]=last.get(key);last[key]=n
     def solve(at,used,chosen):
         nonlocal visits
         visits+=1
@@ -69,6 +85,8 @@ def bind_text_frames(raw, block, items):
         n=order[at]
         for choice in candidates[n]:
             if used.intersection(choice):continue
+            prior=previous[n]
+            if prior is not None and choice[0]<=chosen[prior][0]:continue
             chosen[n]=choice;solve(at+1,used.union(choice),chosen);chosen.pop(n)
     solve(0,set(),{})
     if len(solutions)!=1:raise ValueError('Association des blocs texte absente ou ambiguë.')

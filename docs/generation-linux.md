@@ -1,4 +1,4 @@
-# Génération Linux 0.3.4 — lots de test
+# Génération Linux 0.3.5 — lots de test
 
 Le bouton **Générer tous les plans** produit maintenant les PDF puis un ZIP,
 sans Illustrator, pour le profil de BAT pris en charge. Il devient disponible
@@ -42,17 +42,31 @@ client choisi. Une trame manquante ou ambiguë bloque le lot complet.
 - Identifie chaque pastille, tige, pointe et étiquette VEI ; retire tous les
   composants des autres VEI et les codes PEV/PIV du dessin.
 - Oriente la flèche active vers le haut et redresse les symboles de lecture et
-  les textes du calque `texte` autour de leurs ancres. Les flèches directionnelles
+  les textes autour de leurs ancres, quel que soit le nom de leur calque visible.
+  Les flèches directionnelles
   suivent le bâtiment ; les panneaux « sortie finale » restent lisibles.
-- Associe les libellés SourceSans multilignes aux séquences de glyphes des
-  histoires natives Illustrator. Une association unique couvrant tous les
+- Associe les libellés multilignes aux séquences de glyphes ou au texte Unicode
+  des histoires natives Illustrator. Une association unique couvrant tous les
   fragments est requise ; toutes les lignes partagent alors la même ancre.
-  Les multiples noms de niveaux restent à leurs positions dans la composition.
+  Des libellés identiques tels que « BUREAU » peuvent apparaître plusieurs fois,
+  chacun conservant son propre emplacement. Les calques `SIG`, `Niveau` ou les
+  autres noms ne sont pas refusés uniquement à cause de leur nom.
+  Les noms de pièces restent dans le dessin. Les vrais titres de niveaux sont
+  extraits et placés sous le niveau concerné en priorité, puis sur le côté si
+  l'espace manque. Les regroupements géométriques servent uniquement au placement
+  des titres : ils ne déplacent ni ne découpent les bâtiments. Avec une sélection
+  PE explicite, seul le titre associé est replacé hors du contour ; les autres
+  titres ne laissent pas de lettres tronquées en bordure du plan.
 - Utilise les équipements des calques natifs visibles, y compris les neuf
   extincteurs du calque EXT non imprimable du BAT fourni, comme la 1.0.16.
 - Place séparément l'adresse, le niveau, la référence/date et le logo client.
   Le masque du logo est conservé ; sa taille est calculée sur la zone visible.
-  Le PE réserve l'espace sous Prévention, le PI le bas droit de la page.
+  Le PE réserve l'espace sous Prévention : à gauche en horizontal, à droite en
+  vertical. Le PI utilise le bas droit de la page. Le logo reste entièrement
+  dans cet espace blanc et ne peut pas recouvrir la légende. Les limites placées
+  sont enregistrées dans `layout.logo_bounds` et `layout.level_titles`.
+  Un logo isolé en bas du BAT peut aussi se trouver sur le calque Date ; il est
+  placé comme logo, séparément du texte de mise à jour.
 - Construit la légende depuis les symboles vectoriels identifiés. Ses libellés
   viennent des noms natifs ; sa présentation diffère de la bibliothèque Illustrator.
   Un cadre vectoriel vert entoure la légende des PE, rouge celle des PI.
@@ -137,6 +151,19 @@ verticales et deux trames horizontales synthétiques sans repère blanc : cinq P
 et ZIP générés. Ce test valide le traitement complet et la détection d'espace
 libre, pas le placement dans les trames horizontales privées du serveur.
 
+La 0.3.5 traite `CO26100179-1.ai` : quatre VEI, trois PI et un PE, libellés de
+pièces sur Niveau, texte de signature sur SIG et logo sur Date. Le contenu de
+signature reste présent ; aucun calque utilisateur n'est supprimé par cette
+correction. Les exports PDF Illustrator utilisant les balises `Layer/Title`
+et les métadonnées `AltAI8` sont également lus. Les flux alternatifs des calques
+masqués ne sont jamais exécutés comme des opérations de dessin.
+Les deux titres de niveaux de `CO26100010-1.ai` sont conservés comme fragments
+vectoriels et replacés sous leurs niveaux, y compris après rotation. Les trois
+sorties portrait ont été contrôlées avec les trames fournies. Le placement du logo
+PE horizontal sous la colonne Prévention gauche est testé sur une trame
+synthétique ; le rendu avec la trame horizontale réelle du serveur reste à
+contrôler après déploiement.
+
 Un contour qui masque la zone occupée par le VEI actif est refusé : la pastille
 et sa flèche doivent rester visibles. Élargir explicitement le contour dans ce
 cas ; le moteur ne le modifie jamais tout seul.
@@ -167,7 +194,7 @@ Ce fonctionnement est synchrone ; il n'y a pas encore de file persistante de wor
 
 ```text
 /opt/doemo-studio/src/engine/                 code moteur
-/opt/doemo-studio/venv-pdf/                   environnement Python 0.3.4
+/opt/doemo-studio/venv-pdf/                   environnement Python 0.3.5
 /var/www/studio/api/                         PHP, dont les deux routeurs internes
 /var/www/studio/app/                         build doemo-app, branche feat/studio-host
 /var/lib/doemo-studio/templates/doemo/        trames DOEMO
@@ -186,6 +213,7 @@ cd /opt/doemo-studio/src
 git pull --ff-only origin main
 /opt/doemo-studio/venv-pdf/bin/python -m pip install -r engine/requirements.lock
 /opt/doemo-studio/venv-pdf/bin/python -m pip install --no-deps ./engine
+/opt/doemo-studio/venv-pdf/bin/python -c "from importlib.metadata import version; print(version('doemo-studio-pdf'))"
 /opt/doemo-studio/venv-pdf/bin/doemo-pdf generate-test-batch --help
 ```
 
@@ -205,14 +233,23 @@ trames clients et projets privés. Adapter si nécessaire le délai PHP/FPM/prox
 résultats pour le compte PHP. Voir aussi [le guide serveur](deploiement-serveur.md).
 
 Contrôle après déploiement : ouvrir `https://studio.doemo.fr/app/orientation`,
-choisir `doemo`, charger le BAT fourni, laisser la délimitation décochée, générer
-et vérifier trois PDF dans le ZIP. Tester ensuite la délimitation facultative.
+choisir le dossier client approprié, charger le BAT fourni, laisser la
+délimitation décochée et générer. Vérifier le nombre de PDF dans le ZIP : trois
+pour CO26100364, quatre pour CO26100179, cinq pour CO26100010. Tester ensuite la
+délimitation facultative. Pour CO26100010, contrôler spécialement le logo du
+PE horizontal sous Prévention à gauche, et les titres sous chaque niveau du PI.
+Cette correction 0.3.5 nécessite la réinstallation du moteur Python ; elle
+ne nécessite pas de reconstruire un frontend déjà à jour.
 Le serveur cible n'est pas accessible depuis cette session : son activation et
 ses délais doivent être contrôlés par la session de déploiement.
 
 ## Contrôles locaux
 
-- 123 tests Python, 27 scénarios HTTP ciblés et cinq tests navigateur passent.
+- 166 tests Python passent en 0.3.5, dont titres sous les niveaux, repli latéral,
+  suppression du titre hors sélection PE, noms de pièces conservés et logo PE
+  horizontal sous Prévention à gauche sans recouvrement de la légende.
+  Les 27 scénarios HTTP et cinq tests navigateur ont été validés lors de la
+  livraison de la génération ; cette correction ne modifie pas ces interfaces.
 - Chaîne HTTP réelle avec le BAT fourni : contrôle natif, génération des trois
   PDF par le moteur Python puis téléchargements individuels et ZIP via PHP 8.4
   authentifié en environnement isolé. Empreintes téléchargées identiques,

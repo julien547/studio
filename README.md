@@ -19,7 +19,7 @@ Aucun secret n'est stocké dans ce dépôt.
 
 ## Moteur PDF Linux — lots de test
 
-Le moteur Python 0.3.4 génère tous les PDF et leur ZIP pour les BAT Illustrator
+Le moteur Python 0.3.5 génère tous les PDF et leur ZIP pour les BAT Illustrator
 AI24 à une page dont les objets ont été identifiés. Chaque plan conserve un seul
 VEI orienté vers le haut ; les textes et pictogrammes de lecture sont redressés.
 La délimitation des niveaux est facultative et désactivée par défaut.

@@ -26,6 +26,8 @@ from .batch import template_index, check_template
 from .settings import templates_dir
 from .levels import validate_document, level_path, pdf_path
 from .template_zones import detect_zone, named as zone_name
+from .template_zones import overlap, area
+from .layout import level_title, level_regions, title_position, logo_slot
 
 
 def rotation(angle, anchor=(0,0)):
@@ -168,10 +170,16 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
         groups={k:[] for k in ['plan','header','footer','level','logo','legend','decoration']}
         for it in scene.items:
             if visible.get(it.layer,False):groups[role(it.layer)].append(it.index)
-        if sum(scene.items[i].kind=='text' for i in groups['level'])>1:
-            # A BAT with several level labels keeps them at their source
-            # positions; collecting them in one footer would reorder levels.
-            groups['plan']=sorted(groups['plan']+groups['level']);groups['level']=[]
+        # Room names sometimes share the Niveau layer. Only level titles move
+        # outside the drawing, independently of the number of text operations.
+        title_groups={}
+        for i in groups['level']:
+            it=scene.items[i]
+            if it.kind=='text' and level_title(it.text):
+                title_groups.setdefault(it.text_anchor or center(it.bounds),[]).append(i)
+            else:groups['plan'].append(i)
+        groups['plan'].sort()
+        groups['level']=[i for ids in title_groups.values() for i in ids]
         # Auto-detected free space can extend up to the banner. Reserve room
         # for the source address before fitting the plan, rather than letting
         # it overlap the banner or creating an inverted header slot.
@@ -182,20 +190,25 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
             zone=(zone[0],zone[1],zone[2],min(zone[3],header_top-header_height-16))
         # The one isolated image in the footer is the client logo; a scan of the
         # building must never be guessed to be a logo or quietly discarded.
-        images=[scene.items[i] for i in groups['plan'] if scene.items[i].kind=='image']
+        images=[scene.items[i] for i in groups['plan']+groups['footer'] if scene.items[i].kind=='image']
         logo=[it for it in images if it.bounds[3]<source_box[1]+.2*(source_box[3]-source_box[1]) and
               it.bounds[2]-it.bounds[0]<.35*(source_box[2]-source_box[0])]
         if images and (len(images)!=1 or len(logo)!=1):raise ValueError('Image de plan ou logo ambigu : préparation requise.')
-        for it in logo:groups['plan'].remove(it.index);groups['logo'].append(it.index)
-        if marker.kind=='PI' and groups['logo']:
+        for it in logo:groups[role(it.layer)].remove(it.index);groups['logo'].append(it.index)
+        logo_bounds=None;logo_matrix=None
+        if groups['logo']:
             lb=union(scene.items[i].bounds for i in groups['logo'])
-            logo_scale=min(1,.30*(ab[2]-ab[0])/(lb[2]-lb[0]),(.12*(ab[3]-ab[1])-10)/(lb[3]-lb[1]))
-            zone=(zone[0],max(zone[1],ab[1]+22+(lb[3]-lb[1])*logo_scale+10),zone[2],zone[3])
+            slot=logo_slot(ts,template_ids,ab,marker.kind,marker.orientation)
+            logo_matrix=fit_box(lb,slot,marker.kind=='PE','center' if marker.kind=='PE' else 'bottom-right')
+            logo_bounds=transform_box(lb,logo_matrix)
+            if overlap(logo_bounds,zone):
+                zone=(zone[0],max(zone[1],logo_bounds[3]+10),zone[2],zone[3])
         if not groups['plan']:raise ValueError('Dessin architectural absent.')
         all_labels={m.label for m in markers};hidden=set(all_labels)
         for m in markers:
             if m.id!=marker.id:hidden.update([m.stem,m.head,*m.symbol.items])
         plan=[i for i in groups['plan'] if i not in hidden]
+        regions=level_regions(scene,list(title_groups.values()),plan,{i for s in symbols for i in s.items}) if title_groups else []
         angle=rotation_to_up(marker.direction);turn=rotation(angle);local={}
         for symbol in symbols:
             if not symbol.directional:
@@ -209,6 +222,16 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
             if len(assigned)!=1:raise ValueError('Associez le VEI '+str(marker.index)+' à un niveau avant de générer le PE.')
             clip=level_path(assigned[0]);level_id=assigned[0]['id']
             if not list(clip):raise ValueError('Niveau sélectionné vide.')
+            if regions:
+                def score(region):
+                    b=region['source_bounds'];c=clip.bounds
+                    return max(0,min(b[2],c[2])-max(b[0],c[0]))*max(0,min(b[3],c[3])-max(b[1],c[1]))/max(area(b),.01)
+                matching=[r for r in regions if r['name'].strip().casefold()==assigned[0]['name'].strip().casefold()]
+                regions=[max(matching or regions,key=score)]
+                b=regions[0]['source_bounds'];c=clip.bounds
+                rb=(max(b[0],c[0]),max(b[1],c[1]),min(b[2],c[2]),min(b[3],c[3]))
+                regions[0]={**regions[0],'source_bounds':rb if rb[2]>rb[0] and rb[3]>rb[1] else c}
+                groups['level']=regions[0]['items']
             for i in [marker.stem,marker.head,*marker.symbol.items]:
                 x0,y0,x1,y1=transform_box(scene.items[i].bounds,local.get(i,I))
                 envelope=geometry_path([('m',x0,y0),('l',x1,y0),('l',x1,y1),('l',x0,y1),('h',)])
@@ -245,7 +268,19 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
             writer.place(make_group(out,sf,ids,source_box),m)
         # Header stays in the free band under the template banner.
         block(groups['header'],(useful[0],zone[3]+16,useful[2],header_top))
-        block(groups['level'],(useful[0],placed[1]-30,useful[2],placed[1]-8))
+        level_layout=[]
+        obstacles=[transform_box(scene.items[i].bounds,multiply(fit,transformed[i])) for i in plan]
+        if clip is not None:
+            obstacles=[(max(b[0],placed[0]),max(b[1],placed[1]),min(b[2],placed[2]),min(b[3],placed[3]))
+                       for b in obstacles if overlap(b,placed)]
+        title_area=(useful[0],legend_slot[3]+6,useful[2],useful[3])
+        for region in regions:
+            rb=transform_box(region['source_bounds'],global_matrix)
+            tb=union(scene.items[i].bounds for i in region['items'])
+            target,placement=title_position(tb,rb,title_area,obstacles)
+            block(region['items'],target)
+            obstacles.append(target)
+            level_layout.append({'name':region['name'],'bounds':list(target),'region_bounds':list(rb),'placement':placement})
         footer,reference=footer_label(scene,groups['footer'],marker.index,generated_on or batch_date())
         selfont=out.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Font,Subtype=pikepdf.Name.Type1,BaseFont=pikepdf.Name.Helvetica,Encoding=pikepdf.Name.WinAnsiEncoding))
         boldfont=out.make_indirect(pikepdf.Dictionary(Type=pikepdf.Name.Font,Subtype=pikepdf.Name.Type1,BaseFont=pikepdf.Name('/Helvetica-Bold'),Encoding=pikepdf.Name.WinAnsiEncoding))
@@ -299,19 +334,9 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
             writer.place(symbol_group,fit_box(symbol.bounds,(x,y,x+16*legend_scale,y+16*legend_scale)))
             for k,line in enumerate(labels[n]):text(line,x+24*legend_scale,y+(5-k*8)*legend_scale,label_size*legend_scale,True)
         if groups['logo']:
-            slot=(ab[2]-12-(ab[2]-ab[0])*.30,ab[1]+22,ab[2]-12,ab[1]+12+(ab[3]-ab[1])*.12)
-            # Existing prevention objects set the bottom of the available space.
-            bands=[ts.items[i] for i in template_ids if ts.items[i].fill is not None and len(ts.items[i].fill)==4
-                   and ts.items[i].fill[0]<.4 and ts.items[i].fill[1]<.4 and ts.items[i].fill[2]>.5 and ts.items[i].fill[3]<.4
-                   and ts.items[i].bounds[0]>(ab[0]+ab[2])/2 and ts.items[i].bounds[3]<(ab[1]+ab[3])/2
-                   and ts.items[i].bounds[2]-ts.items[i].bounds[0]>(ab[2]-ab[0])*.1
-                   and ts.items[i].bounds[3]-ts.items[i].bounds[1]<(ab[3]-ab[1])*.05]
-            if marker.kind=='PE' and len(bands)==1:
-                band=bands[0].bounds
-                obstacles=[ts.items[i].bounds for i in template_ids if ts.items[i].bounds[2]>band[0] and ts.items[i].bounds[0]<band[2]
-                           and ts.items[i].bounds[3]<band[1] and ts.items[i].bounds[1]>ab[1]+12]
-                slot=(band[0],ab[1]+22,band[2],min((b[1] for b in obstacles),default=band[1])-8)
-            block(groups['logo'],slot,marker.kind=='PE','center' if marker.kind=='PE' else 'bottom-right')
+            if any(overlap(logo_bounds,b) for b in [legend_frame,placed,*(x['bounds'] for x in level_layout)]):
+                raise ValueError('Le logo client chevauche le plan ou la légende : ajuster les espaces de la trame.')
+            writer.place(make_group(out,sf,groups['logo'],source_box),logo_matrix)
         writer.finish();out.docinfo['/Title']='DOEMO Studio — PDF de test — VEI '+str(marker.index)
         out.docinfo['/Subject']='Généré sur Linux depuis le BAT ; contrôle visuel requis.'
         before=[digest(f.read_bytes()) for f in sf];resources=resources_fingerprint(sf[0].Resources)
@@ -338,7 +363,7 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
         return {'vei':marker.index,'id':marker.id,'type':marker.kind,'file':Path(output).name,'sha256':file_hash(output),
           'angle':angle,'scale':fit[0],'direction_after':list(direction),'active_vei_count':1,'hidden_vei_count':len(markers)-1,
           'level':level_id,'plan_reference':reference,'footer_text':footer,
-          'layout':{'zone':list(zone),'zone_detection':ts.zone_detection,'plan_bounds':list(placed),'legend_frame':legend_frame,'legend_color_cmyk':legend_color,'footer_bounds':footer_bounds},
+          'layout':{'zone':list(zone),'zone_detection':ts.zone_detection,'plan_bounds':list(placed),'level_titles':level_layout,'logo_bounds':logo_bounds,'legend_frame':legend_frame,'legend_color_cmyk':legend_color,'footer_bounds':footer_bounds},
           'source_fragments_unchanged':True,'publication_metadata_rewritten':bool(footer),
           'embedded_resources_unchanged':True,'production_ready':False,'status':'test_pdf_generated'}
 
@@ -368,7 +393,7 @@ def generate_batch(source, destination, client='doemo', levels=None, basename=No
                 result['template']=f'{client}/{template.relative_to(directory).as_posix()}';results.append(result)
                 if sum(p.stat().st_size for p in temporary.iterdir())>256*1024*1024:raise ValueError('Lot supérieur à 256 Mio.')
         if file_hash(source)!=initial or any(file_hash(p)!=h for p,h in template_hashes.items()):raise ValueError('Une source a changé pendant la génération.')
-        report={'schema_version':1,'engine_version':'0.3.4','generation_date':generated_on.isoformat(),'status':'test_batch_complete','production_ready':False,'source_sha256':initial,
+        report={'schema_version':1,'engine_version':'0.3.5','generation_date':generated_on.isoformat(),'status':'test_batch_complete','production_ready':False,'source_sha256':initial,
                 'source_unchanged':True,'client':client,'count':len(results),'results':results,
                 'warnings':['Contrôler visuellement les PDF avant utilisation.',
                 'Les zones de trames sont détectées automatiquement ; ce profil prend en charge les BAT Illustrator AI24 à une page.',

@@ -78,6 +78,14 @@ def test_multiline_native_glyphs_share_one_rotation_anchor():
     with pytest.raises(ValueError,match='glyphes PDF'):bind_text_frames(text_document(),block,items)
 
 
+def test_expanded_native_glyph_run_recovers_level_title():
+    data=b'/1 << /1 [ << /0 << /0 (NIVEAU 0\n) >> /1 [ << /99 /G /21 << /0 [15 10 23 6 2 22 1 1087 1] >> >> ] >> ] >>'
+    raw='%AI11_BeginTextDocument\n%'+base64.a85encode(data).decode()+'~>\n%AI11_EndTextDocument'
+    item=SimpleNamespace(glyph_ids=(15,10,23,6,2,22,1,1087),bounds=(10,30,80,42),matrix=(12,0,0,12,10,30),text_anchor=None)
+    bind_text_frames(raw,'/AI11Text :\n0 /FreeUndo ,\n0 /StoryIndex ,\n',[item])
+    assert item.text=='NIVEAU 0' and item.text_anchor==(45,36)
+
+
 def test_icc_and_spot_colour_identification_does_not_rewrite_stream():
     pdf=pikepdf.Pdf.new();profile=pdf.make_stream(b'test only');profile.N=4
     icc=pikepdf.Array([pikepdf.Name.ICCBased,profile]);spot=pikepdf.Array([pikepdf.Name.Separation,pikepdf.Name.Blue,icc,
@@ -88,3 +96,35 @@ def test_icc_and_spot_colour_identification_does_not_rewrite_stream():
     assert item.stroke==(.91,.697,.011,0)
     assert b'/Blue CS\n1 SCN' in item.stream
     assert cmyk_color(spot,[.5],pg.Resources)==pytest.approx((.455,.3485,.0055,0))
+
+
+def test_repeated_unicode_labels_do_not_create_false_frame_ambiguity():
+    story=b'<< /0 << /0 (BUREAU\n) >> /1 [ << /99 /G /5 [37 56 53 40 36 56 3] >> ] >>'
+    data=b'/1 << /1 [ '+story+b' '+story+b' ] >>'
+    raw='%AI11_BeginTextDocument\n%'+base64.a85encode(data).decode()+'~>\n%AI11_EndTextDocument'
+    block='/AI11Text :\n0 /FreeUndo ,\n0 /StoryIndex ,\n/AI11Text :\n0 /FreeUndo ,\n1 /StoryIndex ,\n'
+    items=[SimpleNamespace(glyph_ids=(),text='BUREAU',bounds=(x,30,x+40,37),matrix=(7,0,0,7,x,30),text_anchor=None) for x in (10,100)]
+    bind_text_frames(raw,block,items)
+    assert items[0].text_anchor==(30,33.5) and items[1].text_anchor==(120,33.5)
+
+
+def test_unicode_multiline_label_uses_one_anchor_with_font_specific_terminator():
+    data=b'/1 << /1 [ << /0 << /0 (SALLE DE\nPAUSE\n) >> /1 [ << /99 /G /5 [54 36 47 47 40 3 39 40 3] >> << /99 /G /5 [51 36 56 54 40 3] >> ] >> ] >>'
+    raw='%AI11_BeginTextDocument\n%'+base64.a85encode(data).decode()+'~>\n%AI11_EndTextDocument'
+    block='/AI11Text :\n0 /FreeUndo ,\n0 /StoryIndex ,\n'
+    items=[SimpleNamespace(glyph_ids=(),text='SALLE DE',bounds=(10,30,50,37),matrix=(10,0,0,10,10,30),text_anchor=None),
+           SimpleNamespace(glyph_ids=(),text='PAUSE',bounds=(18,18,42,25),matrix=(10,0,0,10,18,18),text_anchor=None)]
+    bind_text_frames(raw,block,items)
+    assert items[0].text_anchor==items[1].text_anchor==(30,27.5)
+
+
+def test_illustrator_export_layer_titles_and_hidden_metadata():
+    pdf=pikepdf.Pdf.new();page=pdf.add_blank_page()
+    hidden=pdf.make_stream(b'0 0 100 100 re f')
+    page.Resources=pikepdf.Dictionary(Properties=pikepdf.Dictionary(
+        L=pikepdf.Dictionary(Title=pikepdf.String('Relevé'.encode('utf-8'))),
+        H=pikepdf.Dictionary(AIType=pikepdf.Name.HiddenLayer,Contents=hidden)))
+    page.Contents=pdf.make_stream(b'/Layer /L BDC /AltAI8 /H BDC EMC 0 G 1 w 10 20 m 30 40 l S EMC')
+    scene=Scene(page)
+    assert len(scene.items)==1 and scene.items[0].layer=='Relevé'
+    assert scene.items[0].operator=='S'  # The alternate stream is never painted.

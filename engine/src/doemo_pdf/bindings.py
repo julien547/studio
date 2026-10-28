@@ -192,14 +192,22 @@ def bind(page, scene):
             symbols.append(Symbol('symbol-'+str(len(symbols)+1),symbol_name,name,ids,union(it.bounds for it in candidates),bool(DIRECTIONAL.search(symbol_name)),is_marker))
     if len(symbols)!=sum(len(l['symbol_instances']) for l in meta['layers'] if visible.get(l['name'])):
         raise ValueError('Des symboles natifs n’ont pas été associés.')
-    # A multiline native frame must not be counter-rotated line by line.
+    # Text may live on any visible plan layer, including Niveau or SIG.
+    # Validate frame grouping rather than requiring a particular layer name.
     for name,count in native_texts.items():
-        if name.casefold()=='texte' and count!=sum(it.kind=='text' and it.layer==name for it in scene.items):
+        if not visible.get(name):continue
+        fixed=re.match(r'^(fonds? de plans?|cadre|trous?|sp[ée]cimen|adresse|psi|situation|plan de masse|date|l[eé]gende)',name,re.I)
+        if fixed:continue
+        texts=[it for it in scene.items if it.kind=='text' and it.layer==name]
+        # VEI codes are associated with their discs below and removed from the
+        # generated drawing; they do not need a room-label rotation anchor.
+        if texts and all(parse_label(it.text) for it in texts):continue
+        if count!=len(texts) or (name.casefold().startswith('niveau') and any('\ufffd' in it.text for it in texts)):
             from .textframes import bind_text_frames
-            bind_text_frames(raw,text_blocks[name],[it for it in scene.items if it.kind=='text' and it.layer==name])
-        fixed=re.match(r'^(fonds? de plans?|cadre|trous?|sp[ée]cimen|adresse|psi|situation|plan de masse|date|niveau|l[eé]gende)',name,re.I)
-        if not fixed and name.casefold()!='texte' and any(it.layer==name and it.kind=='text' and not parse_label(it.text) for it in scene.items):
-            raise ValueError('Texte hors du calque texte : ancre de contre-rotation non vérifiée.')
+            try:bind_text_frames(raw,text_blocks[name],texts)
+            except ValueError as error:raise ValueError(f'Calque « {name} » : {error}') from error
+        else:
+            for it in texts:it.text_anchor=center(it.bounds)
     markers=[];used=set()
     def blue(c):return c is not None and len(c)==4 and c[0]>.65 and .4<c[1]<.9 and c[2]<.2 and c[3]<.2
     labels=[it for it in scene.items if it.kind=='text' and parse_label(it.text)]
