@@ -3,6 +3,9 @@
 ## Périmètre à déployer
 
 URL du module : **https://studio.doemo.fr/app/orientation**.
+Pour les contours libres, installer aussi `skia-pathops` depuis le verrou Python,
+publier `api/_orientation_levels.php` avec `api/orientation.php` et reconstruire
+la page React. Voir [la procédure et le stockage persistant](niveaux-libres.md).
 La [mise à jour du parcours par lot](generation-par-lot.md) concerne le moteur,
 l'API de ce dépôt et la page React de `doemo-app` sur `feat/studio-host` : déployer
 les deux dépôts pour disposer du choix de dossier client et de l'analyse du lot.

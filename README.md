@@ -32,6 +32,8 @@ voir le [constat et le correctif](docs/incident-generation-20261028.md).
 - [Audit du moteur Illustrator 1.0.13 et résultats PDF](docs/audit-moteur-1.0.13.md)
 - [Référence Illustrator 1.0.14 : impression des pictogrammes et tests](docs/audit-moteur-1.0.14.md)
 - [Préparation de tous les plans et sélection du dossier client](docs/generation-par-lot.md)
+- [Contours libres des niveaux et aperçus PDF vectoriels](docs/niveaux-libres.md)
+- [Nouvelle référence Illustrator 1.0.16 et lot fourni](docs/audit-moteur-1.0.16.md)
 - [Sortie réelle 1.0.14 reçue, correction du logo en cours](docs/reference-sortie-1.0.14.md)
 - [Contrat proposé pour l'export structuré](docs/contrat-export-structure.md)
 

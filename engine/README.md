@@ -31,6 +31,9 @@ doemo-pdf templates-dir --client client-a
 doemo-pdf inspect /chemin/prive/BAT.pdf
 doemo-pdf inspect-ai /chemin/prive/BAT.ai
 doemo-pdf plan-batch /chemin/prive/BAT.ai --client doemo
+doemo-pdf levels-init /chemin/prive/BAT.ai
+doemo-pdf levels-validate /chemin/prive/BAT.ai /chemin/prive/niveaux.json
+doemo-pdf levels-preview /chemin/prive/BAT.ai /chemin/prive/niveaux.json /chemin/prive/selection.pdf --mode PE --level IDENTIFIANT
 doemo-pdf compose-diagnostic /chemin/prive/BAT.ai /chemin/prive/PI-A3-V.pdf \
   /chemin/prive/DIAGNOSTIC-PI.pdf \
   --zone 28.578 126.004 813.775 974.702 --direction 0 -1 --margin 12
@@ -74,6 +77,12 @@ signifie que la commande de diagnostic a réussi, jamais que le plan est conform
 trames par dossier client, type, format et orientation. Il ne crée aucun PDF et
 ne certifie pas encore les associations VEI. Voir le
 [parcours par lot](../docs/generation-par-lot.md) et son raccordement à la page.
+
+Les [contours libres des niveaux](../docs/niveaux-libres.md) sont sauvegardés en
+coordonnées PDF et exportés avec un découpage vectoriel. `levels-preview` ne
+réalise pas encore les contre-rotations ni la suppression des autres VEI : c'est
+un aperçu du découpage, distinct d'une déclinaison finale. En PI, il conserve
+toutes les pages source sans découpage ni réorganisation.
 
 La contre-rotation est implémentée et testée au niveau géométrique dans
 `component_transform`. Son utilisation sur le BAT est bloquée tant que les

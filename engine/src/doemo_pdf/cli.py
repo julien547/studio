@@ -9,6 +9,7 @@ from .pdf import compose_diagnostic, inspect_pdf
 from .ai_metadata import inspect_ai_metadata
 from .settings import templates_dir
 from .batch import plan_batch
+from .levels import new_document, read_document, validate_document, clip_preview
 
 
 def main(argv=None):
@@ -23,6 +24,17 @@ def main(argv=None):
     batch = commands.add_parser("plan-batch", help="Préparer tous les candidats VEI et associer les trames automatiquement, sans générer de PDF.")
     batch.add_argument("source")
     batch.add_argument("--client", default="doemo")
+    init = commands.add_parser('levels-init')
+    init.add_argument('source')
+    validate = commands.add_parser('levels-validate')
+    validate.add_argument('source')
+    validate.add_argument('document')
+    clip = commands.add_parser('levels-preview')
+    clip.add_argument('source')
+    clip.add_argument('document')
+    clip.add_argument('output')
+    clip.add_argument('--mode', choices=['PE', 'PI'], required=True)
+    clip.add_argument('--level')
     compose = commands.add_parser("compose-diagnostic", help="Non conforme pour production : page BAT complète conservée.")
     compose.add_argument("source")
     compose.add_argument("template")
@@ -43,6 +55,12 @@ def main(argv=None):
             result = inspect_ai_metadata(args.source)
         elif args.command == "plan-batch":
             result = plan_batch(args.source, args.client)
+        elif args.command == 'levels-init':
+            result = {'document': new_document(args.source)}
+        elif args.command == 'levels-validate':
+            result = validate_document(args.source, read_document(args.document))
+        elif args.command == 'levels-preview':
+            result = clip_preview(args.source, read_document(args.document), args.output, args.mode, args.level)
         else:
             result = compose_diagnostic(args.source, args.template, args.output,
                                         Rect(*args.zone), args.direction, args.page-1,

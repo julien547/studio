@@ -2,13 +2,13 @@
 // Inspection et diagnostic explicite. L'action compose refuse la génération
 // métier tant que le moteur ne sait pas isoler les VEI et redresser les objets.
 // compose-diagnostic reste un essai technique : production_ready est toujours false.
-// Accès : admin / administration. Fichiers dans des dossiers privés (hors web).
+// Accès : admin / administration / dessinateur. Fichiers privés (hors web).
 require __DIR__ . '/_s.php';
 const OR_TEMPLATES = '/var/lib/doemo-studio/templates';
-const OR_PRIVATE = '/var/lib/doemo-studio/private/jobs';
-const OR_RESULTS = '/var/lib/doemo-studio/results';
-const OR_BIN = '/opt/doemo-studio/venv-pdf/bin/doemo-pdf';
-const OR_ROLES = ['admin', 'administration'];
+define('OR_PRIVATE', getenv('DOEMO_PRIVATE_JOBS') ?: '/var/lib/doemo-studio/private/jobs');
+define('OR_RESULTS', getenv('DOEMO_RESULTS_ROOT') ?: '/var/lib/doemo-studio/results');
+define('OR_BIN', getenv('DOEMO_PDF_BIN') ?: '/opt/doemo-studio/venv-pdf/bin/doemo-pdf');
+const OR_ROLES = ['admin', 'administration', 'dessinateur'];
 const OR_MAX_BYTES = 52428800;   // 50 Mo
 const OR_KEEP_DAYS = 14;
 
@@ -16,8 +16,9 @@ studio_start();
 if (empty($_SESSION['login']) || !in_array($_SESSION['role'] ?? '', STUDIO_ROLES_INTERNES, true) || (time() - (int)($_SESSION['t'] ?? 0)) > 43200) {
     studio_json(401, ['ok' => false, 'error' => 'Session expirée.']);
 }
-if (!in_array($_SESSION['role'], OR_ROLES, true)) studio_json(403, ['ok' => false, 'error' => "Cet outil est réservé à l'administration."]);
-$login = $_SESSION['login']; $isAdmin = in_array($_SESSION['role'], OR_ROLES, true);
+if (!in_array($_SESSION['role'], OR_ROLES, true)) studio_json(403, ['ok' => false, 'error' => 'Cet outil est réservé aux administrateurs et dessinateurs.']);
+$login = $_SESSION['login']; $isAdmin = in_array($_SESSION['role'], ['admin', 'administration'], true);
+session_write_close();
 
 function or_post_guard() {
     if ($_SERVER['REQUEST_METHOD'] !== 'POST') studio_json(405, ['ok' => false, 'error' => 'Méthode non autorisée.']);
@@ -31,12 +32,13 @@ function or_job_meta($id, $login, $isAdmin) {
     $f = OR_PRIVATE . "/$id/meta.json";
     $m = is_file($f) ? json_decode(file_get_contents($f), true) : null;
     if (!is_array($m)) studio_json(404, ['ok' => false, 'error' => 'Travail introuvable.']);
+    if (!$isAdmin && ($m['login'] ?? '') !== $login) studio_json(403, ['ok' => false, 'error' => 'Projet non autorisé.']);
     return $m;
 }
 // Exécute le moteur sans shell, avec délai et plafonds mémoire / CPU / taille de fichier.
 function or_run(array $args, $timeout = 100) {
     $cmd = array_merge(['/usr/bin/timeout', '--kill-after=5', (string)$timeout, '/usr/bin/prlimit', '--as=3221225472', '--cpu=' . $timeout, '--fsize=268435456', OR_BIN], $args);
-    $p = proc_open($cmd, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, '/tmp', ['PATH' => '/usr/bin:/bin', 'PYTHONDONTWRITEBYTECODE' => '1', 'DOEMO_TEMPLATES_ROOT' => OR_TEMPLATES, 'LANG' => 'C.UTF-8']);
+    $p = proc_open($cmd, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, '/tmp', ['PATH' => '/usr/local/bin:/usr/bin:/bin', 'PYTHONDONTWRITEBYTECODE' => '1', 'DOEMO_TEMPLATES_ROOT' => OR_TEMPLATES, 'LANG' => 'C.UTF-8']);
     if (!is_resource($p)) return [127, '', 'lancement impossible'];
     $out = stream_get_contents($pipes[1], 4194304); $err = stream_get_contents($pipes[2], 65536);
     foreach ($pipes as $x) fclose($x);
@@ -50,7 +52,7 @@ function or_rmtree($d) {
 function or_cleanup() {
     foreach ([OR_PRIVATE, OR_RESULTS] as $base) {
         if (!is_dir($base)) continue;
-        foreach (scandir($base) as $n) if (or_job_ok($n) && filemtime("$base/$n") < time() - OR_KEEP_DAYS * 86400) or_rmtree("$base/$n");
+        foreach (scandir($base) as $n) if (or_job_ok($n) && !is_file(OR_PRIVATE . "/$n/levels.json") && filemtime("$base/$n") < time() - OR_KEEP_DAYS * 86400) or_rmtree("$base/$n");
     }
 }
 function or_mkdir($d) { if (!is_dir($d)) { @mkdir($d, 02770, true); @chmod($d, 02770); } return is_dir($d); }
@@ -70,6 +72,7 @@ function or_msg($raw, $fallback) {
 function or_num($v, $min = -1e7, $max = 1e7) { if (!is_numeric($v)) return null; $f = (float)$v; return (is_finite($f) && $f >= $min && $f <= $max) ? $f : null; }
 
 $action = (string)($_GET['action'] ?? '');
+require __DIR__ . '/_orientation_levels.php';
 
 if ($action === 'capabilities') {
     studio_json(200, ['ok' => true, 'production_ready' => false,
@@ -194,7 +197,7 @@ if ($action === 'compose-diagnostic') {
 if ($action === 'result') {
     $id = (string)($_GET['job'] ?? ''); or_job_meta($id, $login, $isAdmin);
     $name = (string)($_GET['file'] ?? '');
-    if (!preg_match('/^diagnostic-[0-9-]{15}\.pdf$/', $name)) studio_json(400, ['ok' => false, 'error' => 'Fichier invalide.']);
+    if (!preg_match('/^(?:diagnostic-[0-9-]{15}|selection-[a-f0-9]{16})\.pdf$/', $name)) studio_json(400, ['ok' => false, 'error' => 'Fichier invalide.']);
     $p = OR_RESULTS . "/$id/$name";
     if (!is_file($p) || is_link($p)) studio_json(404, ['ok' => false, 'error' => 'Introuvable.']);
     header('Content-Type: application/pdf'); header('X-Content-Type-Options: nosniff'); header('Cache-Control: private, no-store');

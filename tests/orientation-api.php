@@ -23,7 +23,7 @@ try {
     session_save_path($tmp);
     session_name('studio_sid');
     $sessions = [];
-    foreach (['admin', 'dessinateur'] as $role) {
+    foreach (['admin', 'technicien'] as $role) {
         $id = bin2hex(random_bytes(16));
         session_id($id);
         session_start();
@@ -50,7 +50,7 @@ try {
     check($ready, 'Délai de démarrage dépassé.');
     [$status] = call_api($port, 'compose', 'POST');
     check($status === 401, 'Un anonyme doit rester refusé.');
-    [$status] = call_api($port, 'compose', 'POST', $sessions['dessinateur']);
+    [$status] = call_api($port, 'compose', 'POST', $sessions['technicien']);
     check($status === 403, 'Les rôles non autorisés doivent rester refusés.');
     [$status] = call_api($port, 'compose', 'GET', $sessions['admin']);
     check($status === 405, 'La garde POST doit rester active.');
