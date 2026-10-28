@@ -29,6 +29,11 @@ et un clic sur « Structure bâtiment » doit laisser le menu du haut affiché.
 - Le bouton « ＋ Nouveau projet » crée le projet **sans fenêtre**.
 - **Ne pas réintroduire** la page principale (`dashboard`) ni la fenêtre « Nouveau projet »
   (`showCreate`). Le code est dans `releves/web/src/studio.tsx`.
+- ⚠️ **Écrasé une première fois le 28/10 à 19:42** par un redéploiement de `/releves/` depuis une version
+  qui l'ignorait. La branche GitHub `codex/studio-mvp-editor` est restée à `01eaf20` alors que le serveur
+  est à `b32a3c4` : **poussez vos commits**, puis appliquez le correctif
+  `releves-patches/sans-tableau-de-bord.patch` (écrit contre `b32a3c4`) :
+  `cd /opt/doemo-studio-releves/src && git apply --check releves-patches/sans-tableau-de-bord.patch`.
 - Branche : `feat/releves-sans-tableau-de-bord` — **à fusionner** dans `codex/studio-mvp-editor`
   et `main`. Le test `releves/web/e2e/studio.spec.ts` clique encore sur « Créer le projet » :
   **à adapter**.
