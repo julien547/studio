@@ -792,6 +792,15 @@ function Runs({
   return (
     <>
       <GpuPanel administrator onStatus={() => {}} />
+      {engine === "qwen" && (
+        <p className="training-card">
+          Fine-tuning LoRA de Qwen3.5-9B sur les images et interprétations
+          validées. Les poids de base restent figés ; le résultat est un
+          adaptateur candidat. La perte sur les lots réservés ne garantit pas
+          une amélioration des réponses. Le référentiel de conventions et l’IA
+          architecturale restent des fonctions distinctes.
+        </p>
+      )}
       {engine === "paddleocr" && (
         <p className="training-card">
           Cet entraînement améliore la lecture des textes recadrés et vérifiés.
@@ -1046,7 +1055,7 @@ function Models({
         }}
       >
         <h3>
-          {engine === "qwen"
+          {engine === "qwen" && !run
             ? "Enregistrer une version du référentiel"
             : "Enregistrer le modèle entraîné"}
         </h3>
@@ -1090,7 +1099,7 @@ function Models({
               ))}
           </select>
         </label>
-        {engine === "qwen" && (
+        {engine === "qwen" && !run && (
           <p>
             Cette version mémorise les conventions du lot d’entraînement. Elle
             ne constitue pas un fine-tuning.
@@ -1126,7 +1135,9 @@ function Models({
           <p>
             {v.method === "reference"
               ? "Référentiel, sans modification des poids"
-              : "Poids entraînés"}{" "}
+              : engine === "qwen"
+                ? "Adaptateur LoRA, poids de base inchangés"
+                : "Poids entraînés"}{" "}
             · {v.created} · {v.author}
           </p>
           <p>

@@ -30,8 +30,8 @@ def digest(value):return hashlib.sha256(encoded(value).encode()).hexdigest()
 
 def profile(engine="rtmdet"):
     """Operator-installed acceptance record, never supplied by a browser."""
-    if engine not in ('rtmdet','paddleocr'):return None
-    path=os.environ.get('DOEMO_PADDLE_TRAINING_PROFILE' if engine=='paddleocr' else 'DOEMO_TRAINING_PROFILE','')
+    if engine not in ('rtmdet','paddleocr','qwen'):return None
+    path=os.environ.get({'qwen':'DOEMO_QWEN_TRAINING_PROFILE','paddleocr':'DOEMO_PADDLE_TRAINING_PROFILE','rtmdet':'DOEMO_TRAINING_PROFILE'}[engine],'')
     if not path:return None
     try:
         p=Path(path)
@@ -42,7 +42,7 @@ def profile(engine="rtmdet"):
         evidence=value.get('acceptance',{})
         if any(evidence.get(k) is not True for k in ('training_completed','resume_verified','inference_preemption_verified','cancel_verified')):return None
         if not HEX.fullmatch(evidence.get('report_sha256','')):return None
-        clean={k:value[k] for k in keys};clean.update(engine=engine,driver='paddleocr.recognition/1' if engine=='paddleocr' else 'rtmdet.training/1',acceptance={k:evidence[k] for k in ('training_completed','resume_verified','inference_preemption_verified','cancel_verified','report_sha256')})
+        clean={k:value[k] for k in keys};clean.update(engine=engine,driver='qwen.lora/1' if engine=='qwen' else 'paddleocr.recognition/1' if engine=='paddleocr' else 'rtmdet.training/1',acceptance={k:evidence[k] for k in ('training_completed','resume_verified','inference_preemption_verified','cancel_verified','report_sha256')})
         clean['id']=digest(clean)
         return clean
     except (OSError,ValueError,TypeError,AttributeError):return None
@@ -50,10 +50,10 @@ def profile(engine="rtmdet"):
 
 def capability(engine):
     p=profile(engine)
-    enabled=p is not None and engine in ('rtmdet','paddleocr') and gpu.configured()
-    return {'training':enabled,'register_weights':engine in ('rtmdet','paddleocr'),'driver_status':'accepted_profile' if enabled else 'async_adapter_acceptance_required' if engine in ('rtmdet','paddleocr') else 'not_implemented',
-            'reason':('' if enabled else 'Entraînement non disponible : profil du moteur recetté et orchestration OVH requis.' if engine in ('rtmdet','paddleocr') else 'Entraînement non disponible : pilote compatible non raccordé.'),
-            'profile_id':p['id'] if enabled else None,'batch_size_max':4,'learning_rate_max':.001}
+    enabled=p is not None and engine in ('rtmdet','paddleocr','qwen') and gpu.configured()
+    return {'training':enabled,'register_weights':engine in ('rtmdet','paddleocr','qwen'),'driver_status':'accepted_profile' if enabled else 'async_adapter_acceptance_required' if engine in ('rtmdet','paddleocr','qwen') else 'not_implemented',
+            'reason':('' if enabled else 'Entraînement non disponible : profil du moteur recetté et orchestration OVH requis.' if engine in ('rtmdet','paddleocr','qwen') else 'Entraînement non disponible : pilote compatible non raccordé.'),
+            'profile_id':p['id'] if enabled else None,'batch_size_max':1 if engine=='qwen' else 4,'learning_rate_max':.0002 if engine=='qwen' else .001}
 
 
 def decode(row):
@@ -91,7 +91,7 @@ def launch(store,actor,data):
         if not cap['training']:
             from fastapi import HTTPException
             raise HTTPException(503,cap['reason'])
-        if data.batch_size>4 or data.learning_rate>.001:raise ValueError('Paramètres hors limites du pilote')
+        if data.batch_size>cap['batch_size_max'] or data.learning_rate>cap['learning_rate_max']:raise ValueError('Paramètres hors limites du pilote')
         examples=dataset['snapshot']['examples']
         if any(not any(e['split']==split for e in examples) for split in ('train','validation','test')):raise ValueError('Lots indépendants train, validation et test requis')
         train={a['category'] for e in examples if e['split']=='train' for a in e['data']['labels']}
@@ -156,7 +156,7 @@ def valid_result(job,dataset,response):
     if not isinstance(meta,dict):raise ValueError('Métadonnées invalides')
     if meta.get('id')!=job['id'] or meta.get('engine')!=job['engine'] or meta.get('dataset_sha256')!=dataset['sha256'] or meta.get('profile_id')!=job['profile']['id'] or meta.get('parameters')!=job['parameters']:raise ValueError('Résultat incompatible avec la demande')
     if response.get('artifacts_verified') is not True or not isinstance(meta.get('metrics'),dict) or not meta['metrics'] or meta.get('status')!='completed':raise ValueError('Artefacts ou métriques non vérifiés')
-    expected=({'weights.pdparams','training_config.yaml','dictionary.txt','metrics.json','predictions.json'} if job['engine']=='paddleocr' else {'weights.pth','model_config.py','classes.json','metrics.json'})
+    expected=({'adapter_model.safetensors','adapter_config.json','training_config.json','metrics.json'} if job['engine']=='qwen' else {'weights.pdparams','training_config.yaml','dictionary.txt','metrics.json','predictions.json'} if job['engine']=='paddleocr' else {'weights.pth','model_config.py','classes.json','metrics.json'})
     if not isinstance(files,list) or any(not isinstance(f,dict) for f in files) or {f.get('name') for f in files}!=expected or len(files)!=len(expected):raise ValueError('Artefacts manquants')
     for f in files:
         if not HEX.fullmatch(f.get('sha256','')) or type(f.get('bytes')) is not int or f['bytes']<=0:raise ValueError('Empreinte ou taille invalide')

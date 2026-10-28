@@ -42,6 +42,9 @@ function start() {
         DOEMO_TRAINING_PROFILE: acceptedTrainingFixture
           ? root + "/fixture-profile.json"
           : "",
+        DOEMO_QWEN_TRAINING_PROFILE: acceptedTrainingFixture
+          ? root + "/fixture-qwen-profile.json"
+          : "",
         DOEMO_PADDLE_TRAINING_PROFILE: acceptedTrainingFixture
           ? root + "/fixture-paddle-profile.json"
           : "",
@@ -757,4 +760,85 @@ print(json.dumps(dataset(c,'paddleocr',examples)))
   expect((await (await page.request.get(url)).json())[0].status).toBe(
     "cancelled",
   );
+});
+
+test("Qwen LoRA admission is distinct from references and architectural AI", async ({
+  page,
+}) => {
+  await stop();
+  const data = JSON.parse(
+    execFileSync(
+      python,
+      [
+        "-c",
+        `
+import json,sys
+from pathlib import Path
+sys.path.insert(0,${JSON.stringify(resolve("../backend/tests"))})
+from test_training import source,example,validate,dataset
+from test_qwen_training import profile_value
+from fastapi.testclient import TestClient
+from doemo_releves.api import create_app
+root=Path(${JSON.stringify(root)})
+(root/'fixture-qwen-profile.json').write_text(json.dumps(profile_value()))
+c=TestClient(create_app(root),headers={'X-Doemo-User':'admin','X-Doemo-Role':'admin'})
+examples=[]
+for color in ('cyan','magenta','black'):
+ p=source(c,color);_,e=example(c,'qwen',p,[],convention='PCF',interpretation='Porte coupe-feu');examples.append(validate(c,p,e))
+print(json.dumps(dataset(c,'qwen',examples)))
+`,
+      ],
+      { encoding: "utf8" },
+    ),
+  );
+  acceptedTrainingFixture = true;
+  server = start();
+  await ready();
+  await login(page);
+  await section(page, "Entraînements").click();
+  await expect(page.getByText(/Fine-tuning LoRA de Qwen3.5-9B/)).toBeVisible();
+  await page.getByLabel("Version du dataset").selectOption(data.id);
+  await expect(
+    page.getByLabel("Taille de lot", { exact: true }),
+  ).toHaveAttribute("max", "1");
+  page.on("dialog", (d) => d.accept());
+  await page
+    .getByRole("button", { name: "Lancer l’entraînement", exact: true })
+    .click();
+  await expect(
+    page.getByText("Entraînement demandé.", { exact: true }),
+  ).toBeVisible();
+  const runs = await (
+    await page.request.get(origin + "/api/projects/training/runs?engine=qwen")
+  ).json();
+  expect(runs).toHaveLength(1);
+  expect(runs[0].profile.driver).toBe("qwen.lora/1");
+  expect(runs[0].dispatched).toBe(0);
+  await page.reload();
+  await section(page, "Entraînements").click();
+  await expect(
+    page.getByRole("heading", {
+      name: "En attente · " + runs[0].id.slice(0, 8),
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Interrompre proprement", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Annulé · " + runs[0].id.slice(0, 8) }),
+  ).toBeVisible();
+  await section(page, "Modèles IA").click();
+  await expect(
+    page.getByRole("button", {
+      name: "Enregistrer le référentiel",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "IA architecturale Reconstruire les murs" })
+    .click();
+  await section(page, "Entraînements").click();
+  await expect(
+    page.getByRole("button", { name: "Lancer l’entraînement", exact: true }),
+  ).toBeDisabled();
 });

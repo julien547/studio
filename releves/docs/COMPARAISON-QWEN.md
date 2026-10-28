@@ -114,7 +114,8 @@ la recette. Une évaluation comparative reproductible avec poids attestés, puis
 l’approbation/publication/rollback restent à développer. Les capacités de promotion
 restent désactivées même après un avis humain favorable.
 
-Le fine-tuning Qwen et le réseau architectural restent à implémenter. Le pilote
+Le [pilote LoRA Qwen](ENTRAINEMENT-QWEN.md) est raccordé avec recette GPU obligatoire.
+Le réseau architectural reste à implémenter. Le pilote
 [PaddleOCR de reconnaissance](ENTRAINEMENT-PADDLEOCR.md) est maintenant raccordé,
 avec une recette GPU obligatoire avant activation.
 

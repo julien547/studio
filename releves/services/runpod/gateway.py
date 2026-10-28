@@ -212,7 +212,7 @@ async def infer(engine:str,file:UploadFile,x_doemo_job:str=Header(default=''),co
 @app.get('/training/capabilities',dependencies=[Depends(authorize)])
 async def training_capabilities():
     engines={engine:{'training':bool(training and training.profile_for(engine)),
-                     'profile_id':training.profile_for(engine)['public']['id'] if training and training.profile_for(engine) else None} for engine in ('rtmdet','paddleocr')}
+                     'profile_id':training.profile_for(engine)['public']['id'] if training and training.profile_for(engine) else None} for engine in ('rtmdet','paddleocr','qwen')}
     return {'engine':'rtmdet',**engines['rtmdet'],'engines':engines}
 
 

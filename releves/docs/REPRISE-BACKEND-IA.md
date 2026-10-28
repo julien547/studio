@@ -93,8 +93,9 @@ sont celles du lot test ; elles ne valent pas comparaison à la production.
   la recette GPU obligatoire et la nouvelle variable privée. Les poids candidats
   ne sont pas un export de service ; le détecteur existant reste distinct.
 - Qwen : référentiel persistant versionné et recherche lexicale disponibles ; le
-  test actuel ne vérifie pas l’inférence du modèle. Auditer Transformers, PEFT,
-  quantification et VRAM avant un LoRA/QLoRA. Distinguer référentiel, prompts et poids.
+  test lexical ne vérifie pas l’inférence du modèle. Le [pilote LoRA BF16](ENTRAINEMENT-QWEN.md)
+  est désormais raccordé ; sa recette GPU est obligatoire. Distinguer référentiel,
+  prompts, adaptateur et poids de base.
 - Architecture : axes, masques polygonaux, raccordements et ouvertures conservés ;
   aucun réseau de segmentation installé n’est annoncé. Dessiner un seul trait
   noir plein par axe de mur, sans fermer les ouvertures.
@@ -116,7 +117,7 @@ poids persistants et des inférences sur GPU. Enregistrer son digest après rece
 Les routes de promotion refusent l’activation tant que les adaptateurs réels ne
 sont pas raccordés. Ne pas contourner les contrôles en changeant les statuts SQL.
 Le raccordement RTMDet, la priorité, les reprises et les artefacts sont maintenant
-implémentés et testés localement. Restent la recette GPU complète, le pilote
+implémentés et testés localement. Restent la recette GPU complète, la recette LoRA
 Qwen, l’évaluation comparative indépendante, l’approbation administrative,
 les pointeurs de production transactionnels par moteur, la version figée par
 inférence et le rollback. Aucun candidat n’est automatiquement mis en production.

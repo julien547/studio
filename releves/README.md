@@ -173,3 +173,7 @@ Le [parcours reconnaissance → SAI → Illustrator](docs/POSE-PICTOGRAMMES.md) 
 l’analyse multimodale à des propositions d’implantation, aux aperçus SAI déplaçables
 et au paquet d’export Illustrator. Les positions ambiguës et les correspondances
 restent à contrôler ; les ressources vectorielles doivent être importées et approuvées.
+
+Le [pilote LoRA Qwen3.5-9B](docs/ENTRAINEMENT-QWEN.md) est raccordé à la même file,
+avec pause entre batches et sauvegarde de l’adaptateur/optimiseur. Une recette GPU
+réelle est obligatoire ; l’activation en production des adaptateurs reste désactivée.

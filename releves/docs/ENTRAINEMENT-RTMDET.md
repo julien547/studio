@@ -162,8 +162,9 @@ file : l’opérateur doit décider de la reprendre ou l’annuler.
   configuration, classes et métriques du lot test. Ces métriques ne comparent pas
   encore le candidat à la production. Aucun modèle actif n’est remplacé.
 - L’évaluation comparative, l’approbation, la publication et le rollback des poids
-  restent indisponibles. Le fine-tuning Qwen et le réseau architectural
-  restent à développer. Le référentiel Qwen existant est distinct de ses poids.
+  restent indisponibles. Le réseau architectural
+  reste à développer. Le [pilote LoRA Qwen](ENTRAINEMENT-QWEN.md) est raccordé
+  et exige une recette GPU distincte. Le référentiel Qwen existant est distinct de ses poids.
 
 ## Validation locale de cette livraison
 

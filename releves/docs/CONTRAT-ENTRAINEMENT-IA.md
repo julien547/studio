@@ -21,10 +21,10 @@ les routes publiques, les tests et les limites des services GPU.
 | PaddleOCR : reconnaissance CTC, checkpoints poids/optimiseur, CER/WER validation/test | Pilote et file raccordés, tests CPU ; recette GPU requise, aucun fine-tuning réel effectué |
 | RTMDet : préparation COCO, pilote de formation MMDetection 3.3.0, checkpoints vérifiés | Pilote écrit ; tests CPU des données/artefacts ; exécution GPU NON réalisée |
 | Registre des versions, états, séparation par moteur | Persistant ; versions de référentiel enregistrables |
-| Entraînement asynchrone depuis le navigateur | RTMDet et PaddleOCR raccordés à la file OVH/gateway ; activation conditionnée à la recette GPU réelle |
-| Enregistrement de poids | Candidat RTMDet/PaddleOCR après tâche terminée et artefacts vérifiés, un par tâche |
+| Entraînement asynchrone depuis le navigateur | RTMDet, PaddleOCR et Qwen LoRA raccordés à la file OVH/gateway ; activation conditionnée à la recette GPU réelle |
+| Enregistrement de poids | Candidat RTMDet/PaddleOCR ou adaptateur Qwen après tâche terminée et artefacts vérifiés, un par tâche |
 | Évaluation comparative réelle, approbation, publication, rollback | Opérations refusées : adaptateurs non raccordés |
-| Qwen LoRA/QLoRA | À implémenter après audit des modèles/configurations réellement installés |
+| Qwen LoRA BF16 | Pilote et file raccordés, tests CPU ; recette GPU obligatoire, QLoRA non implémenté |
 | IA architecturale | Contrat géométrique uniquement, aucun réseau installé annoncé |
 | Image Docker permanente | Recette fournie ; ni construite ni publiée ni testée sur GPU |
 
@@ -190,7 +190,7 @@ Il reste à développer l’évaluation comparative sur des documents indépenda
 l’approbation humaine journalisée, puis la promotion transactionnelle **sur OVH**,
 le pointeur précédent, la version figée à l’admission des inférences et le rollback.
 Les statuts `approved`, `production`, `archived` existent mais leurs transitions
-ne sont pas activées. PaddleOCR nécessite sa [recette GPU](ENTRAINEMENT-PADDLEOCR.md), Qwen son pilote de fine-tuning ;
+ne sont pas activées. PaddleOCR nécessite sa [recette GPU](ENTRAINEMENT-PADDLEOCR.md), Qwen sa [recette LoRA](ENTRAINEMENT-QWEN.md) ;
 un moteur architectural absent reste indisponible.
 
 ## Comparaisons Qwen par inférence

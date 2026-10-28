@@ -17,7 +17,7 @@ import uuid
 from pathlib import Path
 from artifacts import sha256,verify
 from compute import exclusive,require_idle_gpu
-from training_service import Manager,DRIVER,PADDLE_DRIVER,runtime_hash,digest,encoded
+from training_service import Manager,DRIVER,PADDLE_DRIVER,QWEN_DRIVER,runtime_hash,digest,encoded
 
 
 async def acceptance(args):
@@ -26,11 +26,12 @@ async def acceptance(args):
     if not os.path.ismount('/workspace') or not root.is_relative_to('/workspace/doemo-studio'):raise ValueError('Volume persistant requis')
     destination=Path(args.profile_output)
     if destination.exists():raise ValueError('Le profil de sortie existe déjà ; choisir un fichier neuf')
-    engine=getattr(args,'engine','rtmdet');paddle=engine=='paddleocr'
-    if engine not in ('rtmdet','paddleocr'):raise ValueError('Moteur non pris en charge')
+    engine=getattr(args,'engine','rtmdet');paddle=engine=='paddleocr';qwen=engine=='qwen'
+    if engine not in ('rtmdet','paddleocr','qwen'):raise ValueError('Moteur non pris en charge')
+    from qwen_training_data import model_hash
     # Same canonical profile fingerprint as OVH/gateway, with no secrets.
-    public={'engine':engine,'driver':'paddleocr.recognition/1' if paddle else 'rtmdet.training/1','driver_sha256':sha256(PADDLE_DRIVER if paddle else DRIVER),'runtime_sha256':runtime_hash(),
-            'config_sha256':sha256(args.config),'weights_sha256':sha256(args.weights),
+    public={'engine':engine,'driver':'qwen.lora/1' if qwen else 'paddleocr.recognition/1' if paddle else 'rtmdet.training/1','driver_sha256':sha256(QWEN_DRIVER if qwen else PADDLE_DRIVER if paddle else DRIVER),'runtime_sha256':runtime_hash(),
+            'config_sha256':sha256(args.config),'weights_sha256':model_hash(args.weights) if qwen else sha256(args.weights),
             'acceptance':{'training_completed':False,'resume_verified':False,'inference_preemption_verified':False,'cancel_verified':False,'report_sha256':'0'*64}}
     for p in (args.config,args.weights):
         if not Path(p).resolve().is_relative_to('/workspace/doemo-studio'):raise ValueError('Profil et poids persistants requis')
@@ -46,7 +47,7 @@ async def acceptance(args):
     public['id']=digest(public)
     environment=lambda:dict({k:v for k,v in os.environ.items() if k!='RUNPOD_API_KEY'},HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1')
     manager=Manager(root,asyncio.Lock(),lambda:True,lambda:False,lambda:None,environment,
-                    lambda:None if paddle else profile,lambda:profile if paddle else None)
+                    lambda:profile if engine=='rtmdet' else None,lambda:profile if paddle else None,lambda:profile if qwen else None)
     # Validate the snapshot and all files without relying on archive paths.
     from training_data import unpack
     with tempfile.TemporaryDirectory(prefix='doemo-acceptance-data-',dir='/tmp') as tmp:
@@ -56,13 +57,16 @@ async def acceptance(args):
     async def controlled_run(ident,action):
         task=asyncio.create_task(manager.run(ident))
         try:
-            for _ in range(2400):
+            deadline=time.monotonic()+args.timeout
+            while time.monotonic()<deadline:
                 if task.done():raise ValueError('Pilote terminé avant le contrôle demandé')
-                if manager.proc and manager.proc.returncode is None and manager.control_file:
+                observed=await asyncio.to_thread(manager.store.state,ident) if qwen and action=='pause' else {}
+                progressed=not (qwen and action=='pause') or observed.get('iteration',0)>=1
+                if progressed and manager.proc and manager.proc.returncode is None and manager.control_file:
                     await manager.control(ident,action);break
-                await asyncio.sleep(.05)
-            else:raise ValueError('Processus non démarré')
-            await asyncio.wait_for(task,args.timeout)
+                await asyncio.sleep(.1)
+            else:raise ValueError('Délai dépassé avant le contrôle demandé')
+            await asyncio.wait_for(task,max(.1,deadline-time.monotonic()))
         finally:
             if not task.done():
                 # Manager cancellation reaps its child inside the compute lock.
@@ -73,7 +77,9 @@ async def acceptance(args):
     state=manager.store.state(first['id'])
     if state['status']!='paused' or not state.get('checkpoint'):raise ValueError('Pause avec checkpoint non vérifiée')
     checkpoint=verify(manager.store.artifact(first['id'],state['checkpoint']))
-    if checkpoint['metadata'].get('epoch')!=1:raise ValueError('Pause attendue après la première époque')
+    if qwen:
+        if checkpoint['metadata'].get('cursor',0)<=0 or checkpoint['metadata'].get('cursor',0)>=state.get('total_iterations',0):raise ValueError('Pause Qwen après un vrai batch, avant la fin de l’entraînement requise')
+    elif checkpoint['metadata'].get('epoch')!=1:raise ValueError('Pause attendue après la première époque')
     if manager.lock.locked():raise ValueError('GPU non libéré après la pause')
     # Run an actual inference using the same production probe and shared compute guard.
     log=root/'training/logs'/first['id']/'acceptance-paddleocr.log'
@@ -107,7 +113,7 @@ async def acceptance(args):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     for field in ('dataset','config','weights','profile-output'):p.add_argument('--'+field,required=True)
-    p.add_argument('--engine',choices=['rtmdet','paddleocr'],default='rtmdet');p.add_argument('--repository');p.add_argument('--dictionary')
+    p.add_argument('--engine',choices=['rtmdet','paddleocr','qwen'],default='rtmdet');p.add_argument('--repository');p.add_argument('--dictionary')
     p.add_argument('--output',default='/workspace/doemo-studio');p.add_argument('--timeout',type=int,default=3600)
     p.add_argument('--authorize-gpu-training',action='store_true');p.add_argument('--maintenance-confirmed',action='store_true')
     args=p.parse_args()

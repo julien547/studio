@@ -27,6 +27,8 @@ DRIVER=Path(__file__).with_name('rtmdet_pipeline.py')
 PYTHON='/opt/doemo-rtmdet-venv/bin/python'
 PADDLE_DRIVER=Path(__file__).with_name('paddle_pipeline.py')
 PADDLE_PYTHON='/opt/doemo-ocr-venv/bin/python'
+QWEN_DRIVER=Path(__file__).with_name('qwen_training.py')
+QWEN_PYTHON='/opt/doemo-qwen-venv/bin/python'
 
 
 def encoded(value):return json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(',',':'))
@@ -34,7 +36,7 @@ def digest(value):return hashlib.sha256(encoded(value).encode()).hexdigest()
 
 
 def runtime_hash():
-    names=('training_service.py','rtmdet_pipeline.py','compute.py','training_data.py','artifacts.py','gateway.py','infer.py','readiness.py','qwen_prompt.py','paddle_pipeline.py','paddle_training.py')
+    names=('training_service.py','rtmdet_pipeline.py','compute.py','training_data.py','artifacts.py','gateway.py','infer.py','readiness.py','qwen_prompt.py','paddle_pipeline.py','paddle_training.py','qwen_training.py','qwen_training_data.py')
     return digest({name:sha256(Path(__file__).with_name(name)) for name in names})
 
 
@@ -53,6 +55,28 @@ def load_profile():
             local=Path(value[key]).resolve()
             if not local.is_relative_to('/workspace/doemo-studio') or sha256(local)!=value[key+'_sha256']:return None
         clean={k:value[k] for k in keys};clean.update(engine='rtmdet',driver='rtmdet.training/1',acceptance={k:evidence[k] for k in ('training_completed','resume_verified','inference_preemption_verified','cancel_verified','report_sha256')})
+        clean['id']=digest(clean)
+        return {'public':clean,'config':value['config'],'weights':value['weights']}
+    except (OSError,ValueError,KeyError,TypeError,AttributeError):return None
+
+
+def load_qwen_profile():
+    path=os.environ.get('DOEMO_QWEN_TRAINING_PROFILE','')
+    if not path or not os.path.ismount('/workspace'):return None
+    try:
+        if Path(path).stat().st_size>65536:return None
+        value=json.loads(Path(path).read_text());keys=('driver_sha256','runtime_sha256','config_sha256','weights_sha256')
+        if value.get('engine')!='qwen' or any(not HASH.fullmatch(value.get(k,'')) for k in keys):return None
+        evidence=value.get('acceptance',{})
+        if any(evidence.get(k) is not True for k in ('training_completed','resume_verified','inference_preemption_verified','cancel_verified')):return None
+        if not HASH.fullmatch(evidence.get('report_sha256','')):return None
+        if sha256(QWEN_DRIVER)!=value['driver_sha256'] or runtime_hash()!=value['runtime_sha256']:return None
+        from qwen_training_data import model_hash,configuration
+        for key in ('config','weights'):
+            local=Path(value[key]).resolve()
+            if not local.is_relative_to('/workspace/doemo-studio') or (model_hash(local) if key=='weights' else sha256(local))!=value[key+'_sha256']:return None
+        configuration(value['config'])
+        clean={k:value[k] for k in keys};clean.update(engine='qwen',driver='qwen.lora/1',acceptance={k:evidence[k] for k in ('training_completed','resume_verified','inference_preemption_verified','cancel_verified','report_sha256')})
         clean['id']=digest(clean)
         return {'public':clean,'config':value['config'],'weights':value['weights']}
     except (OSError,ValueError,KeyError,TypeError,AttributeError):return None
@@ -81,10 +105,11 @@ def load_paddle_profile():
 
 def spec_valid(value,ident):
     if set(value)!={'id','engine','profile_id','parameters','dataset_id','dataset_sha256','archive_sha256'}:raise ValueError('Contrat de demande invalide')
-    if value['id']!=ident or not ID.fullmatch(ident) or value['engine'] not in ('rtmdet','paddleocr'):raise ValueError('Moteur ou identifiant invalide')
+    if value['id']!=ident or not ID.fullmatch(ident) or value['engine'] not in ('rtmdet','paddleocr','qwen'):raise ValueError('Moteur ou identifiant invalide')
     if not ID.fullmatch(value['dataset_id']) or any(not HASH.fullmatch(value[k]) for k in ('profile_id','dataset_sha256','archive_sha256')):raise ValueError('Empreintes invalides')
     p=value['parameters']
     if set(p)!={'epochs','batch_size','learning_rate'} or type(p['epochs']) is not int or type(p['batch_size']) is not int:raise ValueError('Paramètres invalides')
+    if value['engine']=='qwen' and (p['batch_size']!=1 or p['learning_rate']>.0002):raise ValueError('Limites Qwen dépassées')
     if not 1<=p['epochs']<=100 or not 1<=p['batch_size']<=4 or type(p['learning_rate']) not in (int,float) or not 0<p['learning_rate']<=.001:raise ValueError('Paramètres hors limites')
 
 
@@ -136,7 +161,10 @@ class JobStore:
                 snapshot=json.loads((extracted/'examples.json').read_text())
                 if digest(snapshot)!=spec['dataset_sha256'] or snapshot.get('engine')!=spec['engine']:raise ValueError('Snapshot incompatible')
                 if spec['engine']=='rtmdet':detection_splits(extracted)
-                else:ocr_splits(extracted)
+                elif spec['engine']=='paddleocr':ocr_splits(extracted)
+                else:
+                    from qwen_training_data import dataset
+                    dataset(extracted)
             folder=self.directory(ident);folder.mkdir(parents=True,exist_ok=False)
             import shutil
             shutil.copyfile(archive,folder/'dataset.zip')
@@ -167,16 +195,18 @@ class JobStore:
 
 
 class Manager:
-    def __init__(self,root,compute_lock,ready,draining,activity,environment,profile_loader=load_profile,paddle_profile_loader=load_paddle_profile):
+    def __init__(self,root,compute_lock,ready,draining,activity,environment,profile_loader=load_profile,paddle_profile_loader=load_paddle_profile,qwen_profile_loader=load_qwen_profile):
         self.store=JobStore(root);self.lock=compute_lock;self.ready=ready;self.draining=draining;self.activity=activity
         self.environment=environment;self.profile_loader=profile_loader;self.profile=None
         self.paddle_profile_loader=paddle_profile_loader;self.paddle_profile=None
+        self.qwen_profile_loader=qwen_profile_loader;self.qwen_profile=None
         self.active=None;self.control_file=None;self.proc=None;self.priority_until=0
     async def initialize(self):
         self.profile=await asyncio.to_thread(self.profile_loader)
         self.paddle_profile=await asyncio.to_thread(self.paddle_profile_loader)
+        self.qwen_profile=await asyncio.to_thread(self.qwen_profile_loader)
         await asyncio.to_thread(self.store.recover)
-    def profile_for(self,engine):return self.paddle_profile if engine=='paddleocr' else self.profile if engine=='rtmdet' else None
+    def profile_for(self,engine):return self.qwen_profile if engine=='qwen' else self.paddle_profile if engine=='paddleocr' else self.profile if engine=='rtmdet' else None
     async def control(self,ident,action):
         state=await asyncio.to_thread(self.store.state,ident)
         if action=='cancel':
@@ -210,7 +240,7 @@ class Manager:
     async def loop(self):
         try:
             while True:
-                if (self.profile or self.paddle_profile) and self.ready() and not self.draining() and not self.lock.locked() and time.monotonic()>=self.priority_until:
+                if (self.profile or self.paddle_profile or self.qwen_profile) and self.ready() and not self.draining() and not self.lock.locked() and time.monotonic()>=self.priority_until:
                     queued=[s for s in await asyncio.to_thread(self.store.all) if s['status']=='queued']
                     if queued:await self.run(queued[0]['id'])
                 await asyncio.sleep(1)
@@ -230,8 +260,8 @@ class Manager:
             self.active=ident;self.activity()
             try:
                 spec=self.store.request(ident)
-                paddle=spec['engine']=='paddleocr'
-                current_profile=await asyncio.to_thread(self.paddle_profile_loader if paddle else self.profile_loader)
+                paddle=spec['engine']=='paddleocr';qwen=spec['engine']=='qwen'
+                current_profile=await asyncio.to_thread(self.qwen_profile_loader if qwen else self.paddle_profile_loader if paddle else self.profile_loader)
                 if not current_profile or current_profile['public']['id']!=spec['profile_id']:raise ValueError('Profile changed')
                 folder=self.store.directory(ident)
                 if await asyncio.to_thread(sha256,folder/'dataset.zip')!=spec['archive_sha256']:raise ValueError('Dataset corrupted')
@@ -239,7 +269,7 @@ class Manager:
                 if state['status']!='queued':return
                 with tempfile.TemporaryDirectory(prefix='doemo-training-control-',dir='/tmp') as tmp:
                     self.control_file=Path(tmp)/'control';self.control_file.write_text('run')
-                    args=[PADDLE_PYTHON if paddle else PYTHON,str(PADDLE_DRIVER if paddle else DRIVER),'--dataset',str(folder/'dataset.zip'),'--config',current_profile['config'],'--weights',current_profile['weights'],
+                    args=[QWEN_PYTHON if qwen else PADDLE_PYTHON if paddle else PYTHON,str(QWEN_DRIVER if qwen else PADDLE_DRIVER if paddle else DRIVER),'--dataset',str(folder/'dataset.zip'),'--config',current_profile['config'],'--weights',current_profile['weights'],
                           '--output',str(self.store.root),'--authorize-gpu-training','--managed-job',ident,'--control',str(self.control_file),
                           '--dataset-sha256',spec['dataset_sha256'],'--profile-id',spec['profile_id'],
                           '--epochs',str(spec['parameters']['epochs']),'--batch-size',str(spec['parameters']['batch_size']),'--learning-rate',str(spec['parameters']['learning_rate'])]
