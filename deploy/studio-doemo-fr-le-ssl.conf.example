@@ -7,6 +7,11 @@
         AllowOverride None
         Require all granted
     </Directory>
+    # React build supplied separately by doemo-app. Enables direct navigation
+    # to https://studio.doemo.fr/app/orientation without redirecting API routes.
+    <Directory /var/www/studio/app>
+        FallbackResource /app/index.html
+    </Directory>
     <IfModule mod_headers.c>
         Header always set Strict-Transport-Security "max-age=31536000"
         Header always set X-Content-Type-Options "nosniff"

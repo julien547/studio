@@ -2,6 +2,8 @@
 
 Espace interne DOEMO : page de connexion et socle de l'application d'orientation automatique des plans « Vous êtes ici ».
 
+Adresse du module d'orientation : **https://studio.doemo.fr/app/orientation**.
+
 ## Fonctionnement
 - `index.html`, `style.css`, `login.js` : page de connexion.
 - `app/` : application React (menu du haut : Studio Plans, Orientation des plans), générée depuis le dépôt doemo-app (`npx vite build -c vite.studio.config.js`, branche `feat/studio-host`) et copiée dans `/var/www/studio/app`. Non versionnée ici.
@@ -14,3 +16,18 @@ Espace interne DOEMO : page de connexion et socle de l'application d'orientation
 ## Déploiement
 Apache + mod_php, racine `/var/www/studio`. Voir `deploy/studio-doemo-fr-le-ssl.conf.example` (en-têtes de sécurité). Certificat Let's Encrypt via `certbot --apache -d studio.doemo.fr`.
 Aucun secret n'est stocké dans ce dépôt.
+
+## Moteur PDF indépendant — faisabilité en cours
+
+Le module Python [engine](engine/README.md) inspecte les PDF et les métadonnées
+natives AI24, et réalise des compositions vectorielles de diagnostic. Ses tests
+sont exécutables indépendamment de PHP. Il n'est pas encore branché à l'espace
+connecté et ne produit pas de déclinaison certifiée pour la production.
+
+- [Cahier des charges](docs/cahier-des-charges.md)
+- [Audit du moteur Illustrator 1.0.13 et résultats PDF](docs/audit-moteur-1.0.13.md)
+- [Contrat proposé pour l'export structuré](docs/contrat-export-structure.md)
+
+Les rapports initiaux du BAT et des trames sont conservés dans `docs/`. Les
+fichiers clients, les scripts de référence reçus et les sorties de diagnostic
+restent hors de la racine publique et du dépôt source.

@@ -1,0 +1,2 @@
+# Preserve the exact bytes of vector templates across checkouts.
+*.pdf binary

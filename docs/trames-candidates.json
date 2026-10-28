@@ -1,0 +1,97 @@
+{
+  "status": "audit_only_not_approved",
+  "coordinate_system": "PDF points, origin bottom-left, y upward",
+  "templates": [
+    {
+      "file_name": "PI-A3-V.pdf",
+      "sha256": "6869fd21df0ccb2eb3492319e8f5bd91b7870a143d669d21c9e59f491dc324dd",
+      "type": "PI",
+      "orientation": "V",
+      "paper": "A3",
+      "page_count": 1,
+      "page_size_pt": [
+        841.89,
+        1190.55
+      ],
+      "zone_plan": null,
+      "candidate_zones": [
+        {
+          "pdf_bbox": [
+            28.577999114990234,
+            126.0040283203125,
+            813.7750244140625,
+            974.7020263671875
+          ],
+          "browser_bbox": [
+            28.577999114990234,
+            215.8480224609375,
+            813.7750244140625,
+            1064.5460205078125
+          ],
+          "size_mm": [
+            277.00006170272826,
+            299.40179375542533
+          ],
+          "layer": "Date et N° de Conception",
+          "stroke_width_pt": 1.0,
+          "confirmed": false
+        }
+      ],
+      "active_for_production": false,
+      "contains_specimen_watermark": true,
+      "contains_previous_order_reference": true,
+      "layer_count": 15,
+      "disabled_layers": [
+        "Cadre",
+        "Trous de percage",
+        "EXT"
+      ],
+      "has_named_zone_plan": false
+    },
+    {
+      "file_name": "PE-A3-V.pdf",
+      "sha256": "cea18b01dc11e9cd3cf5e328e6fa952fa3b51be036dc10e44a49ffb905e66537",
+      "type": "PE",
+      "orientation": "V",
+      "paper": "A3",
+      "page_count": 1,
+      "page_size_pt": [
+        841.89,
+        1190.55
+      ],
+      "zone_plan": null,
+      "candidate_zones": [
+        {
+          "pdf_bbox": [
+            28.34600067138672,
+            194.2989501953125,
+            813.5430297851562,
+            979.4959716796875
+          ],
+          "browser_bbox": [
+            28.34600067138672,
+            211.0540771484375,
+            813.5430297851562,
+            996.2510986328125
+          ],
+          "size_mm": [
+            277.0000630484687,
+            277.00006035698783
+          ],
+          "layer": "Date et N° de conception",
+          "stroke_width_pt": 1.0,
+          "confirmed": false
+        }
+      ],
+      "active_for_production": false,
+      "contains_specimen_watermark": true,
+      "contains_previous_order_reference": true,
+      "layer_count": 14,
+      "disabled_layers": [
+        "Cadre",
+        "Trous de percage"
+      ],
+      "has_named_zone_plan": false
+    }
+  ]
+}

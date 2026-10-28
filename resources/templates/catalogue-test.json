@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "templates_root": "/var/lib/doemo-studio/templates",
+  "templates": [
+    {
+      "path": "doemo/PE-A3-V.pdf",
+      "sha256": "cea18b01dc11e9cd3cf5e328e6fa952fa3b51be036dc10e44a49ffb905e66537",
+      "type": "PE",
+      "paper": "A3",
+      "orientation": "V",
+      "status": "test_specimen",
+      "active_for_production": false,
+      "zone_plan": null
+    },
+    {
+      "path": "doemo/PI-A3-V.pdf",
+      "sha256": "6869fd21df0ccb2eb3492319e8f5bd91b7870a143d669d21c9e59f491dc324dd",
+      "type": "PI",
+      "paper": "A3",
+      "orientation": "V",
+      "status": "test_specimen",
+      "active_for_production": false,
+      "zone_plan": null
+    }
+  ]
+}

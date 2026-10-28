@@ -1,0 +1,13 @@
+# Python 3.12 dependency versions exercised during onboarding.
+# Source package is installed separately from this checkout.
+fonttools==4.68.0
+iniconfig==2.3.1
+lxml==6.1.3
+packaging==26.3
+pikepdf==10.17.0
+pillow==13.0.0
+pluggy==1.7.0
+Pygments==2.21.0
+pypdf==6.21.3
+pytest==9.0.2
+zstandard==0.25.0
