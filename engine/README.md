@@ -30,6 +30,7 @@ doemo-pdf templates-dir
 doemo-pdf templates-dir --client client-a
 doemo-pdf inspect /chemin/prive/BAT.pdf
 doemo-pdf inspect-ai /chemin/prive/BAT.ai
+doemo-pdf plan-batch /chemin/prive/BAT.ai --client doemo
 doemo-pdf compose-diagnostic /chemin/prive/BAT.ai /chemin/prive/PI-A3-V.pdf \
   /chemin/prive/DIAGNOSTIC-PI.pdf \
   --zone 28.578 126.004 813.775 974.702 --direction 0 -1 --margin 12
@@ -68,6 +69,11 @@ Son seul objet est de vérifier les matrices, l'insertion vectorielle, les
 ressources et la visibilité des calques. Le rapport porte toujours
 `production_ready: false` et liste les défauts restants. Un code de sortie zéro
 signifie que la commande de diagnostic a réussi, jamais que le plan est conforme.
+
+`plan-batch` prépare toutes les étiquettes candidates du BAT et sélectionne les
+trames par dossier client, type, format et orientation. Il ne crée aucun PDF et
+ne certifie pas encore les associations VEI. Voir le
+[parcours par lot](../docs/generation-par-lot.md) et son raccordement à la page.
 
 La contre-rotation est implémentée et testée au niveau géométrique dans
 `component_transform`. Son utilisation sur le BAT est bloquée tant que les

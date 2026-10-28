@@ -56,7 +56,7 @@ function or_cleanup() {
 function or_mkdir($d) { if (!is_dir($d)) { @mkdir($d, 02770, true); @chmod($d, 02770); } return is_dir($d); }
 function or_template($ref) {
     $parts = explode('/', (string)$ref);
-    if (count($parts) !== 2 || !preg_match('/^[a-z0-9][a-z0-9_-]{0,63}$/', $parts[0]) || !or_name_ok($parts[1]) || strtolower(pathinfo($parts[1], PATHINFO_EXTENSION)) !== 'pdf') return null;
+    if (count($parts) !== 2 || !or_name_ok($parts[0]) || !or_name_ok($parts[1]) || strtolower(pathinfo($parts[1], PATHINFO_EXTENSION)) !== 'pdf') return null;
     $root = realpath(OR_TEMPLATES); $p = realpath(OR_TEMPLATES . '/' . $parts[0] . '/' . $parts[1]);
     if ($root === false || $p === false || strpos($p, $root . '/') !== 0 || !is_file($p)) return null;
     return $p;
@@ -74,7 +74,8 @@ $action = (string)($_GET['action'] ?? '');
 if ($action === 'capabilities') {
     studio_json(200, ['ok' => true, 'production_ready' => false,
         'generation_available' => false, 'diagnostic_available' => true,
-        'diagnostic_action' => 'compose-diagnostic']);
+        'diagnostic_action' => 'compose-diagnostic', 'planning_action' => 'plan',
+        'generation_scope' => 'all_vei', 'template_selection' => 'automatic_by_client_type_paper_orientation']);
 }
 
 if ($action === 'compose') {
@@ -86,10 +87,29 @@ if ($action === 'compose') {
         'error' => 'La génération de plans n’est pas encore opérationnelle : le moteur ne sait pas conserver un seul « Vous êtes ici » et redresser les textes et pictogrammes. Aucun plan n’a été généré.']);
 }
 
+if ($action === 'plan') {
+    or_post_guard();
+    $in = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($in)) studio_json(400, ['ok' => false, 'error' => 'Demande invalide.']);
+    $collection = $in['collection'] ?? 'doemo';
+    if (!or_name_ok($collection)) {
+        studio_json(400, ['ok' => false, 'error' => 'Collection de trames invalide.']);
+    }
+    $id = (string)($in['job'] ?? '');
+    or_job_meta($id, $login, $isAdmin);
+    [$code, $out, $err] = or_run(['plan-batch', OR_PRIVATE . "/$id/source.pdf", '--client', $collection], 100);
+    $batch = json_decode($out, true);
+    if ($code !== 0 || !is_array($batch) || ($batch['status'] ?? '') !== 'planning_only') {
+        studio_json(422, ['ok' => false, 'error' => 'Analyse du BAT impossible : ' . or_msg($err, 'préparation du lot impossible.')]);
+    }
+    studio_json(200, ['ok' => true, 'status' => 'planning_only', 'production_ready' => false,
+        'job' => $id, 'batch' => $batch]);
+}
+
 if ($action === 'templates') {
     $out = [];
     if (is_dir(OR_TEMPLATES)) foreach (scandir(OR_TEMPLATES) as $c) {
-        if (!preg_match('/^[a-z0-9][a-z0-9_-]{0,63}$/', $c) || !is_dir(OR_TEMPLATES . "/$c") || is_link(OR_TEMPLATES . "/$c")) continue;
+        if (!or_name_ok($c) || !is_dir(OR_TEMPLATES . "/$c") || is_link(OR_TEMPLATES . "/$c")) continue;
         $files = [];
         foreach (scandir(OR_TEMPLATES . "/$c") as $f) if ($f[0] !== '.' && is_file(OR_TEMPLATES . "/$c/$f") && strtolower(pathinfo($f, PATHINFO_EXTENSION)) === 'pdf') $files[] = $f;
         sort($files, SORT_NATURAL | SORT_FLAG_CASE);

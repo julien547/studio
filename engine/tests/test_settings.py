@@ -14,6 +14,12 @@ def test_client_collections_are_siblings(tmp_path, monkeypatch):
     assert templates_dir('client-a') == tmp_path/'client-a'
 
 
+@pytest.mark.parametrize('client', ['SAI', 'Client École', 'Client_01'])
+def test_client_names_match_template_administration(tmp_path, monkeypatch, client):
+    monkeypatch.setenv('DOEMO_TEMPLATES_ROOT', str(tmp_path))
+    assert templates_dir(client) == tmp_path/client
+
+
 @pytest.mark.parametrize('client', ['../doemo','/tmp','client/other','','..'])
 def test_untrusted_client_path_rejected(client):
     with pytest.raises(ValueError): templates_dir(client)

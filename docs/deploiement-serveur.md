@@ -3,6 +3,9 @@
 ## Périmètre à déployer
 
 URL du module : **https://studio.doemo.fr/app/orientation**.
+La [mise à jour du parcours par lot](generation-par-lot.md) concerne le moteur,
+l'API de ce dépôt et la page React de `doemo-app` sur `feat/studio-host` : déployer
+les deux dépôts pour disposer du choix de dossier client et de l'analyse du lot.
 Origine et connexion : **https://studio.doemo.fr**. Ne pas modifier `plans.doemo.fr` ni
 les autres applications DOEMO. La connexion existante utilise l'API distante
 `https://gestion.doemo.fr/api_doemo.php` ; aucune modification de cette API n'est

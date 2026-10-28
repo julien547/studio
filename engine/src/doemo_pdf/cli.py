@@ -8,6 +8,7 @@ from .geometry import Rect
 from .pdf import compose_diagnostic, inspect_pdf
 from .ai_metadata import inspect_ai_metadata
 from .settings import templates_dir
+from .batch import plan_batch
 
 
 def main(argv=None):
@@ -19,6 +20,9 @@ def main(argv=None):
     inspect.add_argument("source")
     native = commands.add_parser("inspect-ai", help="Lire les noms et matrices natives sans exécuter Illustrator.")
     native.add_argument("source")
+    batch = commands.add_parser("plan-batch", help="Préparer tous les candidats VEI et associer les trames automatiquement, sans générer de PDF.")
+    batch.add_argument("source")
+    batch.add_argument("--client", default="doemo")
     compose = commands.add_parser("compose-diagnostic", help="Non conforme pour production : page BAT complète conservée.")
     compose.add_argument("source")
     compose.add_argument("template")
@@ -37,6 +41,8 @@ def main(argv=None):
             result = inspect_pdf(args.source)
         elif args.command == "inspect-ai":
             result = inspect_ai_metadata(args.source)
+        elif args.command == "plan-batch":
+            result = plan_batch(args.source, args.client)
         else:
             result = compose_diagnostic(args.source, args.template, args.output,
                                         Rect(*args.zone), args.direction, args.page-1,

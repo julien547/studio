@@ -1,5 +1,10 @@
 # Référence Illustrator 1.0.14 — contrôle du 28 octobre 2026
 
+Complément reçu depuis cet audit : [PDF VEI-02 et rapport du lot de trois
+plans](reference-sortie-1.0.14.md). La réserve sur le logo est suivie dans
+l'autre session. Les mentions d'absence de sortie ci-dessous décrivent le
+contenu de l'archive au moment de sa réception.
+
 La version 1.0.14 reçue devient la référence pour les prochains travaux Studio.
 Elle reste un générateur exécuté dans Illustrator ; ses JSX ne remplacent pas
 l'adaptation des transformations individuelles au moteur PDF serveur.

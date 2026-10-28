@@ -63,11 +63,14 @@ try {
     check(!isset($result['file']), 'Aucun fichier ne doit être proposé comme plan.');
     [$status, $result] = call_api($port, 'capabilities', 'GET', $sessions['admin']);
     check($status === 200 && $result['generation_available'] === false &&
-        $result['diagnostic_available'] === true && $result['diagnostic_action'] === 'compose-diagnostic',
+        $result['diagnostic_available'] === true && $result['diagnostic_action'] === 'compose-diagnostic' &&
+        $result['generation_scope'] === 'all_vei' && $result['planning_action'] === 'plan',
         'Le frontend doit pouvoir distinguer diagnostic et génération.');
     [$status] = call_api($port, 'compose-diagnostic', 'POST', $sessions['admin']);
     check($status === 404, 'Le diagnostic explicite doit contrôler le travail demandé.');
-    echo "7 scénarios HTTP réussis : authentification, rôle, méthode, origine, refus de génération, capacités, diagnostic explicite.\n";
+    [$status] = call_api($port, 'plan', 'POST', $sessions['admin']);
+    check($status === 404, 'La préparation du lot doit vérifier le travail demandé.');
+    echo "8 scénarios HTTP réussis : authentification, rôle, méthode, origine, refus de génération, capacités, préparation du lot, diagnostic explicite.\n";
 } finally {
     if (is_resource($server)) { proc_terminate($server); proc_close($server); }
     foreach (glob("$tmp/*") as $file) unlink($file);
