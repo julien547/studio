@@ -10,6 +10,11 @@ dependencies = ["fastapi>=0.135,<0.136", "uvicorn>=0.41,<0.42", "python-multipar
 
 [project.scripts]
 doemo-releves = "doemo_releves.cli:main"
+doemo-studio-user = "doemo_releves.auth:main"
+doemo-studio-worker = "doemo_releves.queue:main"
+
+[tool.setuptools.package-data]
+doemo_releves = ["migrations/*.sql"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

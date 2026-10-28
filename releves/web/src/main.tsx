@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { createRoot } from "react-dom/client";
+
 import { api, url, download } from "./api";
 import { projectPoint, clearReview } from "./geometry";
 import type {
@@ -58,7 +58,7 @@ const statuses: Record<string, string> = {
 const pointText = (p: Point) => `${(p.x * 100).toFixed(1)} %, ${(p.y * 100).toFixed(1)} %`;
 type Pair = { source: Point; target: Point };
 
-function App() {
+export function AdvancedApp() {
   const [projects, setProjects] = useState<{ id: string; name: string }[]>([]),
     [p, setP] = useState<Project | null>(null),
     [libraries, setLibraries] = useState<Library[]>([]);
@@ -1745,5 +1745,3 @@ function Viewer({
     </div>
   );
 }
-
-createRoot(document.getElementById("root")!).render(<App />);

@@ -1,5 +1,19 @@
 # Reconnaissance et pose des pictogrammes — phase 1
 
+## Nouvel atelier Studio — MVP du 28 octobre 2026
+
+Le module comprend maintenant un tableau de bord, une connexion autonome optionnelle,
+un éditeur de niveaux et d’annotations fonctionnant sans GPU, une sauvegarde automatique
+versionnée, les imports des sorties Qwen/PaddleOCR/RTMDet et une file de travaux persistante.
+
+- [Démarrage et parcours utilisateur](docs/mvp-demarrage.md)
+- [Audit, fonctionnalités vérifiées et limites](docs/mvp-audit.md)
+
+Le nouvel atelier utilise le backend et la bibliothèque existants. L’atelier avancé
+de recalage/Illustrator reste accessible. Aucun déploiement OVH ou RunPod n’a été effectué.
+
+Les sections suivantes documentent l’intégration PHP et le connecteur antérieurs.
+
 Module indépendant de l’orientation et des déclinaisons VEI. Il conserve les originaux,
 propose des annotations à partir de pixels réellement analysés et organise une revue
 avant export vers **Illustrator 2024+**. Aucun service Linux ne prétend écrire un AI natif.

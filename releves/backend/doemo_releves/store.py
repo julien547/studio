@@ -25,6 +25,26 @@ class Store:
             CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, project_id TEXT, actor TEXT NOT NULL,
                 action TEXT NOT NULL, data TEXT NOT NULL, created TEXT DEFAULT CURRENT_TIMESTAMP);
             ''')
+            c.execute("CREATE TABLE IF NOT EXISTS schema_migrations (version TEXT PRIMARY KEY, applied TEXT DEFAULT CURRENT_TIMESTAMP)")
+            for migration in sorted((Path(__file__).parent / "migrations").glob("*.sql")):
+                # Acquire the writer lock BEFORE checking the version: API and worker
+                # can start together. executescript() would implicitly commit this lock.
+                try:
+                    c.execute("BEGIN IMMEDIATE")
+                    if not c.execute("SELECT 1 FROM schema_migrations WHERE version=?", (migration.stem,)).fetchone():
+                        statement = ""
+                        for line in migration.read_text().splitlines(keepends=True):
+                            statement += line
+                            if sqlite3.complete_statement(statement):
+                                c.execute(statement)
+                                statement = ""
+                        if statement.strip():
+                            raise ValueError("Migration SQL incomplète")
+                        c.execute("INSERT INTO schema_migrations(version) VALUES(?)", (migration.stem,))
+                    c.commit()
+                except Exception:
+                    c.rollback()
+                    raise
 
     @contextmanager
     def connect(self):
@@ -37,11 +57,13 @@ class Store:
         finally:
             c.close()
 
-    def create(self, actor, name):
+    def create(self, actor, name, metadata=None):
         ident = uuid.uuid4().hex
         with self.connect() as c:
-            c.execute("INSERT INTO projects(id,owner,name,state) VALUES(?,?,?,?)",
-                      (ident, actor, name, ProjectState(revision=0).model_dump_json()))
+            state = ProjectState(revision=0).model_dump_json()
+            c.execute("INSERT INTO projects(id,owner,name,state,metadata) VALUES(?,?,?,?,?)",
+                      (ident, actor, name, state, json.dumps(metadata or {})))
+            c.execute("INSERT INTO revisions(project_id,revision,actor,state) VALUES(?,0,?,?)", (ident, actor, state))
         return ident
 
     def get(self, ident, actor, admin=False):
@@ -51,15 +73,16 @@ class Store:
                 raise LookupError("Projet inaccessible")
             docs = c.execute("SELECT id,metadata FROM documents WHERE project_id=?", (ident,)).fetchall()
         return {"id": row["id"], "owner": row["owner"], "name": row["name"],
+                "metadata": json.loads(row["metadata"]),
                 "state": json.loads(row["state"]),
                 "documents": [dict(id=r["id"], **json.loads(r["metadata"])) for r in docs]}
 
     def listing(self, actor, admin=False):
         with self.connect() as c:
-            rows = c.execute("SELECT id,name,owner,revision,created FROM projects" +
+            rows = c.execute("SELECT id,name,owner,revision,created,metadata,json_extract(state,'$.workflow') AS workflow, json_array_length(state,'$.annotations') AS annotation_count FROM projects" +
                              ("" if admin else " WHERE owner=?") + " ORDER BY created DESC",
                              () if admin else (actor,)).fetchall()
-        return [dict(r) for r in rows]
+        return [dict(dict(r), metadata=json.loads(r["metadata"])) for r in rows]
 
     def save(self, project_id, actor, state, action="review"):
         # Caller has checked owner/admin and validated references and registration evidence.
@@ -74,6 +97,8 @@ class Store:
                 raise Conflict("Projet modifié dans une autre session : recharger avant de sauvegarder")
             c.execute("INSERT INTO events(project_id,actor,action,data) VALUES(?,?,?,?)",
                       (project_id, actor, action, json.dumps({"revision": state.revision})))
+            c.execute("INSERT INTO revisions(project_id,revision,actor,state) VALUES(?,?,?,?)",
+                      (project_id, state.revision, actor, state.model_dump_json()))
         return state
 
     def library(self, ident):

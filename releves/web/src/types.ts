@@ -29,6 +29,8 @@ export type Annotation = {
   status: string;
   review: Review;
   evidence: string;
+  comment?: string;
+  training_accepted?: boolean;
 };
 export type Floor = {
   id: string;
@@ -36,6 +38,10 @@ export type Floor = {
   target_page: number;
   artboard_index: number;
   target_group: string;
+  source_document_id?: string | null;
+  source_page?: number;
+  source_region?: Box | null;
+  rotation_deg?: 0 | 90 | 180 | 270;
   confirmed: boolean;
 };
 export type Registration = {
@@ -64,11 +70,17 @@ export type Legend = {
   source_document_id: string;
   source_page: number;
   bbox: Box | null;
-  entries: { color: string; label: string; equipment_type: string; confirmed: boolean }[];
+  entries: {
+    color: string;
+    label: string;
+    equipment_type: string;
+    confirmed: boolean;
+  }[];
 };
 export type State = {
   schema_version: "doemo.review/1";
   revision: number;
+  workflow?: string;
   annotations: Annotation[];
   floors: Floor[];
   registrations: Registration[];
@@ -82,9 +94,21 @@ export type Doc = {
   name: string;
   role: "survey" | "target";
   sha256: string;
-  pages: { number: number; width: number; height: number; pdf_size_pt: [number, number] | null }[];
+  pages: {
+    number: number;
+    width: number;
+    height: number;
+    pdf_size_pt: [number, number] | null;
+  }[];
 };
-export type Project = { id: string; owner: string; name: string; state: State; documents: Doc[] };
+export type Project = {
+  id: string;
+  owner: string;
+  name: string;
+  metadata?: Record<string, string | boolean>;
+  state: State;
+  documents: Doc[];
+};
 export type Asset = {
   id: string;
   name: string;

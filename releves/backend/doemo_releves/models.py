@@ -55,6 +55,8 @@ class Annotation(Model):
     status: Literal["review", "confirmed", "rejected", "missing_asset", "uncertain_position"] = "review"
     review: Review = Field(default_factory=Review)
     evidence: str = Field(default="", max_length=2000)
+    comment: str = Field(default="", max_length=4000)
+    training_accepted: bool = False
 
 
 class Floor(Model):
@@ -65,6 +67,10 @@ class Floor(Model):
     artboard_index: int = Field(ge=0, le=999)
     target_group: str = Field(default="", max_length=200)
     confirmed: bool = False
+    source_document_id: str | None = None
+    source_page: int = Field(default=1, ge=1)
+    source_region: Box | None = None
+    rotation_deg: Literal[0, 90, 180, 270] = 0
 
 
 class Registration(Model):
@@ -123,6 +129,7 @@ class ProjectState(Model):
     mappings: list[Mapping] = Field(default_factory=list, max_length=1000)
     mapping_version: int = Field(default=1, ge=1)
     library_id: str | None = None
+    workflow: Literal["draft", "review", "corrected", "validated"] = "draft"
 
     @model_validator(mode="after")
     def unique_ids(self):

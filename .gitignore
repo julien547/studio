@@ -10,3 +10,5 @@ engine/dist/
 !.env.example
 releves/web/node_modules/
 releves/dist/
+releves/web/test-results/
+releves/web/playwright-report/

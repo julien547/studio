@@ -1,5 +1,10 @@
 # DOEMO Studio (studio.doemo.fr)
 
+Le MVP d’édition des relevés est développé dans `releves/` :
+[démarrer l’atelier](releves/docs/mvp-demarrage.md),
+[consulter l’audit et les vérifications](releves/docs/mvp-audit.md).
+Il fonctionne sans GPU et n’a pas été déployé sur le domaine de production.
+
 Le nouveau module [Relevés & pictogrammes](releves/README.md) fournit l’import SAI,
 la revue des annotations, le recalage, l’export contrôlé et le script Illustrator 2024+.
 Il reste en validation : voir [les essais réels et leurs limites](releves/docs/essais-reels.md).

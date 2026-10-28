@@ -54,6 +54,11 @@ def upload(file, path, limit):
 
 class NewProject(Model):
     name: str = Field(min_length=1, max_length=200)
+    reference: str = Field(default="", max_length=100)
+    client: str = Field(default="", max_length=200)
+    address: str = Field(default="", max_length=500)
+    building_type: str = Field(default="", max_length=100)
+    responsible: str = Field(default="", max_length=100)
 
 
 class Analysis(Model):
@@ -103,6 +108,11 @@ def create_app(root=None):
         directory = store.root / "documents" / found["id"]
         return found, directory
 
+    from .studio_api import attach
+    attach(app, store, actor, admin, get, doc)
+    from .queue import attach_queue
+    attach_queue(app, store, actor, get, doc)
+
     @app.get("/health")
     def health():
         return {"ok": True, "scope": "private-unix-socket", "multimodal_configured": bool(os.environ.get("DOEMO_VISION_ENDPOINT"))}
@@ -113,7 +123,7 @@ def create_app(root=None):
 
     @app.post("/projects")
     def new_project(data: NewProject, who=Depends(actor)):
-        return get(store.create(who.login, data.name), who)
+        return get(store.create(who.login, data.name, data.model_dump(exclude={"name"})), who)
 
     @app.get("/projects/{ident}")
     def project_get(ident, who=Depends(actor)):
@@ -130,6 +140,35 @@ def create_app(root=None):
         elif any(a.asset_id for a in state.annotations) or state.mappings:
             raise ValueError("Sélectionner une bibliothèque")
         old = ProjectState.model_validate(p["state"])
+        # Client-side review controls are not an authorization boundary.
+        previous = {a.id: a for a in old.annotations}
+        fields = {"equipment": ("text", "equipment_type"), "asset": ("asset_id",),
+                  "floor": ("floor_id",), "position": ("anchor", "target", "source_document_id", "source_page"),
+                  "orientation": ("rotation_deg",), "size": ("size_mm",)}
+        for annotation in state.annotations:
+            prior = previous.get(annotation.id)
+            if prior:
+                changed = False
+                for criterion, keys in fields.items():
+                    if any(getattr(prior, key) != getattr(annotation, key) for key in keys):
+                        setattr(annotation.review, criterion, False)
+                        changed = True
+                if changed:
+                    annotation.training_accepted = False
+                    if annotation.status == "confirmed": annotation.status = "review"
+                if prior.bbox != annotation.bbox:
+                    annotation.training_accepted = False
+            if annotation.status == "confirmed" and (not all(annotation.review.model_dump().values()) or not annotation.anchor or not annotation.asset_id or not annotation.floor_id or not annotation.equipment_type):
+                raise ValueError("Confirmer les six critères et renseigner le placement avant validation")
+            if annotation.status == "confirmed":
+                approved = next((a for a in library["assets"] if a["id"] == annotation.asset_id), None)
+                if not approved or not approved["approved"] or not approved["verified"] or not approved["pictogram_candidate"]:
+                    raise ValueError("Approuver le pictogramme SAI avant validation du placement")
+        if state.workflow == "validated":
+            if not who.admin:
+                raise HTTPException(403, "Validation finale réservée au responsable ou administrateur")
+            if not state.annotations or any(a.status not in ("confirmed", "rejected") for a in state.annotations):
+                raise ValueError("Vérifier ou rejeter chaque annotation avant validation finale")
         if [m.model_dump() for m in old.mappings] != [m.model_dump() for m in state.mappings]:
             state.mapping_version = old.mapping_version + 1
         else:

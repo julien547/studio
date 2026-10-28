@@ -12,7 +12,11 @@ def validate_state(state, documents):
         raise ValueError("Un seul BAT par projet")
     target = targets[0] if targets else None
     for f in state.floors:
-        if target is None or f.target_page > len(target["pages"]):
+        if f.source_document_id:
+            source = docs.get(f.source_document_id)
+            if not source or source["role"] != "survey" or f.source_page > len(source["pages"]) or not f.source_region:
+                raise ValueError("Zone de niveau sans page de relevé valide")
+        if (target is None and not f.source_document_id) or (target and f.target_page > len(target["pages"])):
             raise ValueError("Page BAT du niveau introuvable")
     for a in state.annotations:
         doc = docs.get(a.source_document_id)
@@ -20,6 +24,9 @@ def validate_state(state, documents):
             raise ValueError("Annotation sans page de relevé valide")
         if a.floor_id and a.floor_id not in floors:
             raise ValueError("Niveau introuvable")
+        floor = floors.get(a.floor_id)
+        if floor and floor.source_document_id and (floor.source_document_id != a.source_document_id or floor.source_page != a.source_page):
+            raise ValueError("L’annotation et son niveau doivent appartenir à la même page de relevé")
     for legend in state.legends:
         doc = docs.get(legend.source_document_id)
         if not doc or doc["role"] != "survey" or legend.source_page > len(doc["pages"]):

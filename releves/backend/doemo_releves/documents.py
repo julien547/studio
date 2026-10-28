@@ -58,6 +58,9 @@ def prepare_document(path, directory, original_name, role):
     if role == "target" and not is_pdf(path):
         raise ValueError("BAT AI sans compatibilité PDF : exporter un aperçu PDF depuis Illustrator")
     native_present = False
+    original_image_size = None
+    exif_orientation = None
+    pdf_frames = []
     if role == "target":
         from pypdf import PdfReader
         try:
@@ -81,17 +84,26 @@ def prepare_document(path, directory, original_name, role):
             with pdfium.PdfDocument(path) as doc:
                 count = len(doc)
                 sizes = [list(doc[i].get_size()) for i in range(min(count, MAX_PAGES))]
+                for i in range(min(count, MAX_PAGES)):
+                    pdf_page = doc[i]
+                    pdf_frames.append({"crop_box_pt": list(pdf_page.get_bbox()), "rotation_deg": pdf_page.get_rotation()})
+                    pdf_page.close()
         except pdfium.PdfiumError as e:
             raise ValueError("PDF illisible") from e
         if not 1 <= count <= MAX_PAGES:
             raise ValueError("Document limité à 50 pages")
     else:
         sizes = [None]
+        with Image.open(path) as original:
+            original_image_size = list(original.size)
+            exif_orientation = int(original.getexif().get(274, 1))
     pages = []
     for i, points in enumerate(sizes, 1):
         image = render_page(path, i, directory / f"page-{i}.png")
         pages.append({"number": i, "width": image.width, "height": image.height,
-                      "pdf_size_pt": points, "coordinate_frame": "rendered_upright_normalized_top_left"})
+                      "pdf_size_pt": points, "coordinate_frame": "rendered_upright_normalized_top_left",
+                      "original_image_size_px": original_image_size, "exif_orientation": exif_orientation,
+                      "pdf_source_frame": pdf_frames[i-1] if pdf_frames else None})
     return {"name": Path(original_name).name, "sha256": digest, "role": role, "pages": pages,
             "native_ai_data_present": native_present, "native_ai_runtime_verified": False}
 
