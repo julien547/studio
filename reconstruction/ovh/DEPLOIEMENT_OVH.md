@@ -24,7 +24,9 @@ ouvertures ne sont pas reconnues automatiquement par cette version. Aucun mur ni
 aucune échelle n’est approuvé automatiquement. Les coordonnées de la page restent
 inchangées ; le trait graphique et l’épaisseur physique sont indépendants.
 
-Le bouton des trois IA devient disponible après configuration du service RunPod.
+Pour terminer le raccordement réel des IA, suivre la
+[procédure commune OVH–RunPod](RACCORDEMENT_RUNPOD.md). Le bouton d’analyse devient
+disponible après un contrôle réussi du service et des trois tests de démarrage.
 Il ajoute des observations OCR et de zones sans remplacer les murs corrigés.
 RTMDet COCO reste un diagnostic, jamais une détection architecturale de murs.
 Le module ne démarre, n’arrête et ne migre aucun Pod. Ne pas activer le contrôleur
@@ -122,7 +124,7 @@ sudo systemctl status doemo-redessin.service --no-pager
 Si PHP-FPM est utilisé, valider puis recharger le pool effectivement identifié après
 modification de ses paramètres. Ne pas supposer le nom de son service.
 
-## 4. Recette sans GPU puis activation de RunPod
+## 4. Recette locale puis raccordement obligatoire pour tester les IA
 
 Premier contrôle interne, depuis OVH :
 
@@ -165,7 +167,9 @@ et la mise à jour du tunnel ou de l’endpoint après migration.
 
 Rendre la clé lisible par le compte `doemo-redessin`, protégée des autres comptes,
 puis redémarrer le seul service du redessin lorsqu’aucune tâche n’est en cours.
-Le bouton **Tester les trois IA sur cette page** sauvegarde d’abord les corrections,
+Exécuter `ovh/check-connection.py` comme décrit dans la procédure commune, puis
+cliquer **Vérifier la connexion aux IA**. Ce contrôle ne transmet pas de plan.
+Le bouton **Tester les trois IA sur cette page** revérifie la disponibilité et sauvegarde les corrections,
 puis attend les réponses avec versions et provenance vérifiées. Les observations
 sont attachées au dernier dessin sauvegardé ; elles n’approuvent aucun mur.
 

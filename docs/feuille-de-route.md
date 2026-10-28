@@ -60,3 +60,13 @@ Le module de test web est publié dans [studio PR 1](https://github.com/julien54
 La [procédure OVH](../reconstruction/ovh/DEPLOIEMENT_OVH.md) décrit l’installation isolée, le service systemd, le pont PHP sur socket Unix, la connexion RunPod facultative, la recette et le retour arrière. Le propriétaire a confié le déploiement réel à une autre session. Les branches ne sont pas fusionnées et le VPS n’a pas été modifié depuis ce fil.
 
 50 tests Python passent. Un parcours Chromium avec PHP, socket Python et stockage réels en local valide l’import de la page 1, la correction, la sauvegarde et le SVG. L’extraction de cette livraison produit 327 propositions de revue ; ce comptage n’est pas une précision mesurée. La segmentation spécialisée, les inférences réelles RunPod et la recette Adobe restent à qualifier.
+
+## Raccordement 0.3.1 — priorité avant l’essai IA
+
+Le contrôle de connexion est implémenté dans Studio et dans une commande de recette
+du service OVH actif. Une configuration renseignée ne prouve plus la disponibilité
+des moteurs : le contrôle signé exige l’identité du worker courant, trois versions
+locales vérifiées et les tests de démarrage réussis. 64 tests locaux passent ; les
+tests d’inférence utilisent des doubles. Le branchement réel reste à faire suivant
+la [transmission OVH–RunPod](../reconstruction/ovh/RACCORDEMENT_RUNPOD.md), par la
+session désignée pour déployer. Aucun déploiement ni appel GPU réel effectué ici.

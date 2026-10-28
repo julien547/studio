@@ -15,7 +15,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 $route = (string)($_GET['route'] ?? '/health');
 $id = '[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}';
 $allowed = $method === 'GET'
-    ? preg_match('#^/(health|projects|projects/' . $id . '|tasks/' . $id . '|projects/' . $id . '/export/(svg|preview|training|illustrator))$#D', $route)
+    ? preg_match('#^/(health|runpod/status|projects|projects/' . $id . '|tasks/' . $id . '|projects/' . $id . '/export/(svg|preview|training|illustrator))$#D', $route)
     : ($method === 'POST' && preg_match('#^/(projects|projects/' . $id . '/(save|analyze))$#D', $route));
 if (!$allowed) studio_json(404, ['error' => 'Route inconnue.']);
 $body = null;

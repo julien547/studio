@@ -20,6 +20,7 @@ header('Cache-Control: no-store');
 <label>Page du PDF <input name="page" type="number" min="1" max="10000" value="1" required></label>
 <button id="import">Importer et proposer les axes</button></form>
 <div class="actions"><label>Mes projets <select id="projects"></select></label><button id="open">Ouvrir</button>
+<button id="checkAi" disabled>Vérifier la connexion aux IA</button>
 <button id="ai" disabled>Tester les trois IA sur cette page</button><button id="saveServer" disabled>Enregistrer sur OVH</button>
 <button id="serverSvg" disabled>SVG validé du serveur</button></div>
 <p id="status" role="status">Connexion au service…</p><p id="aiStatus"></p><pre id="evidence" hidden></pre>

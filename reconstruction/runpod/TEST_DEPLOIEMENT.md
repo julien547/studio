@@ -3,6 +3,8 @@
 Ce paquet prépare un essai d’inférence privée sur la **page 1 de `2(2).pdf`**.
 Les trois environnements ont été déclarés restaurés et vérifiés par le propriétaire.
 Ce service doit encore être exécuté contre ces installations pour confirmer ses adaptateurs.
+La [transmission commune OVH–RunPod](../ovh/RACCORDEMENT_RUNPOD.md) rassemble les
+paramètres des deux côtés et les critères de raccordement de la page Studio.
 Il ne constitue pas encore le redessin automatique des murs : la segmentation spécialisée
 reste à qualifier. RTMDet COCO sert uniquement à vérifier une inférence d’objets génériques.
 
@@ -78,7 +80,8 @@ Les routes `/health`, `/models`, `/infer/{uuid}` et `/drain` nécessitent ce jet
 La route d’inférence est synchrone pour cet essai. Le transport doit tolérer jusqu’à
 2 800 secondes sans réponse pendant le calcul ; utiliser le tunnel ou le proxy privé
 configuré en conséquence. Ne pas supposer que le proxy HTTP public RunPod accepte
-ce délai. L’intégration asynchrone dans DOEMO est une étape ultérieure.
+ce délai. Le module web 0.3.1 place cette requête dans une tâche OVH persistante et
+le navigateur suit son état ; la requête OVH vers le worker reste synchrone.
 
 Avec le tunnel exposant le service sur `127.0.0.1:8009` côté OVH, exécuter une fois
 depuis la racine du paquet (le même environnement de dépendances légères est nécessaire

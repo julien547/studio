@@ -1,7 +1,8 @@
 'use strict';
 (() => {
   const byId = id => document.getElementById(id);
-  let project = null, loadedVersion = null, user = '', dirty = false, remoteConfigured = false, busy = false;
+  let project = null, loadedVersion = null, user = '', dirty = false, remoteReadyUntil = 0, busy = false;
+  let readinessTimer = null;
   const message = text => { byId('status').textContent = text; };
   async function api(route, body, multipart = false) {
     const response = await fetch('/api/redessin.php?route=' + encodeURIComponent(route), {
@@ -15,10 +16,44 @@
     return result;
   }
   function controls() {
-    byId('ai').disabled = !project || busy || !remoteConfigured;
+    byId('ai').disabled = !project || busy || Date.now() >= remoteReadyUntil;
+    byId('checkAi').disabled = busy;
     byId('saveServer').disabled = !project || busy;
     byId('serverSvg').disabled = !project || busy || dirty;
     byId('import').disabled = busy; byId('open').disabled = busy;
+  }
+  async function checkConnection() {
+    clearTimeout(readinessTimer);
+    remoteReadyUntil = 0; controls();
+    byId('aiStatus').textContent = 'Vérification du service RunPod…';
+    try {
+      const status = await api('/runpod/status');
+      const labels = {
+        not_configured: 'IA non raccordées : configuration OVH–RunPod à terminer.',
+        unavailable: 'Service RunPod injoignable. Faire vérifier le transport privé.',
+        authentication_failed: 'Authentification RunPod refusée. Faire vérifier les clés de service et les horloges.',
+        key_unavailable: 'La clé de signature OVH est inaccessible au service.',
+        invalid_configuration_or_contract: 'La configuration ou la réponse RunPod ne correspond pas au service attendu.',
+        starting: 'RunPod répond ; les tests de démarrage des trois moteurs ne sont pas tous confirmés.',
+        not_ready: 'RunPod répond mais demande une intervention avant toute analyse.',
+        busy: 'RunPod répond mais ne peut pas accepter une nouvelle analyse pour le moment.',
+        ready: 'RunPod répond ; les trois moteurs ont réussi leur test de démarrage. Vous pouvez lancer le test sur cette page.',
+      };
+      byId('aiStatus').textContent = labels[status.state] || 'État RunPod non reconnu.';
+      if (status.state === 'ready' && status.can_analyze === true) {
+        remoteReadyUntil = Date.now() + 60000;
+        readinessTimer = setTimeout(() => {
+          if (Date.now() >= remoteReadyUntil) {
+            controls();
+            byId('aiStatus').textContent = 'Vérifiez de nouveau la disponibilité RunPod avant une nouvelle analyse.';
+          }
+        }, 60100);
+      }
+      return status.state === 'ready' && status.can_analyze === true;
+    } catch (error) {
+      byId('aiStatus').textContent = 'Vérification RunPod impossible. Réessayez ou faites contrôler le service.';
+      throw error;
+    } finally { controls(); }
   }
   function edited() { dirty = true; controls(); }
   async function listing(selected) {
@@ -79,7 +114,9 @@
     action(() => open(byId('projects').value));
   };
   byId('saveServer').onclick = () => action(save);
+  byId('checkAi').onclick = () => action(checkConnection);
   byId('ai').onclick = () => action(async () => {
+    if (!await checkConnection()) throw Error('Les trois moteurs RunPod doivent être disponibles avant le test.');
     await save();
     window.doemoEditor.lock(true);
     try {
@@ -96,10 +133,10 @@
   });
   addEventListener('beforeunload', event => { if (dirty) { event.preventDefault(); event.returnValue = ''; } });
   api('/health').then(async health => {
-    user = health.user; remoteConfigured = health.runpod_configured;
-    byId('aiStatus').textContent = remoteConfigured
-      ? 'Connexion RunPod configurée. Le test vérifiera les inférences réelles.'
-      : 'RunPod non configuré pour ce module. Import, correction et sauvegarde restent disponibles.';
+    user = health.user;
+    byId('aiStatus').textContent = health.runpod_configured
+      ? 'Configuration RunPod présente. Cliquez sur « Vérifier la connexion aux IA » avant le test.'
+      : 'IA non raccordées : configuration OVH–RunPod à terminer. Import et correction locale disponibles.';
     await listing(); controls(); message('Prêt à importer une page.');
   }).catch(error => message(error.message));
 })();

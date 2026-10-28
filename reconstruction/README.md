@@ -1,10 +1,17 @@
-# DOEMO Reconstruction architecturale 0.3.0
+# DOEMO Reconstruction architecturale 0.3.1
 
 Prototype local ajouté à DOEMO Studio. Le modèle indépendant contient des axes, épaisseurs et ouvertures de murs ; les SVG contiennent des axes noirs ouverts, sans remplissage, groupés par mur et interrompus aux ouvertures. Toutes les détections sont des propositions à valider. Il ne s’agit pas encore du module complet de production.
 
 La version 0.3.0 ajoute un module web de test derrière la session DOEMO existante : import d’une page, file locale, correction et sauvegarde par utilisateur, SVG validé côté serveur et observations RunPod facultatives. La procédure de la session qui déploie est [Déployer sur OVH](ovh/DEPLOIEMENT_OVH.md). L’URL prévue après installation est `/redessin/` ; les poids et les plans clients sont exclus du dépôt.
 
 Pour commencer les tests sur le serveur GPU, transmettre le [paquet de test d’inférence](runpod/TEST_DEPLOIEMENT.md) à la session responsable de l’image Docker. Cette session gère l’image et le cycle de vie RunPod ; les scripts de restauration restent uniquement un secours. Le paquet de test n’installe ni ne restaure les trois IA.
+
+La version 0.3.1 ajoute le contrôle signé de connexion depuis Studio et une commande
+de diagnostic utilisant la configuration du service OVH actif. Suivre la
+[transmission OVH–RunPod](ovh/RACCORDEMENT_RUNPOD.md). Le raccordement réel et les
+inférences GPU restent à exécuter par la session de déploiement ; une URL configurée
+ne suffit pas à activer l’analyse. 64 tests locaux passent, dont un parcours des
+appels signés jusqu’aux trois adaptateurs simulés, sans modification des murs.
 
 ## Exécution
 

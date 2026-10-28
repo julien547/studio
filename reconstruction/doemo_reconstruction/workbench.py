@@ -25,6 +25,7 @@ from .ai_service.auth import issue
 from .ai_service.contracts import validate_request
 from .ai_service.evidence import attach_evidence
 from .ai_service.limits import BodyLimit
+from .connection import connection_status, inspect_worker, ENGINES
 
 
 class Conflict(ValueError):
@@ -185,14 +186,10 @@ class Workbench:
         data = base64.b64decode(level['reference'].split(',', 1)[1], validate=True)
         with Image.open(io.BytesIO(data)) as image:
             width, height = image.size
-        health = self.remote('GET', '/health')
-        if not health.get('ready') or health.get('active') or health.get('unsaved') or health.get('draining'):
+        state, health, versions, _ = inspect_worker(self.remote)
+        if state != 'ready':
             raise Conflict('RunPod non prêt ; vérifier le panneau Serveur IA')
-        if not health.get('pod_id') or not health.get('worker_instance_id'):
-            raise ValueError('Identité du worker absente')
-        models = self.remote('GET', '/models')
-        names = ['paddleocr', 'qwen', 'rtmdet']
-        versions = {m['id']: m['version'] for m in models if m.get('functional_inference_verified')}
+        names = list(ENGINES)
         request, _ = validate_request({'project_id': project['id'], 'page': level['source_page'],
             'source_sha256': doc['source']['sha256'], 'image_sha256': hashlib.sha256(data).hexdigest(),
             'image_base64': base64.b64encode(data).decode(), 'width': width, 'height': height,
@@ -299,8 +296,12 @@ def create_app(workbench, start_worker=True):
 
     @app.get('/health')
     def health(user=Depends(actor)):
-        return {'ready': True, 'version': '0.3.0', 'runpod_configured': bool(workbench.remote_url and workbench.key_path),
+        return {'ready': True, 'version': '0.3.1', 'runpod_configured': bool(workbench.remote_url and workbench.key_path),
                 'runpod_inference_verified': False, 'specialized_segmentation': 'not_qualified', 'user': user}
+
+    @app.get('/runpod/status')
+    def runpod_status(user=Depends(actor)):
+        return connection_status(bool(workbench.remote_url and workbench.key_path), workbench.remote)
 
     @app.get('/projects')
     def listing(user=Depends(actor)):
