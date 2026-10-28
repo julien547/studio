@@ -117,35 +117,40 @@ def parse_native(data):
             'production_ready':False,'warning':'Identités et matrices natives ; correspondance aux opérateurs PDF non validée.'}
 
 
+def decode_native(page, with_size=False):
+    private=page.obj.get('/PieceInfo',{}).get('/Illustrator',{}).get('/Private')
+    if private is None:
+        raise ValueError("Données natives Illustrator absentes.")
+    keys=[key for key in private.keys() if re.fullmatch(r'/AI(?:PDF)?PrivateData\d+',key)]
+    keys.sort(key=lambda key:int(re.search(r'\d+$',key)[0]))
+    if not keys or [int(re.search(r'\d+$',k)[0]) for k in keys]!=list(range(1,len(keys)+1)):
+        raise ValueError("Blocs natifs Illustrator incomplets.")
+    parts=[];total=0
+    for key in keys:
+        part=private[key].read_bytes();total+=len(part)
+        if total>MAX_NATIVE:raise ValueError("Données natives compressées trop volumineuses.")
+        parts.append(part)
+    packed=b''.join(parts)
+    if not packed.startswith(PREFIX+b'\x28\xb5\x2f\xfd'):
+        raise ValueError("Compression Illustrator non prise en charge.")
+    compressed=packed[len(PREFIX):]
+    try:
+        if zstandard.get_frame_parameters(compressed).window_size > MAX_NATIVE:
+            raise ValueError("Fenêtre de décompression Illustrator trop volumineuse.")
+        size=zstandard.frame_content_size(compressed)
+        if size not in (zstandard.CONTENTSIZE_UNKNOWN,zstandard.CONTENTSIZE_ERROR) and size>MAX_NATIVE:
+            raise ValueError("Données natives décompressées trop volumineuses.")
+        data=zstandard.ZstdDecompressor(max_window_size=MAX_NATIVE).decompress(compressed,max_output_size=MAX_NATIVE)
+    except zstandard.ZstdError as error:
+        raise ValueError("Flux Illustrator non décompressable dans les limites autorisées.") from error
+    return (data, len(packed)) if with_size else data
+
+
 def inspect_ai_metadata(path):
     initial=file_hash(path)
     with open_pdf(path) as pdf:
         page=pdf.pages[0]
-        private=page.obj.get('/PieceInfo',{}).get('/Illustrator',{}).get('/Private')
-        if private is None:
-            raise ValueError("Données natives Illustrator absentes.")
-        keys=[key for key in private.keys() if re.fullmatch(r'/AI(?:PDF)?PrivateData\d+',key)]
-        keys.sort(key=lambda key:int(re.search(r'\d+$',key)[0]))
-        if not keys or [int(re.search(r'\d+$',k)[0]) for k in keys]!=list(range(1,len(keys)+1)):
-            raise ValueError("Blocs natifs Illustrator incomplets.")
-        parts=[];total=0
-        for key in keys:
-            part=private[key].read_bytes();total+=len(part)
-            if total>MAX_NATIVE:raise ValueError("Données natives compressées trop volumineuses.")
-            parts.append(part)
-        packed=b''.join(parts)
-        if not packed.startswith(PREFIX+b'\x28\xb5\x2f\xfd'):
-            raise ValueError("Compression Illustrator non prise en charge.")
-        compressed=packed[len(PREFIX):]
-        try:
-            if zstandard.get_frame_parameters(compressed).window_size > MAX_NATIVE:
-                raise ValueError("Fenêtre de décompression Illustrator trop volumineuse.")
-            size=zstandard.frame_content_size(compressed)
-            if size not in (zstandard.CONTENTSIZE_UNKNOWN,zstandard.CONTENTSIZE_ERROR) and size>MAX_NATIVE:
-                raise ValueError("Données natives décompressées trop volumineuses.")
-            data=zstandard.ZstdDecompressor(max_window_size=MAX_NATIVE).decompress(compressed,max_output_size=MAX_NATIVE)
-        except zstandard.ZstdError as error:
-            raise ValueError("Flux Illustrator non décompressable dans les limites autorisées.") from error
+        data,compressed_size=decode_native(page, with_size=True)
         result=parse_native(data)
         oc=pdf.Root.get('/OCProperties',{});defaults=oc.get('/D',{})
         off={x.objgen for x in defaults.get('/OFF',[])}
@@ -156,7 +161,7 @@ def inspect_ai_metadata(path):
         for layer in result['layers']:
             layer['visible_in_default_pdf']=visibility.get(layer['name']) if names[layer['name']]==1 else None
         result['source_sha256']=initial
-        result['compressed_bytes']=len(packed)
+        result['compressed_bytes']=compressed_size
     if file_hash(path)!=initial:
         raise ValueError("Source modifiée pendant l'inspection native.")
     result['source_unchanged']=True

@@ -14,31 +14,18 @@ les autres applications DOEMO. La connexion existante utilise l'API distante
 `https://gestion.doemo.fr/api_doemo.php` ; aucune modification de cette API n'est
 requise par cette livraison.
 
-Cette livraison contient le socle HTML/JS/PHP de connexion, le relais
-`api/proxy.php`, l'API de trames `api/templates.php` et un **moteur Python de diagnostic séparé**. La connexion redirige
-vers `/app/`. D'après le README distant, ce frontend React est construit depuis
-`julien547/doemo-app`, branche `feat/studio-host`, puis copié dans
-`/var/www/studio/app/` ; son build n'est pas versionné dans ce dépôt Studio.
-Préserver ce frontend s'il existe déjà. L'API `api/orientation.php` ajoutée depuis
-raccorde le moteur aux uploads et compositions de diagnostic, avec accès
-administrateur, stockage privé et limites de processus. Ce raccordement n'a pas
-été testé sur le serveur cible ; ce n'est pas un worker de production. Ne pas annoncer
-la génération PDF conforme comme opérationnelle après cette installation.
+La livraison 0.3.0 ajoute la génération Linux des lots de test : tous les VEI
+du BAT pris en charge, PDF individuels et ZIP. **Délimitation facultative,
+désactivée par défaut.** Déployer le moteur puis les trois fichiers
+`api/orientation.php`, `api/_orientation_levels.php`, `api/_orientation_batch.php`,
+et enfin le build React de `doemo-app/feat/studio-host`.
 
-Après le retour du PDF incorrect du 28 octobre, l'action web `compose` refuse
-explicitement la génération (HTTP 422, aucun PDF créé). Le diagnostic nécessite
-`compose-diagnostic`. Ne pas raccorder cette action au bouton de génération ;
-voir le [constat et le correctif](incident-generation-20261028.md). Sept scénarios
-HTTP ont été vérifiés en local avec PHP 8.4 ; le serveur cible reste à contrôler.
-
-81 tests Python ont été exécutés dans l'environnement cloud, dont huit contrôles
-du rangement des trames par client et six nouveaux cas d'impression native AI.
-La référence Illustrator 1.0.14 et ses 125 tests simulés ont aussi été contrôlés ;
-voir [le bilan](audit-moteur-1.0.14.md). Les deux PDF d'essai
-réels restent non conformes : page BAT complète, plusieurs VEI et pas de
-contre-rotation individuelle appliquée aux pictogrammes. L'authentification PHP
-et les commandes de déploiement serveur ci-dessous n'ont pas été testées sur le
-serveur cible, qui n'est pas connecté à cette session.
+La [procédure 0.3.0](generation-linux.md) précise les commandes, chemins et limites.
+Le profil courant traite les BAT Illustrator AI24 à une page. Il refuse les
+sources non identifiées plutôt que de produire un plan erroné. Les résultats
+restent des PDF de test à contrôler visuellement ; le serveur cible n'a pas été
+activé depuis cette session. L'ancienne action `compose` reste bloquée et le
+diagnostic de page entière n'est jamais appelé par le bouton de génération.
 
 ## Chemins actuels dans cette session cloud
 
@@ -122,11 +109,9 @@ protégé contre la suppression. Les fichiers remplacés ou supprimés sont dép
 vers `.corbeille` et un journal est tenu dans `.journal.log` ; les sauvegarder aussi.
 
 L'API accepte des noms avec espaces, accents et des sous-dossiers. Le résolveur
-CLI Python `templates-dir --client` accepte actuellement un identifiant simple
-en minuscules, chiffres, tirets ou soulignés, sur un niveau. Pour les collections
-communes au CLI actuel, utiliser ce format. Le catalogue des chemins personnalisés
-et son association au futur worker restent à intégrer, ainsi que les éventuels
-contrôles d'accès par client/équipe.
+CLI Python accepte aussi les espaces et accents sur un niveau de collection ;
+les séquences `..` et les traversées sont refusées. Les contrôles d’accès par
+client/équipe distincts des droits de projet restent à définir.
 
 Créer cette arborescence avec un groupe dédié partagé par le compte PHP Studio et le
 futur worker, ou des ACL équivalentes : le compte d'administration doit pouvoir
@@ -398,7 +383,6 @@ En cas d'échec, restaurer uniquement la livraison et le vhost de Studio concern
 relancer `apache2ctl configtest`, puis recharger Apache. Ne pas toucher aux données
 privées ni aux applications voisines lors d'un retour arrière.
 
-L'activation des fonctions de production PDF nécessitera une livraison distincte :
-liaison vérifiée symbole/contenu vectoriel, contre-rotation réelle, texte,
-exclusion des VEI, interface, API privée, workers isolés, stockage et validation.
-Voir `docs/contrat-export-structure.md` et `docs/audit-moteur-1.0.13.md`.
+La génération de lots de test est décrite dans [generation-linux.md](generation-linux.md).
+La validation de production, la génération native multipage et les profils de
+PDF non structurés restent à étendre. Le moteur ne nécessite pas de machine Illustrator.

@@ -1,6 +1,9 @@
 # Niveaux : contours libres et découpage vectoriel
 
-L'éditeur de `/app/orientation` propose rectangle, polygone libre, lasso et
+L'éditeur de `/app/orientation` est une **option désactivée par défaut**, activée
+par « Délimiter les niveaux (facultatif) ». Sans cette option, le dessin complet
+est utilisé ; les sélections sauvegardées ne sont pas appliquées automatiquement.
+L'éditeur propose rectangle, polygone libre, lasso et
 Bézier, ainsi que déplacement des sommets/poignées, ajout et suppression de
 sommets, zoom, déplacement de la vue, annulation et rétablissement. L'ajout
 d'un sommet sur une courbe utilise une subdivision de Bézier, sans remplacer
@@ -66,7 +69,9 @@ jamais utilisé pour construire le PDF exporté.
 **Il s'agit d'aperçus du découpage**, avant sélection du VEI actif, rotation,
 contre-rotations et composition dans une trame. Ils portent
 `status: clipping_preview`, `production_ready: false`. Ils ne remplacent pas
-la génération finale de tous les plans et du ZIP encore demandée par Julien.
+la [génération Linux du lot](generation-linux.md), désormais disponible pour le
+profil AI24 à une page. Cette génération utilise les contours PE seulement si
+l’option est explicitement activée ; le PI conserve la composition complète.
 
 ## Contrôle des limites
 

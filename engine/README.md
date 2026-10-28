@@ -1,16 +1,18 @@
-# Moteur PDF — étape de faisabilité
+# Moteur PDF Linux 0.3.0
 
-Outils serveur indépendants d'Illustrator pour `https://studio.doemo.fr`.
-Adresse du module web cible : `https://studio.doemo.fr/app/orientation`.
-Le frontend et l'authentification PHP existants sont conservés. Aucun endpoint de
-production n'est branché sur ce banc d'essai.
-L'API `api/orientation.php` expose l'inspection et un diagnostic explicite ;
-son action `compose` refuse la génération, encore non implémentée. Voir le
-[retour sur le PDF incorrect](../docs/incident-generation-20261028.md).
+Génération de lots de test, identification native Illustrator et découpage vectoriel
+pour `https://studio.doemo.fr/app/orientation`. Aucun runtime Adobe n'est requis.
+Voir [le guide de génération et déploiement](../docs/generation-linux.md).
 
-## Installation et tests
+Le profil courant génère tous les VEI des BAT Illustrator AI24 **à une page**
+identifiés sans ambiguïté. Chaque PDF contient un seul VEI, sa flèche orientée
+vers le haut, et les textes/pictogrammes de lecture redressés. Les opérateurs,
+polices et images source sont conservés. Le ZIP n'est publié qu'après réussite
+de tous les PDF. Les sorties restent marquées comme tests à contrôler visuellement.
 
-Depuis `/workspace/studio` :
+## Installation et vérification
+
+Depuis le checkout :
 
 ```sh
 python3 -m venv /workspace/.venvs/studio-pdf
@@ -19,106 +21,78 @@ python3 -m venv /workspace/.venvs/studio-pdf
 /workspace/.venvs/studio-pdf/bin/python -m pytest -q engine/tests
 ```
 
-Les versions des dépendances installées sont figées. Le backend de construction
-setuptools est choisi par pip selon `pyproject.toml` ; ce fichier n'est donc pas
-encore un verrouillage reproductible de toute la chaîne de construction.
+Les dépendances sont figées dans `requirements.lock`. Le backend de construction
+setuptools est choisi par pip selon `pyproject.toml` ; le verrou ne couvre pas
+encore toute la chaîne de construction. Le serveur utilise exclusivement
+`/opt/doemo-studio/venv-pdf/`, pas le venv historique `/opt/doemo-studio/venv/`.
 
 ## Commandes
 
 ```sh
-doemo-pdf templates-dir
-doemo-pdf templates-dir --client client-a
-doemo-pdf inspect /chemin/prive/BAT.pdf
-doemo-pdf inspect-ai /chemin/prive/BAT.ai
-doemo-pdf plan-batch /chemin/prive/BAT.ai --client doemo
-doemo-pdf levels-init /chemin/prive/BAT.ai
-doemo-pdf levels-validate /chemin/prive/BAT.ai /chemin/prive/niveaux.json
-doemo-pdf levels-preview /chemin/prive/BAT.ai /chemin/prive/niveaux.json /chemin/prive/selection.pdf --mode PE --level IDENTIFIANT
-doemo-pdf compose-diagnostic /chemin/prive/BAT.ai /chemin/prive/PI-A3-V.pdf \
-  /chemin/prive/DIAGNOSTIC-PI.pdf \
-  --zone 28.578 126.004 813.775 974.702 --direction 0 -1 --margin 12
+doemo-pdf templates-dir --client doemo
+doemo-pdf inspect BAT.ai
+doemo-pdf inspect-ai BAT.ai
+doemo-pdf plan-batch BAT.ai --client doemo
+doemo-pdf inspect-generation BAT.ai --client doemo
+doemo-pdf generate-test-batch BAT.ai /chemin/prive/nouveau-lot --client doemo
+# Uniquement si les niveaux doivent être délimités :
+doemo-pdf generate-test-batch BAT.ai /chemin/prive/autre-lot --client doemo --levels niveaux.json
+doemo-pdf levels-init BAT.ai
+doemo-pdf levels-validate BAT.ai niveaux.json
+doemo-pdf levels-preview BAT.ai niveaux.json selection.pdf --mode PE --level IDENTIFIANT
 ```
 
-Utiliser le chemin absolu `/workspace/.venvs/studio-pdf/bin/doemo-pdf` si le venv
-n'est pas activé. `--page` commence à 1. Les coordonnées sont en points PDF,
-origine en bas à gauche, Y vers le haut. Les angles positifs sont antihoraires.
-`--reduce-only` interdit l'agrandissement. Les sorties et leurs rapports ne sont
-jamais écrasés : choisir un nouveau nom pour chaque essai.
+`generate-test-batch` crée les PDF, `rapport.json` et `plans.zip`. La destination
+doit être nouvelle. Sans `--levels`, le dessin entier est utilisé, même si des
+sélections ont été sauvegardées ailleurs. Avec cette option, chaque VEI PE doit
+être associé à un niveau ; le PI ne reçoit jamais le clip d'un niveau isolé.
 
-Le dossier fixe des trames DOEMO est `/var/lib/doemo-studio/templates/doemo/`.
-Les collections personnalisées sont des sous-dossiers voisins, par exemple
-`/var/lib/doemo-studio/templates/client-a/`. Le module `doemo_pdf.settings`
-utilise la racine `/var/lib/doemo-studio/templates` par défaut et accepte la
-variable `DOEMO_TEMPLATES_ROOT` pour une configuration explicite. La collection
-par défaut est `doemo`. La future page Réglages PHP et le futur worker doivent
-partager cette racine et sélectionner le client autorisé, sans mélanger les trames.
-`deploy/studio.env.example` documente la variable ; ce fichier n'est pas chargé
-automatiquement. La commande de diagnostic conserve son argument de fichier
-explicite ; il n'y a pas encore de catalogue ni de page d'import branchée au CLI.
+Les coordonnées sont en points PDF, origine en bas à gauche, Y vers le haut.
+Les angles positifs sont antihoraires. Les trames sont dans
+`/var/lib/doemo-studio/templates/<client>/`, collection `doemo` par défaut.
+`DOEMO_TEMPLATES_ROOT` permet un emplacement explicite pour les tests.
+La recherche utilise uniquement la collection choisie ; absence et ambiguïté
+sont des erreurs. Le serveur PHP conserve les mêmes chemins privés.
 
-`inspect` retourne des **étiquettes candidates**, pas des VEI automatiquement
-validés. `inspect-ai` lit les données natives AI24 compressées avec Zstandard,
-sans exécuter le code PostScript ni les JSX. Il inventorie les noms et matrices
-de symboles, mais ne prétend pas reconstruire le DOM Illustrator.
-Il distingue `native_printable`, réglage propre du calque dans le profil AI24
-observé, de `visible_in_default_pdf`. Un profil de calque inconnu donne `null` ;
-l'inspection ne modifie aucun réglage d'impression ou de visibilité. Voir
-l'[audit 1.0.14](../docs/audit-moteur-1.0.14.md) pour le cas des neuf extincteurs EXT.
+`inspect` et `plan-batch` n'identifient que des étiquettes candidates, sur toutes
+les pages. `inspect-ai` inventorie les identités natives sans interpréter du
+PostScript ni lancer de JSX. `inspect-generation` vérifie ensuite les associations
+entre identités natives et tracés PDF, les VEI complets et les zones de trames.
 
-`compose-diagnostic` place **la page BAT complète** dans la trame. Elle conserve
-tous les VEI, textes, légendes et habillages source. Elle ne fait aucune
-contre-rotation individuelle et ne représente pas une déclinaison métier.
-Son seul objet est de vérifier les matrices, l'insertion vectorielle, les
-ressources et la visibilité des calques. Le rapport porte toujours
-`production_ready: false` et liste les défauts restants. Un code de sortie zéro
-signifie que la commande de diagnostic a réussi, jamais que le plan est conforme.
+`levels-preview` reste un aperçu du découpage, sans orientation ni composition.
+Il prend en charge plusieurs pages. La génération native multipage n'est pas
+encore disponible. Les textes multilignes/fragmentés non associés et les formats
+PDF hors du profil pris en charge sont refusés ; voir le guide pour les limites.
 
-`plan-batch` prépare toutes les étiquettes candidates du BAT et sélectionne les
-trames par dossier client, type, format et orientation. Il ne crée aucun PDF et
-ne certifie pas encore les associations VEI. Voir le
-[parcours par lot](../docs/generation-par-lot.md) et son raccordement à la page.
+## Diagnostic historique
 
-Les [contours libres des niveaux](../docs/niveaux-libres.md) sont sauvegardés en
-coordonnées PDF et exportés avec un découpage vectoriel. `levels-preview` ne
-réalise pas encore les contre-rotations ni la suppression des autres VEI : c'est
-un aperçu du découpage, distinct d'une déclinaison finale. En PI, il conserve
-toutes les pages source sans découpage ni réorganisation.
+`compose-diagnostic` insère la page BAT entière dans une trame sans isoler les
+VEI. Cet outil n'est pas appelé par le bouton de génération. L'ancienne action
+HTTP `compose` reste bloquée pour éviter toute confusion avec ce diagnostic.
+Les rapports et incidents antérieurs restent dans `docs/` à titre historique.
 
-La contre-rotation est implémentée et testée au niveau géométrique dans
-`component_transform`. Son utilisation sur le BAT est bloquée tant que les
-tracés exacts de chaque composant ne sont pas liés de façon vérifiable à son
-identité. Faire tourner tout `Pictos` comme un bloc ne satisfait pas cette règle.
+## Conservation et exécution
 
-## Vérifications et limites
+`scene.py` conserve chaque opération de dessin avec ses états graphiques,
+masques et ressources. `bindings.py` compare les contours natifs aux tracés PDF ;
+son échantillonnage n'est jamais utilisé pour dessiner le PDF de sortie.
+`generate.py` applique les matrices, compose la trame, place les informations
+fixes et produit le lot. Les glyphes architecturaux sont conservés ; fontTools
+sert à mesurer leurs bornes pour leur ancre, pas à les redessiner.
 
-La composition incorpore le BAT sous forme d'un Form XObject et vérifie après
-réouverture les empreintes de son flux et de ses ressources embarquées. Elle
-préserve les groupes de transparence et transfère les paramètres de visibilité
-des calques. Les originaux restent inchangés. Elle ne rasterise pas le dessin.
-Ces contrôles sont nécessaires mais ne constituent pas une certification visuelle.
+Les groupes de transparence de page sont conservés. Les fichiers originaux et
+ressources incorporées sont contrôlés par empreinte. Les clips de niveaux
+restent vectoriels, y compris Bézier et chemins composés avec exclusions.
+Un objet traversant un contour peut être coupé : contrôle visuel obligatoire.
 
-La version courante refuse notamment les fichiers chiffrés, les annotations et
-actions de page, les fichiers sans représentation PDF, les unités personnalisées,
-les pages ayant une rotation préexistante, les profils OutputIntents à harmoniser
-et les trames multipages. Une page source d'un BAT multipage peut être choisie
-explicitement. Aucun découpage de niveau automatique n'est effectué.
+L'API PHP authentifiée ajoute les droits de projet, le contrôle d'origine, un
+verrou par BAT et les limites de processus. Elle exécute le lot de façon synchrone
+avec un délai de 240 s ; une file persistante n'est pas encore implémentée.
+Les BAT, résultats et archives restent hors du DocumentRoot.
 
-Les plafonds de taille et de décompression ne constituent pas un sandbox PDF.
-Avant toute exposition aux uploads web, exécuter les traitements dans un worker
-isolé avec limites CPU/mémoire/temps, stockage privé, contrôle d'accès et file
-persistante. Ces services ne sont pas encore implémentés. Ne pas servir les
-fichiers clients depuis la racine publique Apache.
+## Licences
 
-## Licences retenues
-
-- pikepdf : MPL-2.0, basé sur qpdf ; conserver les notices et examiner les
-  obligations applicables aux modifications et à la redistribution.
-- pypdf : BSD-3-Clause.
-- fontTools : MIT.
-- python-zstandard : BSD ; conserver également les notices de sa bibliothèque.
-- PyMuPDF a servi à l'audit visuel dans l'environnement existant. Il n'est pas une
-  dépendance du projet ; son régime AGPL/commercial doit être évalué avant ajout.
-
-Les métadonnées natives extraites ne sont pas une nouvelle représentation
-graphique. Pour une transformation individuelle fidèle, voir le
-[contrat d'export structuré](../docs/contrat-export-structure.md).
+pikepdf : MPL-2.0 (qpdf) ; pypdf : BSD-3-Clause ; fontTools : MIT ; zstandard : BSD ;
+skia-pathops : BSD-3-Clause. Conserver les notices des dépendances.
+PyMuPDF sert uniquement aux audits indépendants dans le cloud ; il n'est pas
+une dépendance du moteur livré.

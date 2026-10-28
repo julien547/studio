@@ -62,9 +62,10 @@ Empreintes des PDF fournis :
 - VEI-02 PE : `a374c6210ce4e337b3687475f8a179f65d881143627ae13c3ba84fe2e025e122` ;
 - VEI-03 PI : `b2484c41b645f54171f09831c5e317d900ca4f5df80b24f35e8ad6f857142a08`.
 
-La 1.0.16 ne contient pas encore l'export structuré décrit dans
-`contrat-export-structure.md`. Les JSX nécessitent le DOM Illustrator. Pour
-générer le lot sur le serveur sans masquer des murs ni tourner les mauvais
-objets, il manque encore une association vérifiée entre chaque composant
-identifié et ses tracés PDF complets. La demande de choix entre export structuré
-et poursuite de l'analyse des PDF actuels reste ouverte auprès de Julien.
+La 1.0.16 ne contient pas l'export structuré décrit dans
+`contrat-export-structure.md` et ses JSX nécessitent le DOM Illustrator.
+Julien a confirmé que la génération doit fonctionner entièrement sur Linux.
+Depuis cet audit, le moteur 0.3.0 associe les tracés aux identités natives du BAT
+fourni et génère un premier lot de test autonome : voir
+[generation-linux.md](generation-linux.md). L'export structuré n'est pas un
+prérequis de ce profil ; les PDF génériques et les BAT multipages restent à étendre.

@@ -17,16 +17,17 @@ Adresse du module d'orientation : **https://studio.doemo.fr/app/orientation**.
 Apache + mod_php, racine `/var/www/studio`. Voir `deploy/studio-doemo-fr-le-ssl.conf.example` (en-têtes de sécurité). Certificat Let's Encrypt via `certbot --apache -d studio.doemo.fr`.
 Aucun secret n'est stocké dans ce dépôt.
 
-## Moteur PDF indépendant — faisabilité en cours
+## Moteur PDF Linux — lots de test
 
-Le module Python [engine](engine/README.md) inspecte les PDF et les métadonnées
-natives AI24, et réalise des compositions vectorielles de diagnostic. Ses tests
-sont exécutables indépendamment de PHP. `api/orientation.php` le raccorde à
-l'espace connecté pour les diagnostics ; il ne produit pas de déclinaison
-certifiée pour la production.
-Après le retour du PDF incorrect, l'action web `compose` refuse la génération
-avant toute création de fichier. Le banc d'essai exige `compose-diagnostic` :
-voir le [constat et le correctif](docs/incident-generation-20261028.md).
+Le moteur Python 0.3.0 génère tous les PDF et leur ZIP pour les BAT Illustrator
+AI24 à une page dont les objets ont été identifiés. Chaque plan conserve un seul
+VEI orienté vers le haut ; les textes et pictogrammes de lecture sont redressés.
+La délimitation des niveaux est facultative et désactivée par défaut.
+Voir [le fonctionnement, les limites et le déploiement](docs/generation-linux.md).
+Les PDF sont destinés au contrôle visuel : aucune conformité universelle n'est
+annoncée. Les BAT multipages et les PDF sans métadonnées natives exploitables
+ne sont pas encore pris en charge par cette génération.
+L'ancien `compose` reste bloqué ; `compose-diagnostic` est distinct du nouveau lot.
 
 - [Cahier des charges](docs/cahier-des-charges.md)
 - [Audit du moteur Illustrator 1.0.13 et résultats PDF](docs/audit-moteur-1.0.13.md)
