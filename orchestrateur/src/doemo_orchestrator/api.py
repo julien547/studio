@@ -142,6 +142,15 @@ def create_app(orchestrator: Orchestrator = None, db_path: str = None) -> FastAP
         if len(expected) < 32 or not hmac.compare_digest(bearer(authorization), expected):
             raise HTTPException(401, "Authentification requise")
 
+    def viewer(authorization: str = Header(default="")):
+        """Lecture seule du tableau de bord : jeton d'administration OU jeton de lecture (statistiques uniquement)."""
+        given = bearer(authorization)
+        for name in ("DOEMO_ORCH_ADMIN_TOKEN", "DOEMO_ORCH_READ_TOKEN"):
+            expected = os.environ.get(name, "")
+            if len(expected) >= 32 and hmac.compare_digest(given, expected):
+                return
+        raise HTTPException(401, "Authentification requise")
+
     # ---- applications ------------------------------------------------------------
     @app.post("/v1/tasks", status_code=201)
     def submit(body: NewTask, who=Depends(current_app)):
@@ -221,7 +230,7 @@ def create_app(orchestrator: Orchestrator = None, db_path: str = None) -> FastAP
         return {"ok": True}
 
     # ---- administration (tableau de bord, registre) ------------------------------
-    @app.get("/v1/admin/overview", dependencies=[Depends(admin)])
+    @app.get("/v1/admin/overview", dependencies=[Depends(viewer)])
     def overview(window: int = 3600):
         return orch.stats(max(60, min(86400 * 30, window)))
 

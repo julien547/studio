@@ -99,3 +99,17 @@ def test_memory_and_corrections_over_http(client):
     client.post("/v1/admin/corrections/%s/validate" % cid, json={"actor": "julien", "reuse_allowed": True}, headers=auth(ADMIN))
     assert client.get("/v1/admin/datasets/paddleocr", headers=auth(ADMIN)).json()["count"] == 1
     assert client.get("/v1/admin/datasets/paddleocr", headers=auth(a)).status_code == 401   # réservé à l'administration
+
+
+def test_read_token_only_sees_overview(client, monkeypatch):
+    monkeypatch.setenv("DOEMO_ORCH_READ_TOKEN", "r" * 40)
+    assert client.get("/v1/admin/overview", headers=auth("r" * 40)).status_code == 200      # tableau de bord
+    assert client.get("/v1/admin/overview", headers=auth(ADMIN)).status_code == 200
+    assert client.get("/v1/admin/models", headers=auth("r" * 40)).status_code == 401        # rien d'autre
+    assert client.post("/v1/admin/apps", json={"id": "xx", "label": "x"}, headers=auth("r" * 40)).status_code == 401
+    assert client.get("/v1/admin/overview", headers=auth("trop-court")).status_code == 401
+
+
+def test_read_token_ignored_when_not_configured(client, monkeypatch):
+    monkeypatch.delenv("DOEMO_ORCH_READ_TOKEN", raising=False)
+    assert client.get("/v1/admin/overview", headers=auth("")).status_code == 401
