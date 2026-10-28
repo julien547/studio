@@ -241,3 +241,40 @@ def test_footer_keeps_revision_and_handles_double_digit_plan_numbers():
     text,reference=footer_label(scene,[0],12,date(2027,1,1))
     assert text=='Mise à jour n° 4 - Date et n° du plan : 01-01-2027 - CLIENT-A-12'
     assert reference=='CLIENT-A-12'
+
+
+def test_unique_vei_stem_may_start_off_center_inside_disc(project,tmp_path):
+    source,_=project
+    modified=tmp_path/'off-centre.ai'
+    with pikepdf.open(source) as pdf:
+        data=pdf.pages[0].Contents.read_bytes().replace(b'80 410 m',b'80.5 410 m')
+        pdf.pages[0].Contents=pdf.make_stream(data);pdf.save(modified)
+    with pikepdf.open(modified) as pdf:
+        _,markers,_=bind(pdf.pages[0],Scene(pdf.pages[0]));assert len(markers)==3
+        pdf.pages[0].Contents=pdf.make_stream(data+b'\n/OC /P BDC .9 .7 .01 0 K 80 410 m 100 410 l S EMC')
+        with pytest.raises(ValueError,match='Tige VEI absente ou ambiguë'):bind(pdf.pages[0],Scene(pdf.pages[0]))
+
+
+def test_pdf_without_native_data_gives_actionable_ai_import_message(tmp_path):
+    source=tmp_path/'export.pdf'
+    with pikepdf.Pdf.new() as pdf:
+        pg=pdf.add_blank_page();pg.Contents=pdf.make_stream(b'/Layer /MC0 BDC EMC');pdf.save(source)
+    with pytest.raises(ValueError,match='Importez le fichier .ai original'):inspect_generation(source)
+
+
+def test_template_retains_its_blending_space_when_bat_has_cmyk_icc(project,tmp_path):
+    source,templates=project;modified=tmp_path/'icc.ai'
+    with pikepdf.open(source) as pdf:
+        profile=pdf.make_stream(b'ICC fixture');profile.N=4
+        pdf.pages[0].obj.Group=pikepdf.Dictionary(S=pikepdf.Name.Transparency,CS=pikepdf.Array([pikepdf.Name.ICCBased,profile]))
+        pdf.save(modified)
+    for template_path in templates.glob('*.pdf'):
+        with pikepdf.open(template_path,allow_overwriting_input=True) as pdf:
+            pdf.pages[0].obj.Group=pikepdf.Dictionary(S=pikepdf.Name.Transparency,CS=pikepdf.Name.DeviceCMYK)
+            pdf.save(template_path)
+    report=generate_batch(modified,tmp_path/'icc-batch')
+    for row in report['results']:
+        with pikepdf.open(tmp_path/'icc-batch'/row['file']) as pdf:
+            assert pdf.pages[0].obj.Group.CS[1].read_bytes()==b'ICC fixture'
+            groups=[obj.Group for obj in pdf.pages[0].Resources.XObject.values() if '/Group' in obj]
+            assert len(groups)==1 and groups[0].CS==pikepdf.Name.DeviceCMYK and groups[0].I

@@ -10,10 +10,13 @@ import math
 
 import pathops
 import pikepdf
-from fontTools.agl import UV2AGL
+from fontTools.agl import UV2AGL, toUnicode
 from fontTools.cffLib import CFFFontSet
 from fontTools.pens.boundsPen import BoundsPen
 from fontTools.ttLib import TTFont
+from pypdf._codecs import charset_encoding
+from pypdf._cmap import _parse_to_unicode
+from pypdf.generic import DictionaryObject, NameObject, DecodedStreamObject
 
 I = (1., 0., 0., 1., 0., 0.)
 PATH = {'m', 'l', 'c', 'v', 'y', 're', 'h'}
@@ -42,6 +45,24 @@ def union(boxes):
     boxes = list(boxes)
     if not boxes: raise ValueError('Ensemble graphique vide.')
     return (min(b[0] for b in boxes), min(b[1] for b in boxes), max(b[2] for b in boxes), max(b[3] for b in boxes))
+
+
+def cmyk_color(space,values,resources):
+    """Read CMYK equivalents for identification only; preserve PDF colour ops."""
+    if isinstance(space,pikepdf.Name):
+        if str(space)=='/DeviceCMYK':return tuple(map(float,values)) if len(values)==4 else None
+        space=resources.get('/ColorSpace',{}).get(space)
+    if not isinstance(space,pikepdf.Array):return None
+    if str(space[0])=='/ICCBased' and int(space[1].get('/N',0))==4:
+        return tuple(map(float,values)) if len(values)==4 else None
+    if str(space[0])=='/Separation' and len(values)==1:
+        fn=space[3]
+        if not isinstance(fn,pikepdf.Dictionary) or int(fn.get('/FunctionType',-1))!=2:return None
+        c0=list(map(float,fn.get('/C0',[0])));c1=list(map(float,fn.get('/C1',[1])))
+        domain=list(map(float,fn.get('/Domain',[0,1])));t=max(domain[0],min(domain[1],float(values[0])))**float(fn['/N'])
+        if len(c0)!=len(c1):return None
+        return cmyk_color(space[2],[a+t*(b-a) for a,b in zip(c0,c1)],resources)
+    return None
 
 
 def transform_box(box, m):
@@ -75,15 +96,25 @@ def path_geometry(commands, ctm=I):
 class FontMetrics:
     def __init__(self, font):
         self.font=font; self.cache={};self.encoding={};self.scale=1.
+        self.composite=str(font.get('/Subtype'))=='/Type0';self.unicode={}
+        if font.get('/ToUnicode') is not None:
+            data=font.ToUnicode.read_bytes()
+            if len(data)>1024*1024:raise ValueError('Table Unicode de police trop volumineuse.')
+            stream=DecodedStreamObject();stream.set_data(data)
+            self.unicode,_=_parse_to_unicode(DictionaryObject({NameObject('/ToUnicode'):stream}))
+        if self.composite:
+            self._init_cid(font)
+            return
         enc=font.get('/Encoding',pikepdf.Name.WinAnsiEncoding)
+        base=enc.get('/BaseEncoding',pikepdf.Name.StandardEncoding) if isinstance(enc,pikepdf.Dictionary) else enc
+        if str(base) not in ('/WinAnsiEncoding','/MacRomanEncoding','/StandardEncoding'):
+            raise ValueError('Encodage simple de police non pris en charge : '+str(base))
+        self.characters=dict(enumerate(charset_encoding[str(base)]))
         if isinstance(enc,pikepdf.Dictionary):
-            if enc.get('/BaseEncoding',pikepdf.Name.WinAnsiEncoding)!=pikepdf.Name.WinAnsiEncoding:
-                raise ValueError('Encodage de police non pris en charge.')
             at=0
             for x in enc.get('/Differences',[]):
                 if isinstance(x,int):at=x
                 else:self.encoding[at]=str(x)[1:];at+=1
-        elif str(enc)!='/WinAnsiEncoding': raise ValueError('Encodage de police non pris en charge.')
         descriptor=font.get('/FontDescriptor',{})
         if '/FontFile3' in descriptor and str(descriptor['/FontFile3'].get('/Subtype'))=='/Type1C':
             cff=CFFFontSet();cff.decompile(BytesIO(descriptor['/FontFile3'].read_bytes()),None)
@@ -97,26 +128,73 @@ class FontMetrics:
         self.first=int(font.get('/FirstChar',0));self.widths=list(map(float,font.get('/Widths',[])))
         if not self.widths:raise ValueError('Largeurs de police absentes.')
 
+    def _init_cid(self,font):
+        if str(font.get('/Encoding'))!='/Identity-H':
+            raise ValueError('Encodage composite de police non pris en charge : '+str(font.get('/Encoding')))
+        descendants=font.get('/DescendantFonts',[])
+        if len(descendants)!=1:raise ValueError('Police CID sans descendant unique.')
+        cid=descendants[0];descriptor=cid.get('/FontDescriptor',{})
+        if str(cid.get('/Subtype'))!='/CIDFontType2' or '/FontFile2' not in descriptor:
+            raise ValueError('Identity-H requiert actuellement une police TrueType CID incorporée.')
+        tt=TTFont(BytesIO(descriptor.FontFile2.read_bytes()));self.glyphs=tt.getGlyphSet()
+        self.glyph_order=tt.getGlyphOrder();self.scale=1000/tt['head'].unitsPerEm
+        mapping=cid.get('/CIDToGIDMap',pikepdf.Name.Identity)
+        self.cid_to_gid=None
+        if isinstance(mapping,pikepdf.Stream):
+            self.cid_to_gid=mapping.read_bytes()
+            if len(self.cid_to_gid)>131072 or len(self.cid_to_gid)%2:raise ValueError('Table CIDToGIDMap invalide.')
+        elif str(mapping)!='/Identity':raise ValueError('Table CIDToGIDMap non prise en charge.')
+        self.default_width=float(cid.get('/DW',1000));self.cid_widths={}
+        values=list(cid.get('/W',[]));at=0
+        while at<len(values):
+            start=int(values[at]);entry=values[at+1];at+=2
+            if isinstance(entry,pikepdf.Array):widths=list(map(float,entry));end=start+len(widths)-1
+            else:
+                end=int(entry)
+                if not 0<=start<=end<=65535:raise ValueError('Plage de largeurs CID invalide.')
+                widths=[float(values[at])]*(end-start+1);at+=1
+            if start<0 or end>65535:raise ValueError('Plage de largeurs CID invalide.')
+            self.cid_widths.update(zip(range(start,end+1),widths))
+
+    def codes(self,raw):
+        if not self.composite:return list(raw)
+        if len(raw)%2:raise ValueError('Texte Identity-H tronqué : code CID incomplet.')
+        return [int.from_bytes(raw[i:i+2],'big') for i in range(0,len(raw),2)]
+
+    def decode(self,raw):
+        chars=[]
+        for code in self.codes(raw):
+            char=self.unicode.get(chr(code))
+            if char is None and not self.composite:
+                char=toUnicode(self.encoding[code]) if code in self.encoding else self.characters.get(code,'')
+            chars.append(char or '\ufffd')
+        return ''.join(chars)
+
     def glyph(self, code):
         if code in self.cache:return self.cache[code]
-        try: char=bytes([code]).decode('cp1252')
-        except UnicodeDecodeError:char='\0'
-        name=self.encoding.get(code, getattr(self,'cmap',{}).get(ord(char), UV2AGL.get(ord(char),'.notdef')))
+        if self.composite:
+            gid=code if self.cid_to_gid is None else int.from_bytes(self.cid_to_gid[code*2:code*2+2],'big')
+            if gid>=len(self.glyph_order):raise ValueError('Indice de glyphe CID hors de la police incorporée.')
+            name=self.glyph_order[gid];width=self.cid_widths.get(code,self.default_width)
+        else:
+            char=self.characters.get(code,'\0')
+            name=self.encoding.get(code, getattr(self,'cmap',{}).get(ord(char), UV2AGL.get(ord(char),'.notdef')))
+            index=code-self.first
+            if not 0<=index<len(self.widths):raise ValueError('Largeur de glyphe absente.')
+            width=self.widths[index]
         if name not in self.glyphs:raise ValueError('Glyphe incorporé introuvable : '+name)
         pen=BoundsPen(self.glyphs);self.glyphs[name].draw(pen)
         b=tuple(v*self.scale for v in pen.bounds) if pen.bounds else None
-        index=code-self.first
-        if not 0<=index<len(self.widths):raise ValueError('Largeur de glyphe absente.')
-        self.cache[code]=(b,self.widths[index]);return self.cache[code]
+        self.cache[code]=(b,width);return self.cache[code]
 
     def measure(self, operands, state):
         x=0.;boxes=[]; size=state['size'];scale=state['Tz']/100
         for value in operands:
             if not isinstance(value,pikepdf.String): x-=float(value)*size/1000;continue
-            for code in bytes(value):
+            for code in self.codes(bytes(value)):
                 b,w=self.glyph(code)
                 if b:boxes.append((x+b[0]*size/1000,b[1]*size/1000+state['Ts'],x+b[2]*size/1000,b[3]*size/1000+state['Ts']))
-                x+=w*size/1000+state['Tc']+(state['Tw'] if code==32 else 0)
+                x+=w*size/1000+state['Tc']+(state['Tw'] if code==32 and not self.composite else 0)
         box=union(boxes) if boxes else (0,0,0,0)
         return (box[0]*scale,box[1],box[2]*scale,box[3]),x*scale
 
@@ -135,6 +213,8 @@ class Paint:
     text: str = ''
     matrix: tuple = I
     resource: str | None = None
+    glyph_ids: tuple = ()
+    text_anchor: tuple | None = None
 
 
 class Scene:
@@ -147,6 +227,7 @@ class Scene:
     def _parse(self):
         history=[];stack=[];layer=None;marks=[];path=[];clip=None;tm=lm=I;in_text=False
         state={'ctm':I,'width':1.,'cap':0,'join':0,'miter':10.,'stroke':None,'fill':None,'clip_bounds':None,
+               'stroke_space':pikepdf.Name.DeviceGray,'fill_space':pikepdf.Name.DeviceGray,
                'font':None,'size':0.,'Tc':0.,'Tw':0.,'Tz':100.,'TL':0.,'Tr':0.,'Ts':0.}
         def emit(kind, commands, bounds, **kwargs):
             if state['clip_bounds'] is not None:
@@ -173,9 +254,14 @@ class Scene:
                 if path:raise ValueError('Changement graphique au milieu d’un tracé non pris en charge.')
                 history.append(ins)
                 if op=='cm':state['ctm']=multiply(state['ctm'],tuple(map(float,v)))
-                elif op in ('K','k'):state['stroke' if op=='K' else 'fill']=tuple(map(float,v))
-                elif op in ('G','RG','CS','SC','SCN'):state['stroke']=None
-                elif op in ('g','rg','cs','sc','scn'):state['fill']=None
+                elif op in ('K','k','G','g','RG','rg'):
+                    key='stroke' if op.isupper() else 'fill'
+                    state[key+'_space']=pikepdf.Name('/'+{'K':'DeviceCMYK','G':'DeviceGray','RG':'DeviceRGB'}[op.upper()])
+                    state[key]=cmyk_color(state[key+'_space'],v,self.resources)
+                elif op in ('CS','cs'):
+                    key='stroke' if op=='CS' else 'fill';state[key+'_space']=v[0];state[key]=None
+                elif op in ('SC','SCN','sc','scn'):
+                    key='stroke' if op.isupper() else 'fill';state[key]=cmyk_color(state[key+'_space'],v,self.resources)
                 elif op in ('w','J','j','M'):state[{'w':'width','J':'cap','j':'join','M':'miter'}[op]]=float(v[0])
             elif op in PATH:path.append(ins)
             elif op in ('W','W*'):clip=ins
@@ -227,7 +313,10 @@ class Scene:
                 commands.extend(instruction(k,[state[k]]) for k in sorted(TEXT) if k!='Tf')
                 commands.extend([instruction('Tm',tm),ins,instruction('ET')])
                 raw=b''.join(bytes(x) for x in values if isinstance(x,pikepdf.String))
-                emit('text',commands,transform_box(box,multiply(state['ctm'],tm)),text=raw.decode('cp1252',errors='replace'),matrix=multiply(state['ctm'],tm),operator=op)
+                font=self.fonts[name]
+                glyph_names=[font.encoding.get(code,'') for code in font.codes(raw)]
+                glyph_ids=tuple(int(n[3:]) for n in glyph_names) if glyph_names and all(n.startswith('gid') and n[3:].isdigit() for n in glyph_names) else ()
+                emit('text',commands,transform_box(box,multiply(state['ctm'],tm)),text=font.decode(raw),matrix=multiply(state['ctm'],tm),operator=op,glyph_ids=glyph_ids)
                 tm=multiply(tm,(1,0,0,1,advance,0))
             else:raise ValueError('Opérateur PDF non pris en charge : '+op)
         if stack or marks or path or in_text:raise ValueError('Flux PDF incomplet.')

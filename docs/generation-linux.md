@@ -1,4 +1,4 @@
-# Génération Linux 0.3.2 — lots de test
+# Génération Linux 0.3.3 — lots de test
 
 Le bouton **Générer tous les plans** produit maintenant les PDF puis un ZIP,
 sans Illustrator, pour le profil de BAT pris en charge. Il devient disponible
@@ -27,6 +27,11 @@ client choisi. Une trame manquante ou ambiguë bloque le lot complet.
 
 - Décompose les opérations PDF avec leurs états graphiques, clips, polices,
   images et ressources incorporées ; ne rasterise jamais le dessin.
+- Lit les polices TrueType CID `Identity-H` incorporées (tables CIDToGIDMap,
+  largeurs W/DW et Unicode), ainsi que les encodages simples WinAnsi, MacRoman
+  et StandardEncoding. Les opérateurs de texte et les polices restent ceux du BAT.
+  Les couleurs CMJN ICC et les tons directs à fonction de teinte exponentielle
+  sont également reconnus pour identifier les flèches ; leurs flux restent intacts.
 - Associe les noms natifs aux tracés PDF par comparaison géométrique complète
   des contours échantillonnés dans les deux sens, avec une borne conservatrice
   de correspondance de 0,02 pt. L'échantillonnage sert uniquement à l'association ;
@@ -39,6 +44,10 @@ client choisi. Une trame manquante ou ambiguë bloque le lot complet.
 - Oriente la flèche active vers le haut et redresse les symboles de lecture et
   les textes du calque `texte` autour de leurs ancres. Les flèches directionnelles
   suivent le bâtiment ; les panneaux « sortie finale » restent lisibles.
+- Associe les libellés SourceSans multilignes aux séquences de glyphes des
+  histoires natives Illustrator. Une association unique couvrant tous les
+  fragments est requise ; toutes les lignes partagent alors la même ancre.
+  Les multiples noms de niveaux restent à leurs positions dans la composition.
 - Utilise les équipements des calques natifs visibles, y compris les neuf
   extincteurs du calque EXT non imprimable du BAT fourni, comme la 1.0.16.
 - Place séparément l'adresse, le niveau, la référence/date et le logo client.
@@ -75,13 +84,27 @@ contrôlées. Le BAT `CO26100364-1.ai` et son PDF fourni passent l'identificatio
 27 symboles, trois VEI, deux PE et un PI. Les PDF sans données natives exploitables,
 les BAT multipages, les textes fragmentés/multilignes non associés, certaines
 polices/encodages et les opérateurs non pris en charge sont refusés explicitement.
+`Identity-V`, les CMap composites personnalisées et les polices CID CFF ne sont
+pas encore pris en charge. Un message mentionnant une trame H manquante signifie
+qu'il faut installer cette trame horizontale dans la collection choisie ; le
+moteur ne la remplace jamais automatiquement par une trame verticale.
 L'éditeur de niveaux et ses aperçus continuent à prendre en charge plusieurs pages.
 
 La zone de trame est actuellement identifiée par un unique grand rectangle blanc
 sur le calque Date, présent dans les deux trames fournies. Une trame personnalisée
 sans cette convention est refusée. Les trames d'essai contiennent SPECIMEN,
 conservé dans les sorties. Les groupes de transparence sont préservés ; des
-espaces de fusion incompatibles ou des OutputIntents à harmoniser sont refusés.
+espaces de fusion non CMJN incompatibles ou des OutputIntents à harmoniser sont
+refusés. Si un BAT utilise un profil ICC CMJN et la trame DeviceCMYK, la trame
+est conservée dans un groupe isolé avec son espace de fusion d'origine ; le BAT
+garde son profil ICC sur la page.
+
+Le BAT `CO26100010-1.ai` vérifie aussi l'import : 48 symboles, cinq VEI et 17
+blocs de texte, dont cinq multilignes. Les trois déclinaisons verticales ont été
+générées avec les trames disponibles dans l'environnement de test. Les deux
+horizontales demandent `PI-A3-H.pdf` et `PE-A3-H.pdf`, déjà présentes sur le serveur
+selon Julien. Le PDF exporté joint à ce BAT ne contient plus les données natives :
+utiliser le `.ai` pour la génération. Le message d'import le précise désormais.
 
 Un contour qui masque la zone occupée par le VEI actif est refusé : la pastille
 et sa flèche doivent rester visibles. Élargir explicitement le contour dans ce
@@ -113,7 +136,7 @@ Ce fonctionnement est synchrone ; il n'y a pas encore de file persistante de wor
 
 ```text
 /opt/doemo-studio/src/engine/                 code moteur
-/opt/doemo-studio/venv-pdf/                   environnement Python 0.3.2
+/opt/doemo-studio/venv-pdf/                   environnement Python 0.3.3
 /var/www/studio/api/                         PHP, dont les deux routeurs internes
 /var/www/studio/app/                         build doemo-app, branche feat/studio-host
 /var/lib/doemo-studio/templates/doemo/        trames DOEMO

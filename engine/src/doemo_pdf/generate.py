@@ -94,7 +94,7 @@ def template_scene(pdf):
 def inspect_generation(source, client='doemo'):
     with open_pdf(source) as pdf:
         if len(pdf.pages)!=1:raise ValueError('Cet import natif prend actuellement en charge un BAT à une page. Le découpage multipage reste disponible séparément.')
-        pg=selected_page(pdf,0);scene=Scene(pg);symbols,markers,visible=bind(pg,scene)
+        pg=selected_page(pdf,0);require_native_metadata(pg);scene=Scene(pg);symbols,markers,visible=bind(pg,scene)
         directory=templates_dir(client);index=template_index(directory);templates={}
         for marker in markers:
             key=(marker.kind,marker.paper,marker.orientation)
@@ -111,6 +111,11 @@ def inspect_generation(source, client='doemo'):
                 'templates':list(templates.values()),'warnings':['PDF de test : contrôle visuel requis.',
                 'Zones des trames détectées par leur rectangle blanc ; vérifier le placement.',
                 'Les équipements des calques natifs visibles sont inclus, même si leur impression était désactivée.']}
+
+
+def require_native_metadata(page):
+    if page.obj.get('/PieceInfo',{}).get('/Illustrator',{}).get('/Private') is None:
+        raise ValueError('Ce PDF ne contient pas les données natives Illustrator nécessaires à la génération. Importez le fichier .ai original enregistré avec compatibilité PDF.')
 
 
 class Composer:
@@ -140,16 +145,32 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
         ts,ab,zone,template_ids=template_scene(template)
         out=pikepdf.Pdf.new();page=out.add_blank_page(page_size=(ab[2]-ab[0],ab[3]-ab[1]));page.MediaBox=pikepdf.Array(ab)
         source_group=source_page.obj.get('/Group');template_group=template.pages[0].obj.get('/Group')
-        if source_group is not None and template_group is not None and str(source_group.get('/CS'))!=str(template_group.get('/CS')):
-            raise ValueError('Espaces de fusion du BAT et de la trame différents.')
+        separate_template_group=source_group is not None and template_group is not None and str(source_group.get('/CS'))!=str(template_group.get('/CS'))
+        if separate_template_group:
+            def is_cmyk(space):
+                return str(space)=='/DeviceCMYK' or (isinstance(space,pikepdf.Array) and str(space[0])=='/ICCBased' and int(space[1].get('/N',0))==4)
+            if not all(is_cmyk(group.get('/CS')) for group in (source_group,template_group)):
+                raise ValueError('Espaces de fusion du BAT et de la trame non pris en charge.')
         if source_group is not None:page.obj.Group=out.copy_foreign(source.make_indirect(source_group))
         elif template_group is not None:page.obj.Group=out.copy_foreign(template.make_indirect(template_group))
         if source.Root.get('/OutputIntents') or template.Root.get('/OutputIntents'):raise ValueError('Profils colorimétriques de sortie non pris en charge par ce profil.')
         sf=scene.forms(source,out,source_box);tf=ts.forms(template,out,ab);writer=Composer(out,page)
-        for i in template_ids:writer.place(tf[i])
+        if separate_template_group:
+            # Keep the template's original blending space in its own isolated
+            # group, while source fragments retain the BAT's page ICC space.
+            template_form=make_group(out,tf,template_ids,ab)
+            template_form.Group=out.copy_foreign(template.make_indirect(template_group))
+            template_form.Group.I=True
+            writer.place(template_form)
+        else:
+            for i in template_ids:writer.place(tf[i])
         groups={k:[] for k in ['plan','header','footer','level','logo','legend','decoration']}
         for it in scene.items:
             if visible.get(it.layer,False):groups[role(it.layer)].append(it.index)
+        if sum(scene.items[i].kind=='text' for i in groups['level'])>1:
+            # A BAT with several level labels keeps them at their source
+            # positions; collecting them in one footer would reorder levels.
+            groups['plan']=sorted(groups['plan']+groups['level']);groups['level']=[]
         # The one isolated image in the footer is the client logo; a scan of the
         # building must never be guessed to be a logo or quietly discarded.
         images=[scene.items[i] for i in groups['plan'] if scene.items[i].kind=='image']
@@ -168,7 +189,7 @@ def build_plan(source, scene, symbols, markers, visible, marker, template_path, 
                 correction=rotation(-angle,center(symbol.bounds))
                 for i in symbol.items:local[i]=correction
         for i in plan:
-            if scene.items[i].kind=='text':local[i]=rotation(-angle,center(scene.items[i].bounds))
+            if scene.items[i].kind=='text':local[i]=rotation(-angle,scene.items[i].text_anchor or center(scene.items[i].bounds))
         clip=None;level_id=None
         if marker.kind=='PE' and levels and levels['levels']:
             assigned=[x for x in levels['levels'] if marker.id in x.get('vei_ids',[])]
@@ -320,7 +341,7 @@ def generate_batch(source, destination, client='doemo', levels=None, basename=No
     try:
         with open_pdf(source) as pdf:
             if len(pdf.pages)!=1:raise ValueError('Génération native multipage non encore prise en charge.')
-            page=selected_page(pdf,0);scene=Scene(page);symbols,markers,visible=bind(page,scene)
+            page=selected_page(pdf,0);require_native_metadata(page);scene=Scene(page);symbols,markers,visible=bind(page,scene)
             if len(markers)>100:raise ValueError('Ce profil est limité à 100 VEI par lot.')
             source_name=basename or Path(source).stem
             stem=re.sub(r'[^\w.-]+','-',source_name,flags=re.UNICODE).strip('.-')[:100] or 'plan'
@@ -334,7 +355,7 @@ def generate_batch(source, destination, client='doemo', levels=None, basename=No
                 result['template']=f'{client}/{template.relative_to(directory).as_posix()}';results.append(result)
                 if sum(p.stat().st_size for p in temporary.iterdir())>256*1024*1024:raise ValueError('Lot supérieur à 256 Mio.')
         if file_hash(source)!=initial or any(file_hash(p)!=h for p,h in template_hashes.items()):raise ValueError('Une source a changé pendant la génération.')
-        report={'schema_version':1,'engine_version':'0.3.2','generation_date':generated_on.isoformat(),'status':'test_batch_complete','production_ready':False,'source_sha256':initial,
+        report={'schema_version':1,'engine_version':'0.3.3','generation_date':generated_on.isoformat(),'status':'test_batch_complete','production_ready':False,'source_sha256':initial,
                 'source_unchanged':True,'client':client,'count':len(results),'results':results,
                 'warnings':['Contrôler visuellement les PDF avant utilisation.',
                 'Les zones de trames sont détectées automatiquement ; ce profil prend en charge les BAT Illustrator AI24 à une page.',
