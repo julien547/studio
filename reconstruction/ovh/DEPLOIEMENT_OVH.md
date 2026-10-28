@@ -13,7 +13,9 @@ sélectionner une page, obtenir des axes proposés, les corriger, enregistrer le
 projet sur OVH et télécharger les murs validés en SVG. Chaque utilisateur accède
 uniquement à ses projets. Les fichiers sources restent hors du répertoire web.
 La page est autonome par rapport au build React : ce premier essai ne nécessite
-pas de remplacer le dossier `/app/`. Un lien de menu React peut être livré séparément.
+pas de remplacer le dossier `/app/`. Le lien de menu React est livré séparément
+dans [doemo-app PR 2](https://github.com/julien547/doemo-app/pull/2), avec sa
+[procédure de build](https://github.com/julien547/doemo-app/blob/feat/redessin-ovh-navigation/docs/studio-plans/DEPLOIEMENT_REDESSIN_OVH.md).
 
 Les PDF vectoriels sont analysés en priorité. Pour les scans, cette version utilise
 un traitement géométrique expérimental. **Le modèle de segmentation architecturale
