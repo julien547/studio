@@ -135,6 +135,7 @@ Sauvegarder puis publier uniquement :
 | Source | Destination décrite par le dépôt |
 | --- | --- |
 | `releves/index.php` | `/var/www/studio/releves/index.php` |
+| `entrainement/index.php` | `/var/www/studio/entrainement/index.php` |
 | `releves/dist/assets/` | `/var/www/studio/releves/assets/` |
 | `api/releves.php` | `/var/www/studio/api/releves.php` |
 
@@ -264,3 +265,10 @@ services, résultats de recette, état GPU et procédure exacte de rollback.
 > Ne supprime ni Pod ni volume. Effectue la recette et fournis le SHA déployé et
 > les preuves de fonctionnement. Les essais cloud précédents ne sont pas une
 > validation de production ni une validation native Illustrator.
+
+## Page Entraînement IA
+
+La branche `codex/ai-training-backend` ajoute `/entrainement` au même frontend et
+au même backend. Suivre [PAGE-ENTRAINEMENT.md](PAGE-ENTRAINEMENT.md) pour intégrer
+ce point d’entrée PHP (ou la route autonome) et vérifier les fonctionnalités.
+La page ne nécessite aucune nouvelle clé dans le navigateur.

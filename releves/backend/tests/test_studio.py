@@ -88,6 +88,12 @@ def test_imports_paddle_res_qwen_no_coordinates_rtmdet_no_equipment():
     assert not q['annotations'] and len(q['observations'])==1
     r=normalise('rtmdet',{'labels':[9],'scores':[.9],'bboxes':[[1,1,3,3]]},'d',1,1000,500)
     assert r['annotations']==[] and r['observations'][0]['equipment_created']==0
+    assert r['proposals'][0]['source_class']==9
+    assert r['proposals'][0]['category'] is None and r['proposals'][0]['anchor'] is None
+    assert r['proposals'][0]['bbox']=={'x':.001,'y':.002,'w':.002,'h':.004}
+    outside=normalise('rtmdet',{'labels':[9],'scores':[.9],'bboxes':[[1,1,3000,3]]},'d',1,1000,500)
+    assert outside['proposals']==[]
+    with pytest.raises(ValueError):normalise('rtmdet',{'labels':['FIRE'],'scores':[.9],'bboxes':[[1,1,3,3]]},'d',1,1000,500)
     with pytest.raises(ValueError):normalise('paddleocr',raw,'d',1,0,500)
     with pytest.raises(ValueError):normalise('paddleocr',{'rec_texts':['x'],'rec_scores':[]},'d',1,1000,500)
 

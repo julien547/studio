@@ -9,6 +9,7 @@ import type { Annotation, Box, Library, Project, Review, State } from "./types";
 import { AdvancedApp } from "./main";
 import "./studio.css";
 import { GpuPanel, gpuLabels } from "./GpuPanel";
+import { TrainingPage } from "./training/TrainingPage";
 
 type User = { login: string; role: string };
 type Entry = {
@@ -144,6 +145,15 @@ function Root() {
       <p className="loading">
         <a href="/">Se connecter à DOEMO Studio</a>
       </p>
+    );
+  if (window.location.pathname.replace(/\/$/, "") === "/entrainement")
+    return (
+      <TrainingPage
+        user={user}
+        onBack={() => {
+          window.location.href = "/releves/";
+        }}
+      />
     );
   if (advanced)
     return (
@@ -553,6 +563,18 @@ function Studio({
           ))}
         </select>
         <button onClick={() => setShowCreate(true)}>＋ Nouveau projet</button>
+        {["admin", "administration"].includes(user.role) && (
+          <button
+            onClick={() =>
+              void run("Enregistrement…", async () => {
+                await editor.save();
+                window.location.href = "/entrainement";
+              })
+            }
+          >
+            Entraînement IA
+          </button>
+        )}
         {p && (
           <>
             <label className="file-button">

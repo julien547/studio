@@ -10,6 +10,14 @@ SetEnv DOEMO_RELEVES_DIST /opt/doemo-studio/src/releves/dist
     Require all granted
 </Directory>
 
+# Nouvelle page administrative, même build React et même relais API.
+# Publier uniquement entrainement/index.php dans le répertoire public correspondant.
+<Directory /var/www/studio/entrainement>
+    Options -Indexes
+    DirectoryIndex index.php
+    Require all granted
+</Directory>
+
 # Autoriser le fond importe et les exports blob uniquement sur le nouvel atelier.
 <Location /releves/>
     Header always set Content-Security-Policy "default-src 'self'; img-src 'self' blob: data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'"

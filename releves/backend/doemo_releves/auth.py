@@ -125,6 +125,8 @@ def standalone(root=None, origin=None, dist=None):
         return RedirectResponse('/releves/')
 
     @app.get('/releves/')
+    @app.get('/entrainement')
+    @app.get('/entrainement/')
     def index():
         if not (build/'index.html').is_file():
             return HTMLResponse('Construire le frontend : npm --prefix releves/web run build',status_code=503)

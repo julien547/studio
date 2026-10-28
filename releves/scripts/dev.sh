@@ -15,7 +15,7 @@ if test -e "$DOEMO_RELEVES_SOCKET"; then
   echo 'Le socket existe déjà. Vérifier le service en cours avant de le supprimer ou redémarrer.' >&2
   exit 1
 fi
-for file in index.html style.css login.js favicon.svg logo-studio.png api; do ln -sfn "$repo/$file" "$public_dir/$file"; done
+for file in index.html style.css login.js favicon.svg logo-studio.png api entrainement; do ln -sfn "$repo/$file" "$public_dir/$file"; done
 ln -sfn "$repo/releves/index.php" "$public_dir/releves/index.php"
 ln -sfn "$repo/releves/dist/assets" "$public_dir/releves/assets"
 "$venv/bin/uvicorn" doemo_releves.api:app_factory --factory --uds "$DOEMO_RELEVES_SOCKET" --no-access-log &

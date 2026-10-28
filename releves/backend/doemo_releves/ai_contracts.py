@@ -16,7 +16,7 @@ def normalise(engine, data, document_id, page, width, height):
     res = data.get('res', data)
     if not isinstance(res, dict):
         raise ValueError('Format res non reconnu')
-    annotations, observations, warnings = [], [], []
+    annotations, observations, warnings, proposals = [], [], [], []
     def box(points):
         if not isinstance(points, list) or len(points)<2:
             raise ValueError('Polygone absent')
@@ -70,9 +70,19 @@ def normalise(engine, data, document_id, page, width, height):
                        'boxes_outside_declared_frame':outside}]
         if outside:
             warnings.append('Des boîtes dépassent les dimensions déclarées : vérifier l’image de référence du moteur. Aucune superposition autorisée.')
+        else:
+            # Neutral source classes only. A training editor may copy these for
+            # explicit human categorisation; production apply sees no equipment.
+            for score, source_class, coords in zip(scores, labels, boxes):
+                if type(source_class) is not int or source_class < 0:
+                    raise ValueError('Classe RTMDet invalide')
+                proposals.append({'source_class':source_class,'score':score,
+                    'bbox':Box(x=coords[0]/width,y=coords[1]/height,
+                        w=(coords[2]-coords[0])/width,h=(coords[3]-coords[1])/height).model_dump(),
+                    'document_id':document_id,'page':page,'category':None,'anchor':None})
         warnings.append('Modèle COCO générique : aucune proposition convertie en équipement DOEMO.')
     else:
         raise ValueError('Moteur inconnu')
-    return {'annotations':annotations,'observations':observations,'warnings':warnings,
+    return {'annotations':annotations,'observations':observations,'warnings':warnings,'proposals':proposals,
             'source_frame':{'width':width,'height':height,'origin':'top_left','unit':'px'},
             'score_semantics':'uncalibrated_model_score','human_validation_required':True}

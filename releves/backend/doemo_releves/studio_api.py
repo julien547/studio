@@ -144,8 +144,8 @@ def attach(app, store, actor, admin, get, doc):
     def jobs(ident: str, who=Depends(actor)):
         get(ident,who)
         with store.connect() as c:
-            rows=c.execute('SELECT id,status,stage,error,attempts,created,updated,result FROM jobs WHERE project_id=? ORDER BY created DESC LIMIT 100',(ident,))
-            return [dict(dict(r), result=json.loads(r['result']) if r['result'] else None) for r in rows]
+            rows=c.execute('SELECT id,status,stage,error,attempts,created,updated,payload,result FROM jobs WHERE project_id=? ORDER BY created DESC LIMIT 100',(ident,))
+            return [dict(dict(r), payload={k:v for k,v in json.loads(r['payload']).items() if k in ('engine','document_id','page')}, result=json.loads(r['result']) if r['result'] else None) for r in rows]
 
     @app.post('/projects/{ident}/jobs/{job_id}/apply')
     def apply_analysis(ident: str, job_id: str, data: AcceptAnalysis, who=Depends(actor)):

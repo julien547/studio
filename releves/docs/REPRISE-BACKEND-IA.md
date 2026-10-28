@@ -1,7 +1,9 @@
 # Reprise du backend IA — audit distant encore requis
 
-Le dernier cahier des charges confie le frontend à une autre session. Cette livraison
-est **backend uniquement**. Lire [le contrat partagé](CONTRAT-ENTRAINEMENT-IA.md) et
+La responsabilité de cette session a été clarifiée par l’utilisateur : **développer
+la page Entraînement ET son backend**. La session de déploiement s’occupe seule des
+serveurs. Lire [la livraison de la page](PAGE-ENTRAINEMENT.md),
+[le contrat partagé](CONTRAT-ENTRAINEMENT-IA.md) et
 [l’OpenAPI](api/training-openapi.json). Les capacités réelles, pas la présence d’une
 route, déterminent quels boutons peuvent être activés.
 
@@ -136,3 +138,10 @@ conflits, murs/ouvertures, groupes de splits, images/transcriptions exportées,
 artefacts/hash, référentiel Qwen et refus des opérations GPU indisponibles.
 Aucun entraînement réel, arrêt/redémarrage Pod, build Docker ni promotion d’un modèle
 n’a été exécuté dans cette session.
+
+La page React `/entrainement` est maintenant raccordée aux API : import,
+corrections, validation/rejet, datasets, exports, référentiel Qwen, analyses
+existantes et supervision GPU. Validation locale complémentaire : build TypeScript,
+8 tests de géométrie, 5 parcours Playwright avec vrai backend temporaire (dont
+redémarrage du processus, conflit de révision, restriction administrateur, murs,
+implantations distinctes et résultats RTMDet rejoués sans appel GPU).

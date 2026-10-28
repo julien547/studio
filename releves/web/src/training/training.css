@@ -1,0 +1,435 @@
+.training-shell {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  min-height: 100vh;
+  background: #f5f6f8;
+}
+.training-sidebar {
+  background: #202b40;
+  color: #eff1fa;
+  padding: 28px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.training-brand {
+  color: white;
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+.training-brand span {
+  font-size: 13px;
+  font-weight: 400;
+}
+.training-sidebar > button,
+.training-sidebar nav button {
+  background: transparent;
+  color: #e0e6f3;
+  border-color: #485267;
+  text-align: left;
+}
+.training-sidebar nav {
+  display: grid;
+  gap: 8px;
+}
+.training-sidebar nav button {
+  padding: 14px 12px;
+}
+.training-sidebar nav button.active {
+  background: #6850bc;
+  border-color: #a491df;
+  color: white;
+}
+.training-sidebar small {
+  display: block;
+  margin-top: 5px;
+  font-weight: 400;
+  color: #d2d8e5;
+  line-height: 1.5;
+}
+.training-sidebar-footer {
+  margin-top: auto;
+  font-size: 12px;
+  line-height: 1.8;
+  color: #bac4d8;
+}
+.training-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 11px;
+  font-weight: 700;
+  color: #7b8192;
+}
+.training-sidebar .training-eyebrow {
+  color: #bcc7dd;
+  margin: 12px 0 0;
+}
+.training-main {
+  padding: 32px;
+  min-width: 0;
+  max-width: 1800px;
+  width: 100%;
+}
+.training-main h1 {
+  font-size: 32px;
+  letter-spacing: -0.04em;
+  margin: 8px 0;
+}
+.training-main header > p:last-child {
+  color: #657086;
+  margin-bottom: 28px;
+}
+.training-engine-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.training-engine-title h2 {
+  font-size: 22px;
+  margin: 0;
+}
+.training-engine-title p {
+  color: #657086;
+  font-size: 13px;
+}
+.training-badge {
+  font-size: 11px;
+  border: 1px solid #ded8f1;
+  border-radius: 20px;
+  padding: 6px 10px;
+  background: #f0ecfa;
+  color: #5f488d;
+  white-space: nowrap;
+}
+.training-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid #dde1e8;
+  padding: 16px 0;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.training-tabs button {
+  background: transparent;
+  border-color: transparent;
+  font-size: 14px;
+}
+.training-tabs .active {
+  background: #eee8ff;
+  border-color: #d2c5fa;
+}
+.training-content {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.training-content:disabled {
+  opacity: 0.7;
+}
+.training-toolbar {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+.training-toolbar.compact {
+  gap: 7px;
+  padding: 12px;
+  background: #fafbfc;
+  margin: 0;
+  border-bottom: 1px solid #dce0e8;
+}
+.training-toolbar.compact button {
+  padding: 7px 9px;
+}
+.training-toolbar.compact label {
+  font-size: 10px;
+}
+.training-toolbar.compact input[type="range"] {
+  max-width: 100px;
+}
+.training-inline {
+  display: flex;
+  align-items: end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.training-check {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 12px;
+  margin: 14px 0;
+}
+.training-check input {
+  width: auto;
+}
+.training-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  border: 1px solid #dce0e8;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  margin: 22px 0;
+  min-height: 400px;
+}
+.training-canvas {
+  min-width: 0;
+  background: #e7eaf0;
+}
+.training-canvas .plan-scroll {
+  height: 560px;
+  min-height: 320px;
+  max-height: 75vh;
+  background: #fff;
+}
+.training-properties {
+  padding: 16px;
+  border-left: 1px solid #dce0e8;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+.training-properties h3 {
+  margin: 0;
+}
+.training-labels {
+  max-height: 220px;
+  overflow: auto;
+  display: grid;
+  gap: 5px;
+}
+.training-labels button {
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.training-properties p {
+  font-size: 12px;
+  color: #657086;
+}
+.training-box-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.training-card {
+  border: 1px solid #e0e4eb;
+  border-radius: 10px;
+  padding: 20px;
+  background: white;
+  margin: 18px 0;
+  min-width: 0;
+}
+.training-card h3,
+.training-card h4 {
+  margin-top: 0;
+}
+.training-card button + button {
+  margin-left: 8px;
+}
+.training-fields {
+  display: grid;
+  gap: 16px;
+}
+.training-fields > button {
+  justify-self: start;
+}
+.training-fields p {
+  margin: 0;
+  font-size: 13px;
+  color: #657086;
+}
+.training-fields textarea {
+  min-height: 90px;
+}
+.training-empty {
+  border: 1px dashed #ccd1df;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  color: #6d7689;
+  background: #fafbfc;
+}
+.training-warning {
+  padding: 16px;
+  background: #fff7e8;
+  color: #775518;
+  border: 1px solid #eed8ae;
+  border-radius: 8px;
+  font-size: 13px;
+  margin: 16px 0;
+}
+.training-error {
+  padding: 14px;
+  background: #fff0ef;
+  border: 1px solid #f0c7c4;
+  color: #9b3430;
+  border-radius: 8px;
+}
+.training-success {
+  padding: 12px;
+  color: #21684f;
+  background: #e6f4ed;
+  border-radius: 8px;
+}
+.training-table-scroll {
+  overflow-x: auto;
+}
+.training-main table {
+  border-collapse: collapse;
+  width: 100%;
+  background: white;
+  font-size: 12px;
+}
+.training-main th {
+  text-align: left;
+  font-size: 11px;
+  color: #768197;
+}
+.training-main th,
+.training-main td {
+  padding: 13px;
+  border-bottom: 1px solid #e1e5ec;
+}
+.training-main td small {
+  display: block;
+  font-size: 10px;
+  color: #768197;
+  margin-top: 4px;
+}
+.training-main pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  max-height: 300px;
+  overflow: auto;
+  font-size: 11px;
+  background: #f4f5f8;
+  padding: 14px;
+  border-radius: 8px;
+}
+.training-main small {
+  overflow-wrap: anywhere;
+}
+.training-hint {
+  font-size: 12px;
+  color: #697286;
+  padding: 0 12px;
+}
+.training-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+.training-stats {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  margin: 12px 0;
+}
+.training-main summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+.training-denied {
+  padding: 40px;
+}
+.training-main progress {
+  width: 100%;
+  max-width: 400px;
+}
+.training-main .gpu-panel {
+  margin-bottom: 18px;
+}
+.training-main input[type="checkbox"] {
+  accent-color: #684acf;
+}
+@media (max-width: 1100px) {
+  .training-shell {
+    grid-template-columns: 190px minmax(0, 1fr);
+  }
+  .training-main {
+    padding: 20px;
+  }
+  .training-editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .training-properties {
+    border-left: 0;
+    border-top: 1px solid #dce0e8;
+  }
+  .training-labels {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .training-shell {
+    display: block;
+  }
+  .training-sidebar {
+    padding: 16px;
+  }
+  .training-sidebar nav {
+    grid-template-columns: 1fr 1fr;
+  }
+  .training-sidebar-footer {
+    display: none;
+  }
+  .training-main {
+    padding: 16px;
+  }
+  .training-engine-title {
+    align-items: start;
+    flex-direction: column;
+  }
+  .training-tabs {
+    gap: 0;
+  }
+  .training-toolbar > label {
+    min-width: 130px;
+    flex: 1;
+  }
+  .training-canvas .plan-scroll {
+    height: 400px;
+  }
+}
+/* Scope the host application's generic header/nav rules to this workspace. */
+.training-main > header {
+  display: block;
+  position: static;
+  height: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.training-sidebar nav {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  position: static;
+  height: auto;
+  box-shadow: none;
+}
+.training-sidebar nav button {
+  display: block;
+  width: 100%;
+  height: auto;
+  white-space: normal;
+}
+.training-sidebar nav button small {
+  display: block;
+}
+.training-tabs {
+  background: transparent;
+  position: static;
+  height: auto;
+  box-shadow: none;
+}

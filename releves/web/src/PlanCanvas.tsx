@@ -13,6 +13,7 @@ export type Tool =
   | "annotation"
   | "floor"
   | "anchor"
+  | "line"
   | "marquee";
 type Props = {
   image: string;
@@ -30,11 +31,22 @@ type Props = {
   onBox: (b: Box) => void;
   onAnchor: (p: Point) => void;
   onMove: (id: string, patch: Partial<Annotation>) => void;
+  centerlines?: Record<string, [Point, Point][]>;
+  onSegment?: (a: Point, b: Point) => void;
+  onVertex?: (
+    id: string,
+    segment: number,
+    vertex: number,
+    point: Point,
+  ) => void;
+  showImage?: boolean;
+  proposals?: { bbox: Box; text: string }[];
 };
 export function PlanCanvas(p: Props) {
   const group = useRef<SVGGElement>(null),
     container = useRef<HTMLDivElement>(null);
   const [draft, setDraft] = useState<Box | null>(null);
+  const [lineDraft, setLineDraft] = useState<[Point, Point] | null>(null);
   const drag = useRef<{
     start: Point;
     client: Point;
@@ -42,6 +54,7 @@ export function PlanCanvas(p: Props) {
     anchor?: boolean;
     box?: Box;
     point?: Point;
+    vertex?: string | null;
     scroll: [number, number];
   } | null>(null);
   const b = p.region || wholePage,
@@ -78,6 +91,7 @@ export function PlanCanvas(p: Props) {
       anchor: element?.getAttribute("data-anchor") === "true",
       box: a?.bbox,
       point: a?.anchor || undefined,
+      vertex: element?.getAttribute("data-vertex"),
       scroll: [container.current!.scrollLeft, container.current!.scrollTop],
     };
     e.currentTarget.setPointerCapture(e.pointerId);
@@ -94,15 +108,21 @@ export function PlanCanvas(p: Props) {
     }
     if (["annotation", "floor", "marquee"].includes(p.tool))
       setDraft(rectangle(d.start, point(e)));
+    if (p.tool === "line") setLineDraft([d.start, point(e)]);
   }
   function up(e: React.PointerEvent<SVGSVGElement>) {
     const d = drag.current;
     if (!d) return;
     drag.current = null;
     setDraft(null);
+    setLineDraft(null);
     const q = point(e),
       box = rectangle(d.start, q),
       distance = Math.hypot(e.clientX - d.client.x, e.clientY - d.client.y);
+    if (p.tool === "line") {
+      if (distance > 3) p.onSegment?.(d.start, q);
+      return;
+    }
     if (p.tool === "anchor") {
       p.onAnchor(q);
       return;
@@ -129,7 +149,10 @@ export function PlanCanvas(p: Props) {
       return;
     }
     if (p.tool === "select" && d.id && distance > 3) {
-      if (d.anchor && d.point)
+      if (d.vertex) {
+        const [segment, vertex] = d.vertex.split(":").map(Number);
+        p.onVertex?.(d.id, segment, vertex, q);
+      } else if (d.anchor && d.point)
         p.onMove(d.id, {
           anchor: clampPoint({
             x: d.point.x + q.x - d.start.x,
@@ -160,13 +183,39 @@ export function PlanCanvas(p: Props) {
         onPointerCancel={() => {
           drag.current = null;
           setDraft(null);
+          setLineDraft(null);
         }}
       >
         <g
           ref={group}
           transform={`${transforms[p.rotation]} translate(${-b.x * w},${-b.y * h})`}
         >
-          <image href={p.image} x={0} y={0} width={w} height={h} />
+          {p.showImage !== false && (
+            <image href={p.image} x={0} y={0} width={w} height={h} />
+          )}
+          {p.proposals?.map((proposal, i) => (
+            <g key={i} pointerEvents="none">
+              <rect
+                x={proposal.bbox.x * w}
+                y={proposal.bbox.y * h}
+                width={proposal.bbox.w * w}
+                height={proposal.bbox.h * h}
+                fill="none"
+                stroke="#2477ad"
+                strokeDasharray="5 3"
+                strokeWidth={2}
+                vectorEffect="non-scaling-stroke"
+              />
+              <text
+                x={proposal.bbox.x * w}
+                y={proposal.bbox.y * h - 5}
+                fontSize={Math.max(12, vw / 65)}
+                fill="#2477ad"
+              >
+                {proposal.text}
+              </text>
+            </g>
+          ))}
           {p.annotations.map((a, i) => {
             const active = p.selected.includes(a.id),
               color =
@@ -179,7 +228,43 @@ export function PlanCanvas(p: Props) {
                       : "#c47a11";
             return (
               <g key={a.id} opacity={a.status === "rejected" ? 0.4 : 1}>
-                {p.showBoxes && (
+                {p.centerlines?.[a.id]?.map(([start, end], segment) => (
+                  <g key={segment} data-id={a.id}>
+                    <line
+                      x1={start.x * w}
+                      y1={start.y * h}
+                      x2={end.x * w}
+                      y2={end.y * h}
+                      stroke="transparent"
+                      strokeWidth={18}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    <line
+                      x1={start.x * w}
+                      y1={start.y * h}
+                      x2={end.x * w}
+                      y2={end.y * h}
+                      stroke="black"
+                      strokeWidth={3}
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    {active &&
+                      [start, end].map((point, vertex) => (
+                        <circle
+                          key={vertex}
+                          data-id={a.id}
+                          data-vertex={`${segment}:${vertex}`}
+                          cx={point.x * w}
+                          cy={point.y * h}
+                          r={Math.max(5, vw / 150)}
+                          fill="white"
+                          stroke="#6549d5"
+                          vectorEffect="non-scaling-stroke"
+                        />
+                      ))}
+                  </g>
+                ))}
+                {p.showBoxes && !p.centerlines?.[a.id]?.length && (
                   <g data-id={a.id}>
                     <rect
                       x={a.bbox.x * w}
@@ -233,6 +318,17 @@ export function PlanCanvas(p: Props) {
               </g>
             );
           })}
+          {lineDraft && (
+            <line
+              x1={lineDraft[0].x * w}
+              y1={lineDraft[0].y * h}
+              x2={lineDraft[1].x * w}
+              y2={lineDraft[1].y * h}
+              stroke="black"
+              strokeWidth={3}
+              vectorEffect="non-scaling-stroke"
+            />
+          )}
           {draft && (
             <rect
               x={draft.x * w}

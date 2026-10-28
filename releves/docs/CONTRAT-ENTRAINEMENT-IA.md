@@ -1,14 +1,18 @@
 # Contrat partagé — services d’apprentissage DOEMO Studio
 
-Version `doemo.training/1`. Ce chantier est **backend uniquement**, conformément au
-complément utilisateur : une autre session réalise `/entrainement`. Aucun frontend
-n’a été remplacé. Le backend s’intègre à FastAPI/SQLite existants sur OVH ; il ne
-crée pas une seconde application et ne migre pas sans besoin vers PostgreSQL.
+Version `doemo.training/1`. Cette livraison couvre **la page `/entrainement` et son
+backend**, conformément à la correction explicite de l’utilisateur. La session de
+déploiement conserve seule la responsabilité des serveurs OVH et RunPod. Le module
+réutilise React, l’éditeur SVG et FastAPI/SQLite existants.
+
+Voir [la procédure de livraison de la page](PAGE-ENTRAINEMENT.md) pour les fichiers,
+les routes publiques, les tests et les limites des services GPU.
 
 ## État exact de cette livraison
 
 | Fonction | État |
 | --- | --- |
+| Page administrative, quatre espaces moteur / quatre onglets, éditeur partagé | Implémenté ; parcours navigateur testés sur le vrai backend local |
 | Exemples par moteur, catégories, corrections, consentement, validation, rejet et historique | Implémenté et testé sur CPU |
 | Versions immuables de datasets, groupes bâtiment/document, exports avec vraies images | Implémenté et testé sur CPU |
 | Qwen : versions du référentiel et recherche lexicale | Implémenté et testé ; aucun poids modifié |
@@ -84,6 +88,14 @@ Les analyses réutilisent la file `/projects/{project_id}/jobs`. Leurs résultat
 séparés des corrections ; le frontend doit les présenter comme propositions puis
 copier explicitement les éléments choisis dans un exemple d’apprentissage.
 Le moteur COCO RTMDet de base ne doit pas attribuer des catégories DOEMO par défaut.
+Ses boîtes sont exposées dans `result.proposals` avec `source_class`, `score`,
+`bbox` normalisée, `document_id`, `page`, `category=null` et `anchor=null`.
+Elles ne sont jamais ajoutées aux équipements de production. La page les superpose
+en bleu et n’en fait des brouillons qu’après copie explicite sous une catégorie
+choisie par l’administrateur ; leur validation et leur implantation restent manuelles.
+Des boîtes hors image bloquent toutes les superpositions de cette réponse.
+La liste des analyses expose un `payload` limité à moteur/document/page pour
+retrouver les résultats après rechargement ; les paramètres internes restent privés.
 
 Un exemple porte `engine`, `project_id`, `document_id`, `page`, `floor_id`, `region`,
 `rotation` et `labels`. Coordonnées normalisées dans la page source redressée,

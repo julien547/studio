@@ -147,3 +147,10 @@ npm --prefix releves/web run build
 Les tests du cœur JSX vérifient les calculs, l’échange, SHA-256 et la comparaison des
 placements. Ils **n’exécutent pas le DOM Adobe**. Le test natif E (import réel, calques,
 sauvegarde puis réouverture AI) reste à effectuer dans Illustrator sous licence.
+
+### Page Entraînement IA
+
+Page administrative `/entrainement` avec quatre moteurs et quatre onglets,
+raccordée au backend existant. [Livraison et installation](docs/PAGE-ENTRAINEMENT.md).
+Les capacités GPU indisponibles restent explicites ; la sauvegarde des corrections
+et les datasets fonctionnent sans GPU.
