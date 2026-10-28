@@ -4,6 +4,24 @@
 Ces changements ont été demandés par Julien et sont **en production**. Les redéploiements
 précédents les ont déjà écrasés à deux reprises : merci de **ne pas les remettre**.
 
+## 0. ⛔ STRUCTURE BÂTIMENT (menu du haut › Redessin des murs) — NE PAS REMETTRE
+
+Cette page a été corrigée à la demande de Julien. **Trois choses à ne jamais rétablir :**
+
+1. **Le bandeau** « DOEMO Studio · Essai du redessin architectural · Validation humaine requise »
+   (balise `<header>` de `/var/www/studio/redessin/index.php`) : **supprimé**. Il avait déjà été
+   remis par un redéploiement à 17:08 ; il a dû être retiré une seconde fois.
+2. **La redirection plein écran** (`window.location.href = '/redessin/'`) : elle faisait disparaître
+   le menu et l'application. La page s'affiche maintenant **sous le menu**, dans un `iframe`
+   (`studio-host/StructureBatiment.jsx` + `studio-host/FramedApp.jsx`, dépôt `doemo-app`,
+   branche `feat/studio-host`, commit `372a31b`).
+3. **Les en-têtes de cadrage** de `/etc/apache2/conf-available/doemo-redessin.conf`
+   (`X-Frame-Options SAMEORIGIN`, `frame-ancestors 'self'`, uniquement pour `/redessin/`) :
+   sans eux, le cadre reste vide.
+
+Contrôle après déploiement : `grep -c "<header>" /var/www/studio/redessin/index.php` doit afficher `0`,
+et un clic sur « Structure bâtiment » doit laisser le menu du haut affiché.
+
 ## 1. Relevé intelligent : pas de tableau de bord, pas de fenêtre de création
 
 - L'application arrive **directement sur « Importer un relevé »** : elle ouvre le dernier projet
