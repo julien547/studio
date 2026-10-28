@@ -70,3 +70,17 @@ locales vérifiées et les tests de démarrage réussis. 64 tests locaux passent
 tests d’inférence utilisent des doubles. Le branchement réel reste à faire suivant
 la [transmission OVH–RunPod](../reconstruction/ovh/RACCORDEMENT_RUNPOD.md), par la
 session désignée pour déployer. Aucun déploiement ni appel GPU réel effectué ici.
+
+## Axes médians 0.3.2
+
+L’extraction conserve maintenant les intervalles de bords non utilisés après un
+premier appariement et n’étend pas les axes au-delà des observations communes.
+L’éditeur ajoute la correction humaine « Deux bords → un axe médian », avec
+conservation des portions restantes, protection des ouvertures et annuler/refaire.
+88 tests Python et le parcours Chromium de cette correction passent.
+
+La page 1 produit 381 propositions non validées. Les doubles traces et les faux
+candidats ne sont pas tous résolus automatiquement : aucune qualité architecturale
+n’est déduite du nombre de propositions. Voir la
+[recette et les limites](../reconstruction/ovh/CORRECTION_AXES.md). La segmentation
+spécialisée et les inférences réelles sur RunPod restent à qualifier séparément.

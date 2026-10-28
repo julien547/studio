@@ -1,6 +1,6 @@
-# Vérification de la livraison OVH 0.3.1
+# Vérification de la livraison OVH 0.3.2
 
-Le 28 octobre 2026, 64 tests Python passent. Ils couvrent les axes noirs, les
+Le 28 octobre 2026, 88 tests Python passent. Ils couvrent les axes noirs, les
 ouvertures, la validation humaine, les contrats d’inférence, l’authentification
 du worker, les reprises après interruption, l’isolation des projets par utilisateur
 et la détection des sauvegardes concurrentes. Les tests d’IA utilisent des doubles ;
@@ -43,3 +43,10 @@ Restent à effectuer par la session de déploiement : installation et recette su
 le VPS OVH réel, vérification du transport RunPod, inférences réelles des trois
 adaptateurs, coordination du contrôleur d’inactivité, et contrôle dans Illustrator.
 Le modèle spécialisé de murs reste à qualifier avant tout redessin sémantique.
+
+La [recette 0.3.2](CORRECTION_AXES.md) ajoute la conservation des portions de bords
+non utilisées et la correction explicite « Deux bords → un axe médian ». Le parcours
+Chromium de cette commande passe avec annuler/refaire, conservation des extrémités
+restantes et protection des ouvertures. Le nouvel essai page 1 produit 381
+propositions non validées. Les 327 propositions décrites plus haut concernent
+le parcours complet de la livraison initiale ; aucun taux de qualité n’est déduit.

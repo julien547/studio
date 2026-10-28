@@ -65,48 +65,134 @@ def split_wall(w, fraction):
 
 
 def pair_boundaries(lines, min_thickness=1., max_thickness=24., min_length=12.):
-    """Pair observed parallel sides; retain only their common extent, at any angle.
+    """Pair observed sides over unused intervals, preserving gaps and all orientations.
 
-    Furniture/frames can be paired too. These are candidates, never semantic truth.
+    A long side may support several shorter opposite sides. Consuming one pairing
+    never consumes its unused tails. Furniture/frames remain ambiguous candidates;
+    neither semantic identity nor a metric scale is inferred here.
     """
-    candidates, used = [], set()
-    lines = sorted(lines, key=lambda l: -distance(l[0], l[1]))[:4000]
+    if (not all(math.isfinite(v) for v in (min_thickness, max_thickness, min_length))
+            or not 0 < min_thickness <= max_thickness or min_length <= 0):
+        raise ValueError('Tolérances géométriques invalides')
+    # Canonical endpoints make equal-length and reversed inputs deterministic.
+    canonical = set()
+    for endpoints in lines:
+        if len(endpoints) != 2 or any(len(p) != 2 or not all(math.isfinite(v) for v in p) for p in endpoints):
+            raise ValueError('Bord invalide')
+        a, b = sorted(tuple(p) for p in endpoints)
+        if distance(a, b) >= min_length:
+            canonical.add((a, b))
+    lines = sorted(canonical, key=lambda line: (-distance(*line), line))[:4000]
+    lengths = [distance(*line) for line in lines]
+    free = [[(0., 1.)] for _ in lines]
+    candidates = []
+
+    def consume(intervals, lo, hi):
+        out = []
+        for start, end in intervals:
+            if start < min(end, lo):
+                out.append((start, min(end, lo)))
+            if max(start, hi) < end:
+                out.append((max(start, hi), end))
+        return out
+
     for i, (a, b) in enumerate(lines):
-        if i in used:
-            continue
-        length = distance(a, b)
-        if length < min_length:
+        length = lengths[i]
+        if not any((hi-lo)*length >= min_length for lo, hi in free[i]):
             continue
         ux, uy = (b[0]-a[0])/length, (b[1]-a[1])/length
-        best = None
+        partners = []
         for j in range(i+1, len(lines)):
-            if j in used:
+            if not any((hi-lo)*lengths[j] >= min_length for lo, hi in free[j]):
                 continue
             c, d = lines[j]
-            other = distance(c, d)
-            if other < min_length:
+            if abs(ux*(d[1]-c[1])-uy*(d[0]-c[0]))/lengths[j] > math.sin(math.radians(1)):
                 continue
-            if abs(ux*(d[1]-c[1])-uy*(d[0]-c[0]))/other > math.sin(math.radians(1)):
+            c0, c1 = [(p[0]-a[0])*ux+(p[1]-a[1])*uy for p in (c, d)]
+            off0, off1 = [ux*(p[1]-a[1])-uy*(p[0]-a[0]) for p in (c, d)]
+            if (abs(off0-off1) > .5 or off0*off1 <= 0
+                    or not all(min_thickness <= abs(off) <= max_thickness for off in (off0, off1))):
                 continue
-            off = ux*(c[1]-a[1])-uy*(c[0]-a[0])
-            off2 = ux*(d[1]-a[1])-uy*(d[0]-a[0])
-            if abs(off-off2) > .5 or not min_thickness <= abs(off) <= max_thickness:
+            lo, hi = max(0., min(c0, c1)), min(length, max(c0, c1))
+            if hi-lo < min_length or (hi-lo)/min(length, lengths[j]) < .8:
                 continue
-            c0, c1 = sorted(((c[0]-a[0])*ux+(c[1]-a[1])*uy, (d[0]-a[0])*ux+(d[1]-a[1])*uy))
-            lo, hi = max(0, c0), min(length, c1)
-            if hi-lo < min_length or (hi-lo)/min(length, other) < .8:
-                continue
-            score = abs(off)
-            if best is None or score < best[0]:
-                best = (score, j, lo, hi, off)
-        if best:
-            thickness, j, lo, hi, off = best
-            p = [a[0]+ux*lo-uy*off/2, a[1]+uy*lo+ux*off/2]
-            q = [a[0]+ux*hi-uy*off/2, a[1]+uy*hi+ux*off/2]
-            candidates.append(wall(p,q,thickness,method="parallel_boundaries",confidence=.45,
-                                   evidence=[{"lines": [i,j], "sides": [lines[i],lines[j]]}]))
-            used.update((i,j))
+            partners.append((abs((off0+off1)/2), j, c0, c1))
+        for _, j, c0, c1 in sorted(partners):
+            c, d = lines[j]
+            # Intersect the remaining intervals on both observed sides. Endpoints
+            # are not extended and distinct intervals are never joined.
+            overlaps = []
+            for start, end in free[i]:
+                for other_start, other_end in free[j]:
+                    projected = sorted((c0+(c1-c0)*other_start, c0+(c1-c0)*other_end))
+                    lo, hi = max(start*length, projected[0]), min(end*length, projected[1])
+                    if hi-lo >= min_length:
+                        overlaps.append((lo, hi))
+            for lo, hi in overlaps:
+                first = [[a[0]+ux*t, a[1]+uy*t] for t in (lo, hi)]
+                fractions = [(t-c0)/(c1-c0) for t in (lo, hi)]
+                second = [[c[k]+(d[k]-c[k])*t for k in (0, 1)] for t in fractions]
+                median = [[(p[k]+q[k])/2 for k in (0, 1)] for p, q in zip(first, second)]
+                widths = [distance(p, q) for p, q in zip(first, second)]
+                first_range = [max(0., lo/length), min(1., hi/length)]
+                second_range = [max(0., min(fractions)), min(1., max(fractions))]
+                candidates.append(wall(*median, sum(widths)/2, method='parallel_boundaries', confidence=0.,
+                    evidence=[{'lines': [i, j], 'sides': [lines[i], lines[j]],
+                               'source_intervals': [first_range, second_range], 'paired_sides': [first, second],
+                               'algorithm': 'unused_boundary_intervals/1', 'semantic_status': 'unknown',
+                               'review': ['wall_or_symbol', 'junctions', 'openings']}]))
+                free[i] = consume(free[i], *first_range)
+                free[j] = consume(free[j], *second_range)
+            if not any((end-start)*length >= min_length for start, end in free[i]):
+                break
     return candidates
+
+
+def merge_parallel_faces(w1, w2, max_separation=24.):
+    """Explicit human interpretation of two traces as faces of the SAME wall.
+
+    Replace only their common observed extent by one median; preserve unmatched
+    tails as pending traces. Openings require separate review, never implicit union.
+    """
+    if w1['id'] == w2['id'] or w1['openings'] or w2['openings']:
+        raise ValueError('Choisir deux traces distinctes sans ouverture renseignée')
+    if any(w['status'] == 'rejected' for w in (w1, w2)):
+        raise ValueError('Trace rejetée')
+    if not math.isfinite(max_separation) or max_separation <= 0:
+        raise ValueError('Distance maximale invalide')
+    a, b, c, d = w1['a'], w1['b'], w2['a'], w2['b']
+    length, other = distance(a, b), distance(c, d)
+    ux, uy = (b[0]-a[0])/length, (b[1]-a[1])/length
+    if abs(ux*(d[1]-c[1])-uy*(d[0]-c[0]))/other > math.sin(math.radians(1)):
+        raise ValueError('Les traces ne sont pas parallèles (tolérance 1 degré)')
+    projected = [(p[0]-a[0])*ux+(p[1]-a[1])*uy for p in (c, d)]
+    lo, hi = max(0., min(projected)), min(length, max(projected))
+    if hi-lo < 1e-6:
+        raise ValueError('Aucune portion commune ; le passage reste ouvert')
+    ranges = [[lo/length, hi/length], [(t-projected[0])/(projected[1]-projected[0]) for t in (lo, hi)]]
+    faces = [axis_points(w1, *ranges[0]), axis_points(w2, *ranges[1])]
+    offsets = [ux*(q[1]-p[1])-uy*(q[0]-p[0]) for p, q in zip(*faces)]
+    if (offsets[0]*offsets[1] <= 0 or min(map(abs, offsets)) < 1e-6
+            or max(map(abs, offsets)) > max_separation or abs(offsets[0]-offsets[1]) > .5):
+        raise ValueError('Séparation des traces ambiguë ou supérieure à la tolérance')
+    median = [[(p[k]+q[k])/2 for k in (0, 1)] for p, q in zip(*faces)]
+    center = wall(*median, sum(map(abs, offsets))/2, method='manual_parallel_faces',
+                  evidence=[{'source_walls': [w1['id'], w2['id']], 'paired_sides': faces,
+                             'source_intervals': ranges, 'human_interpretation': 'same_wall_faces'}])
+    remainders = []
+    for w, interval in zip((w1, w2), ranges):
+        start, end = sorted(max(0., min(1., t)) for t in interval)
+        parts = [(0., start), (end, 1.)]
+        for rlo, rhi in parts:
+            if (rhi-rlo)*distance(w['a'], w['b']) < 1e-6:
+                continue
+            piece = copy.deepcopy(w)
+            piece['id'] = uuid.uuid4().hex
+            piece['a'], piece['b'] = axis_points(w, rlo, rhi)
+            piece['status'] = 'pending'
+            piece['evidence'].append({'unmerged_remainder_of': w['id'], 'source_interval': [rlo, rhi]})
+            remainders.append(piece)
+    return [center, *remainders]
 
 
 def connect(w1, end1, w2, end2, max_distance):
@@ -217,6 +303,10 @@ def edit(doc, level_id, operation, actor):
         elif op=='split':
             parts=split_wall(w,operation['fraction'])
             level['walls'][level['walls'].index(w):level['walls'].index(w)+1]=parts
+        elif op=='merge_parallel_faces':
+            other=next(x for x in level['walls'] if x['id']==operation['other_id'])
+            pieces=merge_parallel_faces(w,other,operation.get('max_separation',24.))
+            level['walls']=[x for x in level['walls'] if x['id'] not in (w['id'],other['id'])]+pieces
         elif op=='update':
             if w['openings'] and any(k in operation for k in ('a','b')):
                 da=[operation.get('a',w['a'])[i]-w['a'][i] for i in (0,1)]

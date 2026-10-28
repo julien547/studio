@@ -1,4 +1,4 @@
-# DOEMO Reconstruction architecturale 0.3.1
+# DOEMO Reconstruction architecturale 0.3.2
 
 Prototype local ajouté à DOEMO Studio. Le modèle indépendant contient des axes, épaisseurs et ouvertures de murs ; les SVG contiennent des axes noirs ouverts, sans remplissage, groupés par mur et interrompus aux ouvertures. Toutes les détections sont des propositions à valider. Il ne s’agit pas encore du module complet de production.
 
@@ -12,6 +12,12 @@ de diagnostic utilisant la configuration du service OVH actif. Suivre la
 inférences GPU restent à exécuter par la session de déploiement ; une URL configurée
 ne suffit pas à activer l’analyse. 64 tests locaux passent, dont un parcours des
 appels signés jusqu’aux trois adaptateurs simulés, sans modification des murs.
+
+La version 0.3.2 conserve les portions de bords non utilisées lors d’un appariement,
+au lieu d’écarter un segment entier. Elle ajoute « Deux bords → un axe médian » dans
+l’éditeur : correction explicite sur deux traces du même mur, portions restantes
+conservées, ouvertures protégées, annuler/refaire. Les 88 tests Python passent.
+Voir la [recette et les limites de cette correction](ovh/CORRECTION_AXES.md).
 
 ## Exécution
 
@@ -38,6 +44,11 @@ doemo-reconstruction connector projet.json import-illustrator.json
 - Raster : suppression des pixels colorés, masquage OCR facultatif, détection de segments, recherche de paires de bords parallèles et épaisseur observée. Le scan couleur original reste intégralement disponible.
 - Aucun comblement automatique d’un espace entre deux segments. Les portes et fenêtres sont des intervalles soustraits à un mur. Les axes gardent leur orientation, y compris diagonale. L’épaisseur graphique `stroke_width` ne modifie ni l’axe ni l’épaisseur détectée `thickness` ; cette dernière peut rester inconnue. Les raccordements demandent une vérification humaine.
 - L’édition exige un auteur, journalise avant/après et annule la validation des objets modifiés. Les ouvertures doivent être revérifiées avant de modifier la longueur d’un mur. Un déplacement conserve les fractions de ses ouvertures.
+- Pour deux traces parallèles représentant les faces d’un même mur, sélectionner la
+  première, cliquer « Deux bords → un axe médian », puis sélectionner la seconde.
+  La portion commune devient un axe à valider ; les portions non communes restent
+  disponibles. La commande refuse les ouvertures renseignées et les traces sans
+  recouvrement. Elle n’est jamais lancée automatiquement sur des murs voisins.
 - Les SVG de revue incluent les propositions en traits noirs, marquées `data-status="pending"`. Le halo orange est réservé au contrôle dans l’éditeur et au PNG de comparaison. Les SVG validés incluent uniquement les murs approuvés. Le calque Référence est présent mais masqué. Les autres calques sont préparés ; les portes sont actuellement des réservations de passages, sans vantail inventé. Les escaliers, fenêtres détaillées et pièces ne sont pas encore reconstruits automatiquement.
 
 ## Modèles et droits

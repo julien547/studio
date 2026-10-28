@@ -16,6 +16,7 @@
 <div class="row"><button id="opening">Créer une ouverture</button><button id="delete" class="danger">Supprimer</button></div>
 <label>Trait graphique (unités du document) <input type="number" min=".1" max="50" step=".1" id="strokeWidth" value="1"></label><button id="style">Appliquer le trait</button><div class="row"><button id="split">Couper le mur</button><button id="connect">Raccorder la fin B</button><button id="calibrate">Calibrer une cote</button></div>
 <p class="hint">Déplacez un mur en le faisant glisser. Modifiez ses extrémités pour le prolonger. Un raccord exige le choix explicite de deux murs. Toute modification annule leur validation.</p>
+<button id="median">Deux bords → un axe médian</button><p class="hint">À utiliser seulement si deux traces représentent les bords du même mur. L’axe est créé sur leur portion commune ; les parties qui dépassent sont conservées. Le résultat reste à valider.</p>
 <h3>Ouvertures du mur</h3><select id="openingList"></select><div class="row"><button id="editOpening">Corriger</button><button id="removeOpening">Supprimer l’ouverture</button></div><h3>Zones à contrôler</h3><div id="observations" class="hint"></div>
 <h3>Enregistrer</h3><div class="row"><button id="save">Projet JSON</button><button id="svgExport">SVG validé</button></div><div class="row"><button id="draft">SVG de revue</button><button id="training">Corrections validées</button></div><p class="hint">Enregistrez le JSON pour conserver les corrections. L’export SVG validé ne contient que les murs approuvés du niveau affiché. Ouvrez le SVG dans Illustrator pour contrôler les objets.</p>
 </aside><section id="stage"><div id="tools"><button id="add">Ajouter un mur</button><button id="undo">Annuler</button><button id="redo">Refaire</button><label><input id="reference" type="checkbox" checked> Plan original</label><label><input id="candidates" type="checkbox" checked> Propositions</label><label><input id="zones" type="checkbox" checked> Zones à contrôler</label><button id="focus">Cadrer le niveau</button><button id="full">Page entière</button><label>Zoom <input type="range" id="zoom" min="100" max="300" value="100"></label></div><div id="viewport"><svg id="canvas" xmlns="http://www.w3.org/2000/svg"></svg></div><div id="message" role="status">Chargez un projet ou utilisez la page de test incluse.</div></section></main>
@@ -96,7 +97,9 @@ function xy(e){const p=$('canvas').createSVGPoint();p.x=e.clientX;p.y=e.clientY;
 $('canvas').addEventListener('pointerdown',e=>{
  if(!doc)return;const p=xy(e),target=e.target.closest('[data-id]');
  if(mode==='add'){if(!first){first=p;say('Cliquez sur la fin du mur.')}else{const a=first,b=p,t=$('thickness').value===''?null:Number($('thickness').value),id=crypto.randomUUID();mutate({op:'add',a,b,thickness:t},()=>level().walls.push({id,kind:'wall',a,b,thickness:t,status:'pending',confidence:0,method:'manual',evidence:[],openings:[]}));mode=first=null}return}
+ if((mode==='connect'||mode==='median')&&!target)return say('Cliquez sur la seconde trace, ou appuyez sur Échap pour annuler.');
  if(mode==='connect'&&target){const source=chosen(),other=level().walls.find(w=>w.id===target.dataset.id);mode=null;if(source===other)return say('Choisissez un autre mur.');connect(source,other,distance(p,other.a)<distance(p,other.b)?'a':'b');return}
+ if(mode==='median'&&target){const source=chosen(),other=level().walls.find(w=>w.id===target.dataset.id);mode=null;median(source,other);return}
  selected=target?target.dataset.id:null;render();if(target){try{actor();drag={p,a:clone(chosen().a),b:clone(chosen().b),id:selected};$('canvas').setPointerCapture(e.pointerId)}catch(err){say(err.message)}}
 });
 $('canvas').addEventListener('pointerup',e=>{if(!drag)return;const d=drag;drag=null;const q=xy(e),dx=q[0]-d.p[0],dy=q[1]-d.p[1];if(Math.hypot(dx,dy)<.5)return;const a=[d.a[0]+dx,d.a[1]+dy],b=[d.b[0]+dx,d.b[1]+dy];mutate({op:'update',id:d.id,a,b},()=>{const w=chosen();w.a=a;w.b=b;w.status='pending'})});
@@ -106,6 +109,33 @@ function connect(w,v,end){const a=w.a,b=w.b,c=v.a,d=v.b,dx=b[0]-a[0],dy=b[1]-a[1
  if(w.openings.length||v.openings.length)return say('Revalidez les ouvertures avant de modifier la longueur.');
  if(Math.max(distance(p,w.b),distance(p,v[end]))>20)return say('Raccord trop éloigné (20 unités maximum).');
  mutate({op:'connect',id:w.id,other_id:v.id,end:'b',other_end:end,max_distance:20},()=>{w.b=p.slice();v[end]=p.slice();w.status=v.status='pending'});
+}
+function median(w,v){
+ if(!w||!v)return say('Sélectionnez de nouveau les deux traces.');
+ if(w===v)return say('Choisissez deux traces distinctes.');
+ if(w.openings.length||v.openings.length)return say('Les ouvertures renseignées doivent être contrôlées séparément avant cette opération.');
+ if(w.status==='rejected'||v.status==='rejected')return say('Trace rejetée.');
+ const length=distance(w.a,w.b),other=distance(v.a,v.b),ux=(w.b[0]-w.a[0])/length,uy=(w.b[1]-w.a[1])/length;
+ if(Math.abs(ux*(v.b[1]-v.a[1])-uy*(v.b[0]-v.a[0]))/other>Math.sin(Math.PI/180))return say('Les traces ne sont pas parallèles (tolérance 1 degré).');
+ const projected=[v.a,v.b].map(p=>(p[0]-w.a[0])*ux+(p[1]-w.a[1])*uy),lo=Math.max(0,Math.min(...projected)),hi=Math.min(length,Math.max(...projected));
+ if(hi-lo<1e-6)return say('Aucune portion commune ; le passage reste ouvert.');
+ const ranges=[[lo/length,hi/length],[lo,hi].map(t=>(t-projected[0])/(projected[1]-projected[0]))],faces=[axis(w,...ranges[0]),axis(v,...ranges[1])];
+ const offsets=faces[0].map((p,i)=>ux*(faces[1][i][1]-p[1])-uy*(faces[1][i][0]-p[0]));
+ if(offsets[0]*offsets[1]<=0||Math.min(...offsets.map(Math.abs))<1e-6||Math.max(...offsets.map(Math.abs))>24||Math.abs(offsets[0]-offsets[1])>.5)return say('Séparation ambiguë ou supérieure à 24 unités du document.');
+ const points=faces[0].map((p,i)=>p.map((n,k)=>(n+faces[1][i][k])/2)),id=crypto.randomUUID();
+ mutate({op:'merge_parallel_faces',id:w.id,other_id:v.id,max_separation:24},()=>{
+  const center={id,kind:'wall',a:points[0],b:points[1],thickness:offsets.reduce((n,t)=>n+Math.abs(t),0)/2,status:'pending',confidence:0,method:'manual_parallel_faces',openings:[],
+    evidence:[{source_walls:[w.id,v.id],paired_sides:faces,source_intervals:ranges,human_interpretation:'same_wall_faces'}]},pieces=[center];
+  for(const [i,source]of [w,v].entries()){
+   const [start,end]=ranges[i].map(t=>Math.max(0,Math.min(1,t))).sort((a,b)=>a-b);
+   for(const [rlo,rhi]of [[0,start],[end,1]]){
+    if((rhi-rlo)*distance(source.a,source.b)<1e-6)continue;
+    const part=clone(source);part.id=crypto.randomUUID();[part.a,part.b]=axis(source,rlo,rhi);part.status='pending';
+    part.evidence.push({unmerged_remainder_of:source.id,source_interval:[rlo,rhi]});pieces.push(part);
+   }
+  }
+  level().walls=level().walls.filter(x=>x.id!==w.id&&x.id!==v.id).concat(pieces);selected=id;
+ });
 }
 $('apply').onclick=()=>{const w=chosen();if(!w)return;const near=(v,old)=>Math.abs(v-old)<.001?old:v,a=[near(+$('ax').value,w.a[0]),near(+$('ay').value,w.a[1])],b=[near(+$('bx').value,w.b[0]),near(+$('by').value,w.b[1])],t=$('thickness').value===''?null:+$('thickness').value;
  if(w.openings.length&&distance(a.map((v,i)=>v-w.a[i]),b.map((v,i)=>v-w.b[i]))>1e-9)return say('Déplacez le mur ou corrigez ses ouvertures avant de changer sa longueur.');
@@ -134,6 +164,7 @@ $('split').onclick=()=>{const w=chosen();if(!w)return;const answer=prompt('Posit
 $('calibrate').onclick=()=>{const w=chosen();if(!w)return say('Sélectionnez un mur dont la longueur correspond à une cote vérifiée.');const s=prompt('Longueur vérifiée entre A et B, en millimètres');if(s===null)return;const n=Number(s),evidence=prompt('Référence de la cote ou du relevé vérifié');if(!evidence||!Number.isFinite(n)||n<=0)return say('Cote et preuve requises.');mutate({op:'calibrate',a:w.a,b:w.b,length_mm:n,evidence},()=>{level().scale={mm_per_unit:n/distance(w.a,w.b),validated_by:actor(),evidence,points:[w.a,w.b]}})};
 $('floor').onchange=()=>{const value=$('floor').checked;mutate({op:'identify_floor',validated:value},()=>{level().floor_validated=value})};
 $('connect').onclick=()=>{if(!chosen())return say('Sélectionnez d’abord un mur.');mode='connect';say('Cliquez près de l’extrémité du second mur à raccorder à la fin B. Les deux validations seront annulées.')};
+$('median').onclick=()=>{if(!chosen())return say('Sélectionnez d’abord une trace de bord.');mode='median';say('Cliquez sur l’autre bord du même mur. L’axe commun remplacera les deux traces sur leur recouvrement. Échap pour annuler.')};
 $('add').onclick=()=>{mode='add';first=null;say('Cliquez sur le début du nouveau mur, puis sur sa fin.')};
 $('undo').onclick=()=>historyMove(undo,redo,'undo');$('redo').onclick=()=>historyMove(redo,undo,'redo');
 $('level').onchange=()=>{index=+$('level').value;selected=null;mode=null;focus();render()};
