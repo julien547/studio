@@ -287,6 +287,13 @@ test("architecture centerline, opening clipping and equipment anchors use separa
   await page
     .getByRole("button", { name: "RTMDet Détecter les équipements" })
     .click();
+  await expect(
+    page.getByRole("heading", { name: "RTMDet", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".training-content")).toHaveAttribute(
+    "aria-busy",
+    "false",
+  );
   await page
     .getByLabel("Projet d’apprentissage", { exact: true })
     .selectOption(saved.project_id);
@@ -555,4 +562,116 @@ print(json.dumps(dataset(c,'rtmdet',examples)))
   expect((await (await page.request.get(url)).json())[0].status).toBe(
     "cancelled",
   );
+});
+
+test("Qwen paired preview is private, persistent and records a human comparison", async ({
+  page,
+}) => {
+  const fixture = JSON.parse(
+    execFileSync(
+      python,
+      [
+        "-c",
+        `
+import json,sys
+sys.path.insert(0,${JSON.stringify(resolve("../backend/tests"))})
+from test_training import source,example,validate,dataset,PREFIX
+from fastapi.testclient import TestClient
+from doemo_releves.api import create_app
+c=TestClient(create_app(${JSON.stringify(root)}),headers={'X-Doemo-User':'admin','X-Doemo-Role':'admin'})
+examples=[]
+for color in ('purple','orange','yellow'):
+ p=source(c,color);_,e=example(c,'qwen',p,[],convention='PCF',interpretation='Porte coupe-feu');examples.append(validate(c,p,e))
+d=dataset(c,'qwen',examples)
+v=c.post(PREFIX+'/models/qwen/versions',json={'name':'Conventions comparaison fixture','dataset_id':d['id']}).json()
+print(json.dumps({'version':v['id'],'held':next(e['id'] for e in d['snapshot']['examples'] if e['split']=='test')}))
+`,
+      ],
+      { encoding: "utf8" },
+    ),
+  );
+  await login(page);
+  await section(page, "Modèles IA").click();
+  const card = page.locator("article.training-card").filter({
+    has: page.getByRole("heading", {
+      name: "Conventions comparaison fixture",
+      exact: true,
+    }),
+  });
+  await card
+    .getByRole("button", { name: "Comparer Qwen sur un plan", exact: true })
+    .click();
+  await card.getByLabel("Exemple réservé au test").selectOption(fixture.held);
+  page.on("dialog", (dialog) => dialog.accept());
+  await card
+    .getByRole("button", { name: "Lancer les deux analyses Qwen", exact: true })
+    .click();
+  await expect(
+    page.getByText("Comparaison Qwen demandée.", { exact: true }),
+  ).toBeVisible();
+  const historyURL =
+    origin +
+    "/api/projects/training/models/qwen/" +
+    fixture.version +
+    "/previews";
+  const comparison = (await (await page.request.get(historyURL)).json())[0];
+  expect(comparison.baseline.status).toBe("queued");
+  expect(comparison.candidate.status).toBe("queued");
+  // Replay labelled fixture outputs only; never run a gateway/GPU/provider worker.
+  execFileSync(python, [
+    "-c",
+    `
+import json
+from doemo_releves.store import Store
+s=Store(${JSON.stringify(root)})
+with s.connect() as c:
+ for ident,text in [(${JSON.stringify(comparison.baseline_job)},'Sortie fixture sans conventions'),(${JSON.stringify(comparison.candidate_job)},'Sortie fixture avec conventions')]:
+  result={'observations':[{'text':text,'interpretation':'Porte coupe-feu','uncertain':True}],'annotations':[]}
+  c.execute("UPDATE jobs SET status='completed',result=? WHERE id=?",(json.dumps(result),ident))
+`,
+  ]);
+  await expect(
+    card
+      .getByRole("region", { name: "Sans référentiel" })
+      .getByText("Sortie fixture sans conventions", { exact: true }),
+  ).toBeVisible({ timeout: 10000 });
+  await expect(
+    card
+      .getByRole("region", { name: "Avec ce référentiel" })
+      .getByText("Sortie fixture avec conventions", { exact: true }),
+  ).toBeVisible();
+  await card
+    .getByLabel("Avis de comparaison", { exact: true })
+    .selectOption("candidate_better");
+  await card
+    .getByLabel("Motif de l’avis", { exact: true })
+    .fill("Avis humain sur sorties de fixture, aucun GPU testé.");
+  await card
+    .getByRole("button", {
+      name: "Enregistrer l’avis de comparaison",
+      exact: true,
+    })
+    .click();
+  await expect(
+    page.getByText("Avis de comparaison enregistré, sans mise en production.", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.reload();
+  await section(page, "Modèles IA").click();
+  await card
+    .getByRole("button", { name: "Comparer Qwen sur un plan", exact: true })
+    .click();
+  await expect(
+    card
+      .getByText(/Avis humain sur sorties de fixture, aucun GPU testé/)
+      .first(),
+  ).toBeVisible();
+  const reloaded = (await (await page.request.get(historyURL)).json())[0];
+  expect(reloaded.review.verdict).toBe("candidate_better");
+  expect(reloaded.publication_eligible).toBe(false);
+  await expect(
+    card.getByRole("button", { name: "Mettre en production", exact: true }),
+  ).toBeDisabled();
+  await card.screenshot({ path: "/tmp/doemo-qwen-preview.png" });
 });

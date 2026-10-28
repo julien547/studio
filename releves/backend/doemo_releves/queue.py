@@ -68,6 +68,8 @@ def attach_queue(app,store,actor,get,doc):
     def retry(ident: str,job_id: str,who=Depends(actor)):
         get(ident,who)
         with gpu.lifecycle_lock(store), store.connect() as c:
+            row=c.execute('SELECT payload FROM jobs WHERE id=? AND project_id=?',(job_id,ident)).fetchone()
+            if row and json.loads(row['payload']).get('training_preview'):raise ValueError('Relancer la comparaison depuis l’espace d’apprentissage')
             result=c.execute("UPDATE jobs SET status='queued',stage='Nouvelle tentative',error=NULL,retry_at=0,attempts=0,updated=CURRENT_TIMESTAMP WHERE id=? AND project_id=? AND status IN ('failed','waiting_gpu','retry_gpu','interrupted')",(job_id,ident))
             if not result.rowcount: raise ValueError('Ce traitement ne peut pas être relancé')
         return {'status':'queued'}
@@ -116,14 +118,25 @@ def process_one(store):
                 return True
             from PIL import Image
             with Image.open(path) as im: width,height=im.size
+            context_data={}
+            if payload.get('training_preview'):
+                from .qwen_preview import check_job,encoded,digest,image_hash
+                with store.connect() as c:check_job(c,payload)
+                if image_hash(path)!=payload['input_sha256']:raise ValueError('Page modifiée depuis l’admission de la comparaison')
+                context_data={'data':{'context':encoded(payload['qwen_context'])}}
             update('running','Analyse '+engine)
             url=control['gateway_url'] if managed else endpoint()
             with path.open('rb') as f:
                 r=httpx.post(url+'/infer/'+engine,headers={'Authorization':'Bearer '+os.environ['DOEMO_RUNPOD_TOKEN'], 'X-Doemo-Job':job['id']},
-                    files={'file':('page.png',f,'image/png')},timeout=540,follow_redirects=False)
+                    files={'file':('page.png',f,'image/png')},timeout=540,follow_redirects=False,**context_data)
             r.raise_for_status()
             if len(r.content)>8*1024**2:raise ValueError('Réponse IA excessive')
             response=r.json()
+            if payload.get('training_preview'):
+                proof=response.get('reference_context',{})
+                if not isinstance(proof,dict) or proof.get('sha256')!=digest(payload['qwen_context']) or proof.get('schema')!=payload['qwen_context']['schema'] or response.get('input_sha256')!=payload['input_sha256']:
+                    update('failed','Comparaison non vérifiée',error='Le gateway ne confirme pas la page et le référentiel attendus. Faire vérifier sa version par la session de déploiement.')
+                    return True
             if response.get('width')!=width or response.get('height')!=height:
                 raise ValueError('Le moteur doit retourner les coordonnées dans l’image transmise')
             result=normalise(engine,response['data'],payload['document_id'],payload['page'],width,height)

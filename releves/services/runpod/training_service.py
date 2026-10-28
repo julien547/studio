@@ -32,7 +32,7 @@ def digest(value):return hashlib.sha256(encoded(value).encode()).hexdigest()
 
 
 def runtime_hash():
-    names=('training_service.py','rtmdet_pipeline.py','compute.py','training_data.py','artifacts.py','gateway.py','infer.py','readiness.py')
+    names=('training_service.py','rtmdet_pipeline.py','compute.py','training_data.py','artifacts.py','gateway.py','infer.py','readiness.py','qwen_prompt.py')
     return digest({name:sha256(Path(__file__).with_name(name)) for name in names})
 
 

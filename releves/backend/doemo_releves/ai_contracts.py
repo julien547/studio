@@ -51,8 +51,10 @@ def normalise(engine, data, document_id, page, width, height):
                 text=str(element.get('texte',''))[:2000]
                 if text in seen: continue
                 seen.add(text)
+                interpretation=element.get('interpretation')
+                if interpretation is not None and (not isinstance(interpretation,str) or len(interpretation)>2000):raise ValueError('Interprétation Qwen invalide')
                 observations.append({'text':text,'zone':str(zone.get('zone',''))[:100], 'uncertain':True,
-                    'source':'qwen','location':None})
+                    'source':'qwen','location':None,**({'interpretation':interpretation} if interpretation is not None else {})})
         warnings.append('Qwen ne fournit pas de coordonnées : observations textuelles uniquement, répétitions regroupées par zone.')
     elif engine=='rtmdet':
         scores=res.get('scores',[]);labels=res.get('labels',[]);boxes=res.get('bboxes',[])

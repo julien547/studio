@@ -133,3 +133,12 @@ existantes et supervision GPU. Validation locale complémentaire : build TypeScr
 8 tests de géométrie, 6 parcours Playwright avec vrai backend temporaire (dont
 redémarrage du processus, conflit de révision, restriction administrateur, murs,
 implantations distinctes et résultats RTMDet rejoués sans appel GPU).
+
+## Suite : comparaison Qwen raccordée
+
+La migration `005` et [COMPARAISON-QWEN.md](COMPARAISON-QWEN.md) ajoutent les essais
+avec/sans conventions du référentiel sur des plans réservés au test, avec historique
+et avis humain. Aucune modification des poids ou promotion. Cette livraison du
+gateway modifie son empreinte de runtime : refaire la recette du profil RTMDet
+avant de l’activer avec ces nouveaux fichiers. Déploiement et recette GPU sont
+exclusivement à la charge de la session serveur.

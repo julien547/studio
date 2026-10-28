@@ -144,7 +144,7 @@ def attach(app, store, actor, admin, get, doc):
     def jobs(ident: str, who=Depends(actor)):
         get(ident,who)
         with store.connect() as c:
-            rows=c.execute('SELECT id,status,stage,error,attempts,created,updated,payload,result FROM jobs WHERE project_id=? ORDER BY created DESC LIMIT 100',(ident,))
+            rows=c.execute("SELECT id,status,stage,error,attempts,created,updated,payload,result FROM jobs WHERE project_id=? AND json_extract(payload,'$.training_preview') IS NULL ORDER BY created DESC LIMIT 100",(ident,))
             return [dict(dict(r), payload={k:v for k,v in json.loads(r['payload']).items() if k in ('engine','document_id','page')}, result=json.loads(r['result']) if r['result'] else None) for r in rows]
 
     @app.post('/projects/{ident}/jobs/{job_id}/apply')
@@ -153,6 +153,7 @@ def attach(app, store, actor, admin, get, doc):
         with store.connect() as c:
             row=c.execute('SELECT * FROM jobs WHERE id=? AND project_id=?',(job_id,ident)).fetchone()
         if not row or row['status']!='completed': raise ValueError('Analyse terminée requise')
+        if json.loads(row['payload']).get('training_preview'):raise ValueError('Comparaison réservée à l’espace d’apprentissage')
         state=ProjectState.model_validate(p['state'])
         if state.revision!=data.revision: raise ValueError('Recharger avant d’intégrer les propositions')
         from .models import Annotation

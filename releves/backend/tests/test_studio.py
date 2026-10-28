@@ -214,5 +214,5 @@ def test_migration_concurrent_startup(tmp_path):
         results=list(pool.map(lambda _:Store(tmp_path/'shared').create('test','Project'),range(4)))
     assert len(set(results))==4
     with Store(tmp_path/'shared').connect() as c:
-        assert c.execute('SELECT count(*) FROM schema_migrations').fetchone()[0]==4
+        assert c.execute('SELECT count(*) FROM schema_migrations').fetchone()[0]==5
         assert c.execute('SELECT count(*) FROM projects').fetchone()[0]==4

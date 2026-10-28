@@ -158,3 +158,7 @@ et les datasets fonctionnent sans GPU.
 Le [raccordement asynchrone RTMDet](docs/ENTRAINEMENT-RTMDET.md) ajoute la file OVH,
 les contrôles du gateway et la migration `004`. Activation uniquement après recette
 GPU réelle par la session de déploiement ; aucune activation de poids en production.
+
+La [comparaison Qwen sur plan](docs/COMPARAISON-QWEN.md) permet de confronter les
+sorties avec/sans un référentiel versionné. Elle conserve un avis humain et ne
+publie aucun modèle. Installer la migration `005` et le gateway compatible ensemble.

@@ -20,6 +20,7 @@ from fastapi import FastAPI,Header,HTTPException,UploadFile,Depends,Form
 from PIL import Image
 from compute import exclusive
 from training_service import Manager
+import qwen_prompt
 
 lock=asyncio.Lock()
 ENGINES={'qwen':'/opt/doemo-qwen-venv/bin/python','paddleocr':'/opt/doemo-ocr-venv/bin/python','rtmdet':'/opt/doemo-rtmdet-venv/bin/python'}
@@ -144,9 +145,14 @@ async def job_status(job_id:str):
 
 
 @app.post('/infer/{engine}',dependencies=[Depends(authorize)])
-async def infer(engine:str,file:UploadFile,x_doemo_job:str=Header(default='')):
+async def infer(engine:str,file:UploadFile,x_doemo_job:str=Header(default=''),context:str=Form(default='')):
     global last_activity
     if engine not in ENGINES:raise HTTPException(404,'Moteur inconnu')
+    reference=None
+    if context:
+        if engine!='qwen':raise HTTPException(422,'Contexte réservé à Qwen')
+        try:reference=qwen_prompt.parse(context)
+        except (ValueError,TypeError):raise HTTPException(422,'Contexte de référentiel invalide')
     if not status['ready']:raise HTTPException(503,'Les trois moteurs ne sont pas prêts')
     if training:
         await training.infer_priority()
@@ -171,18 +177,27 @@ async def infer(engine:str,file:UploadFile,x_doemo_job:str=Header(default='')):
                         width,height=im.size;im.verify()
                 except Exception:raise HTTPException(422,'PNG invalide')
                 metadata={'id':job_id,'engine':engine,'input_sha256':digest.hexdigest(),'status':'running','boot_id':BOOT_ID}
+                metadata['context_sha256']=qwen_prompt.digest(reference) if reference is not None else None
                 if (job/'metadata.json').exists():
                     try:prior=json.loads((job/'metadata.json').read_text())
                     except ValueError:raise HTTPException(409,'Métadonnées persistantes à contrôler')
                     if prior.get('input_sha256')!=metadata['input_sha256'] or prior.get('engine')!=engine:
                         raise HTTPException(409,'Cet identifiant appartient à une autre analyse')
+                    if prior.get('context_sha256')!=metadata['context_sha256']:
+                        raise HTTPException(409,'Cet identifiant appartient à un autre contexte Qwen')
                     if prior.get('status')=='completed':return json.loads((job/'response.json').read_text())
                 shutil.copyfile(source,job/'input.png');write_json(job/'metadata.json',metadata)
                 result=Path(tmp)/'result.json'
+                arguments=[engine,source,result]
+                if reference is not None:
+                    context_path=Path(tmp)/'reference.json';context_path.write_text(qwen_prompt.encoded(reference))
+                    shutil.copyfile(context_path,job/'reference.json')
+                    arguments.append(context_path)
                 try:
-                    code=await execute(ENGINES[engine],ADAPTER,[engine,source,result],job/'engine.log',480)
+                    code=await execute(ENGINES[engine],ADAPTER,arguments,job/'engine.log',480)
                     if code or not result.exists() or result.stat().st_size>8*1024**2:raise ValueError('Invalid output')
                     response={'width':width,'height':height,'engine':engine,'data':json.loads(result.read_text())}
+                    if reference is not None:response.update(reference_context=qwen_prompt.proof(reference),input_sha256=metadata['input_sha256'])
                     shutil.copyfile(result,job/'result.json');write_json(job/'response.json',response)
                     metadata['status']='completed';write_json(job/'metadata.json',metadata)
                     return response

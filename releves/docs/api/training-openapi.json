@@ -5,6 +5,261 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/projects/training/models/qwen/{ident}/preview-options": {
+      "get": {
+        "summary": "Options",
+        "operationId": "options_projects_training_models_qwen__ident__preview_options_get",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/models/qwen/{ident}/previews": {
+      "get": {
+        "summary": "History",
+        "operationId": "history_projects_training_models_qwen__ident__previews_get",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Launch",
+        "operationId": "launch_projects_training_models_qwen__ident__previews_post",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Preview"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/projects/training/models/qwen/{ident}/previews/{preview_id}/review": {
+      "post": {
+        "summary": "Review",
+        "operationId": "review_projects_training_models_qwen__ident__previews__preview_id__review_post",
+        "parameters": [
+          {
+            "name": "ident",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Ident"
+            }
+          },
+          {
+            "name": "preview_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Preview Id"
+            }
+          },
+          {
+            "name": "x-doemo-user",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "title": "X-Doemo-User"
+            }
+          },
+          {
+            "name": "x-doemo-role",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-Doemo-Role"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/doemo_releves__qwen_preview__Review"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/projects/training/openapi": {
       "get": {
         "summary": "Openapi",
@@ -1746,7 +2001,7 @@
             "default": "review"
           },
           "review": {
-            "$ref": "#/components/schemas/Review"
+            "$ref": "#/components/schemas/doemo_releves__models__Review"
           },
           "evidence": {
             "type": "string",
@@ -2672,6 +2927,31 @@
         ],
         "title": "Point"
       },
+      "Preview": {
+        "properties": {
+          "example_id": {
+            "type": "string",
+            "title": "Example Id"
+          },
+          "confirmed": {
+            "type": "boolean",
+            "title": "Confirmed",
+            "default": false
+          },
+          "request_key": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]{16,80}$",
+            "title": "Request Key"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "example_id",
+          "request_key"
+        ],
+        "title": "Preview"
+      },
       "ProjectState": {
         "properties": {
           "schema_version": {
@@ -2869,43 +3149,6 @@
         ],
         "title": "Registration"
       },
-      "Review": {
-        "properties": {
-          "equipment": {
-            "type": "boolean",
-            "title": "Equipment",
-            "default": false
-          },
-          "asset": {
-            "type": "boolean",
-            "title": "Asset",
-            "default": false
-          },
-          "floor": {
-            "type": "boolean",
-            "title": "Floor",
-            "default": false
-          },
-          "position": {
-            "type": "boolean",
-            "title": "Position",
-            "default": false
-          },
-          "orientation": {
-            "type": "boolean",
-            "title": "Orientation",
-            "default": false
-          },
-          "size": {
-            "type": "boolean",
-            "title": "Size",
-            "default": false
-          }
-        },
-        "additionalProperties": false,
-        "type": "object",
-        "title": "Review"
-      },
       "Run": {
         "properties": {
           "engine": {
@@ -3040,6 +3283,70 @@
           "dataset_id"
         ],
         "title": "Version"
+      },
+      "doemo_releves__models__Review": {
+        "properties": {
+          "equipment": {
+            "type": "boolean",
+            "title": "Equipment",
+            "default": false
+          },
+          "asset": {
+            "type": "boolean",
+            "title": "Asset",
+            "default": false
+          },
+          "floor": {
+            "type": "boolean",
+            "title": "Floor",
+            "default": false
+          },
+          "position": {
+            "type": "boolean",
+            "title": "Position",
+            "default": false
+          },
+          "orientation": {
+            "type": "boolean",
+            "title": "Orientation",
+            "default": false
+          },
+          "size": {
+            "type": "boolean",
+            "title": "Size",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "Review"
+      },
+      "doemo_releves__qwen_preview__Review": {
+        "properties": {
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "candidate_better",
+              "same",
+              "baseline_better",
+              "inconclusive"
+            ],
+            "title": "Verdict"
+          },
+          "notes": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Notes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "verdict",
+          "notes"
+        ],
+        "title": "Review"
       }
     }
   }

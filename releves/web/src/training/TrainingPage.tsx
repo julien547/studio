@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, url } from "../api";
 import { AnnotationEditor } from "./AnnotationEditor";
+import { QwenPreview } from "./QwenPreview";
 import {
   engines,
   message,
@@ -1001,7 +1002,8 @@ function Models({
 }) {
   const [dataset, setDataset] = useState(""),
     [name, setName] = useState(""),
-    [run, setRun] = useState("");
+    [run, setRun] = useState(""),
+    [previewVersion, setPreviewVersion] = useState("");
   const action = async (v: string, a: string) => {
     await api(
       `${prefix}/models/${engine}/${v}/${a}`,
@@ -1125,6 +1127,16 @@ function Models({
             · v{datasets.find((d) => d.id === v.dataset_id)?.version || "?"}
           </p>
           <div className="training-toolbar">
+            {engine === "qwen" && v.method === "reference" && (
+              <button
+                onClick={() =>
+                  setPreviewVersion(previewVersion === v.id ? "" : v.id)
+                }
+                aria-expanded={previewVersion === v.id}
+              >
+                Comparer Qwen sur un plan
+              </button>
+            )}
             <button
               disabled={v.method !== "reference" && !capability.evaluation}
               onClick={() =>
@@ -1202,6 +1214,9 @@ function Models({
               )}
               <pre>{JSON.stringify(v.evaluation, null, 2)}</pre>
             </>
+          )}
+          {previewVersion === v.id && (
+            <QwenPreview key={v.id} version={v.id} perform={perform} />
           )}
           <details>
             <summary>Artefacts, paramètres et métriques</summary>

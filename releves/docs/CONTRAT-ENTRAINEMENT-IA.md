@@ -17,6 +17,7 @@ les routes publiques, les tests et les limites des services GPU.
 | Versions immuables de datasets, groupes bâtiment/document, exports avec vraies images | Implémenté et testé sur CPU |
 | Qwen : versions du référentiel et recherche lexicale | Implémenté et testé ; aucun poids modifié |
 | Qwen : test du référentiel sur le lot test | Implémenté ; ce n’est pas une évaluation de l’inférence Qwen |
+| Qwen : comparaison sur plan avec/sans conventions | Raccordée au worker/gateway et à la page ; tests CPU, recette GPU requise, aucun poids modifié |
 | PaddleOCR : images recadrées/transcriptions, conversion des labels, calcul CER/WER | Implémenté et testé sur fixtures ; aucun fine-tuning effectué |
 | RTMDet : préparation COCO, pilote de formation MMDetection 3.3.0, checkpoints vérifiés | Pilote écrit ; tests CPU des données/artefacts ; exécution GPU NON réalisée |
 | Registre des versions, états, séparation par moteur | Persistant ; versions de référentiel enregistrables |
@@ -191,3 +192,9 @@ le pointeur précédent, la version figée à l’admission des inférences et l
 Les statuts `approved`, `production`, `archived` existent mais leurs transitions
 ne sont pas activées. Qwen/PaddleOCR nécessitent leurs propres pilotes validés ;
 un moteur architectural absent reste indisponible.
+
+## Comparaisons Qwen par inférence
+
+Voir [COMPARAISON-QWEN.md](COMPARAISON-QWEN.md) pour les routes `preview-options`,
+`previews` et `review`, le contexte figé, les empreintes de page/conventions et la
+passation serveur. Les avis humains sont séparés des approbations de modèle.

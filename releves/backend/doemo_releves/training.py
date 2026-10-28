@@ -236,6 +236,8 @@ def dataset_bundle(snapshot,engine,resolve_image):
 
 
 def attach_training(app,store,admin,get,doc):
+ from .qwen_preview import attach
+ attach(app,store,admin,doc)
  def cats(c):return {r['code']:dict(r) for r in c.execute('SELECT * FROM training_categories ORDER BY code')}
  def save_revision(c,value,who,action):
   c.execute('INSERT INTO training_revisions(example_id,revision,status,data,actor) VALUES(?,?,?,?,?)',(value['id'],value['revision'],value['status'],encoded(value['data']),who.login))

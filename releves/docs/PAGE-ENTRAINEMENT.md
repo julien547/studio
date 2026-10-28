@@ -17,6 +17,7 @@ Branche : `codex/ai-training-backend` du dépôt `julien547/studio`.
 | `releves/backend/doemo_releves/auth.py` | Même route en mode autonome |
 | `releves/backend/doemo_releves/training.py` | API d’apprentissage persistante |
 | `releves/backend/doemo_releves/migrations/003_training.sql` et `004_training_jobs.sql` | Exemples, datasets, registre, audit et file d’entraînement |
+| `releves/backend/doemo_releves/migrations/005_qwen_previews.sql`, `qwen_preview.py` | Comparaisons Qwen persistantes, contexte figé et avis humain |
 | `releves/backend/doemo_releves/training_jobs.py`, `releves/services/runpod/training_service.py` | Connexion asynchrone OVH/GPU, voir la procédure RTMDet |
 | `releves/backend/doemo_releves/ai_contracts.py` | Propositions RTMDet neutres, jamais des équipements validés |
 | `releves/backend/doemo_releves/studio_api.py` | Historique des analyses identifiable par moteur, document et page |
@@ -28,7 +29,7 @@ Branche : `codex/ai-training-backend` du dépôt `julien547/studio`.
    déployée. Conserver les chemins, secrets et services existants. La passation
    générale contient des exemples de chemins, pas une invitation à les remplacer.
 2. Sauvegarder SQLite, documents, bibliothèques et `training-outbox` avant le
-   démarrage du backend qui applique `003` et `004` si elles manquent. Les migrations
+   démarrage du backend qui applique `003`, `004` et `005` si elles manquent. Les migrations
    sont automatiques au démarrage du Store ; ne pas les exécuter deux fois.
 3. Construire le frontend avec les dépendances verrouillées :
 
@@ -102,8 +103,8 @@ les inférences et la santé du gateway avec la configuration privée existante.
 
 - `npm run build` : TypeScript et bundle validés.
 - `npm test` : 8 tests de géométrie.
-- Backend `python -m pytest -q` : 118 tests.
-- `npm run test:e2e` : 6 parcours, dont l’atelier existant, avec authentification
+- Backend `python -m pytest -q` : 126 tests.
+- `npm run test:e2e` : 7 parcours, dont l’atelier existant, avec authentification
   et une base temporaire réelle ; aucun remplacement des API d’apprentissage.
 - Redémarrage du processus backend pendant le test OCR : données retrouvées.
 - Test RTMDet : sortie de détection **rejouée dans la base de test**, sans GPU,
@@ -113,3 +114,8 @@ les inférences et la santé du gateway avec la configuration privée existante.
 - Nouveau parcours d’admission : profil de recette fictif explicitement limité au
   test, lancement confirmé via le navigateur et la vraie API locale, conservation
   après redémarrage puis annulation. Aucun worker GPU ou fournisseur n’est démarré.
+
+La [comparaison Qwen sur plan](COMPARAISON-QWEN.md) raccorde une version du référentiel
+à deux inférences, avec et sans conventions, résultats conservés et avis humain.
+La migration `005` et les modules du gateway de la même révision sont nécessaires.
+Son test navigateur utilise des sorties de fixture, jamais le GPU de production.
