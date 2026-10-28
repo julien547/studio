@@ -61,7 +61,7 @@ et, pour les fichiers d'entrée, dans l'archive privée déjà préparée.
 | Contenu | Emplacement proposé | Accès |
 | --- | --- | --- |
 | Source complète et documentation | `/opt/doemo-studio/src/` | Administrateur/déploiement uniquement |
-| Venv serveur | `/opt/doemo-studio/venv/` | Administrateur ; diagnostic en CLI |
+| Venv serveur | `/opt/doemo-studio/venv-pdf/` | Administrateur ; diagnostic en CLI |
 | Racine publique du site | `/var/www/studio/` | Apache/PHP, lecture du code |
 | Frontend React construit séparément | `/var/www/studio/app/` | Préserver le build existant ; provenance doemo-app |
 | BAT, AI et scripts de référence | `/var/lib/doemo-studio/private/` | Privé, hors web |
@@ -215,16 +215,18 @@ modifiable par le compte du serveur web.
 ```sh
 set -eu
 cd /opt/doemo-studio/src
-python3 -m venv /opt/doemo-studio/venv
-/opt/doemo-studio/venv/bin/python -m pip install -r engine/requirements.lock
-/opt/doemo-studio/venv/bin/python -m pip install --no-deps ./engine
-/opt/doemo-studio/venv/bin/python -m pytest -q engine/tests
-/opt/doemo-studio/venv/bin/doemo-pdf --help
-/opt/doemo-studio/venv/bin/doemo-pdf templates-dir
-/opt/doemo-studio/venv/bin/doemo-pdf templates-dir --client client-a
+python3 -m venv /opt/doemo-studio/venv-pdf
+/opt/doemo-studio/venv-pdf/bin/python -m pip install -r engine/requirements.lock
+/opt/doemo-studio/venv-pdf/bin/python -m pip install --no-deps ./engine
+/opt/doemo-studio/venv-pdf/bin/python -m pytest -q engine/tests
+/opt/doemo-studio/venv-pdf/bin/doemo-pdf --help
+/opt/doemo-studio/venv-pdf/bin/doemo-pdf templates-dir
+/opt/doemo-studio/venv-pdf/bin/doemo-pdf templates-dir --client client-a
 ```
 
-Le module est installé ici en mode normal, pas comme un service HTTP. Les tests
+Le répertoire `venv-pdf` est dédié au moteur PDF ; le venv déjà utilisé par
+une autre application doit être conservé. Le module est installé ici en mode
+normal, pas comme un service HTTP. Les tests
 doivent réussir ; une installation des dépendances seule ne valide pas le moteur.
 Ne pas lancer `engine/setup-cloud.sh` sur le serveur : il contient volontairement
 les chemins `/workspace` spécifiques au cloud.
@@ -232,9 +234,9 @@ les chemins `/workspace` spécifiques au cloud.
 Essais privés après extraction dans le chemin proposé :
 
 ```sh
-/opt/doemo-studio/venv/bin/doemo-pdf inspect \
+/opt/doemo-studio/venv-pdf/bin/doemo-pdf inspect \
   /var/lib/doemo-studio/private/CO26100364-1.pdf
-/opt/doemo-studio/venv/bin/doemo-pdf inspect-ai \
+/opt/doemo-studio/venv-pdf/bin/doemo-pdf inspect-ai \
   /var/lib/doemo-studio/private/CO26100364-1.ai
 ```
 
