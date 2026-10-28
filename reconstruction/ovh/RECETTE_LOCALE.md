@@ -1,6 +1,6 @@
-# Vérification de la livraison OVH 0.3.4
+# Vérification de la livraison OVH 0.3.5
 
-Le 28 octobre 2026, 111 tests Python passent. Ils couvrent les axes noirs, les
+Le 28 octobre 2026, 128 tests Python passent. Ils couvrent les axes noirs, les
 ouvertures, la validation humaine, les contrats d’inférence, l’authentification
 du worker, les reprises après interruption, l’isolation des projets par utilisateur
 et la détection des sauvegardes concurrentes. Les tests d’IA utilisent des doubles ;
@@ -83,3 +83,15 @@ Le parcours Chromium 0.3.4 repasse avec PHP, socket Unix, worker HTTP signé et
 trois moteurs simulés : menu/iframe conservés, observations persistantes, murs
 inchangés. Une réponse de statut simulant l’échec de PaddleOCR affiche cet échec,
 conserve les succès de Qwen/RTMDet et désactive l’analyse. Aucun appel GPU réel.
+
+La livraison 0.3.5 ajoute le contrôle des paires d’axes proches, en excluant les
+ouvertures des intervalles comparés. Les exports SVG validé et Illustrator sont
+bloqués pour les paires approuvées non résolues. Les tests comparent les calculs
+JavaScript/Python, vérifient les décisions liées à la géométrie, leur invalidation,
+les filtres d’apprentissage et l’identité serveur des auteurs.
+
+Le parcours Chromium vérifie le panneau, la fusion en un axe noir, les décisions
+de murs distincts, annuler/refaire, rechargement JSON et cadrage des deux traces.
+La page 1 conserve ses 381 propositions ; 468 paires proches sont signalées sans
+modification ni validation automatique. Ce nombre n’est pas un taux de qualité.
+Voir [la portée et la recette de ce contrôle](CONTROLE_DOUBLES_AXES.md).

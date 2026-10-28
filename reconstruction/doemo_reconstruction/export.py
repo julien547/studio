@@ -1,6 +1,7 @@
 import copy
 import html
 from .geometry import axis_points, solid_intervals, validate
+from .axis_review import require_reviewed_axes, review_axes, valid_reviews
 
 LAYERS=('walls','doors','windows','stairs','rooms','texts','fire_equipment')
 LABELS={'walls':'Murs','doors':'Portes','windows':'Fenêtres','stairs':'Escaliers',
@@ -8,6 +9,7 @@ LABELS={'walls':'Murs','doors':'Portes','windows':'Fenêtres','stairs':'Escalier
 
 
 def export_svg(level, approved_only=True):
+    if approved_only:require_reviewed_axes(level)
     w,h=level['width'],level['height']
     units='pt' if level['unit']=='pt' else 'px'
     svg=[f'<svg xmlns="http://www.w3.org/2000/svg" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" width="{w}{units}" height="{h}{units}" viewBox="0 0 {w} {h}">']
@@ -36,6 +38,7 @@ def connector_payload(doc):
         raise ValueError('Valider l’identification des niveaux avant le transfert')
     levels=[]
     for level in doc['levels']:
+        require_reviewed_axes(level)
         walls=[]
         for w in level['walls']:
             if w['status']!='approved': continue
@@ -56,6 +59,7 @@ def connector_payload(doc):
 def training_records(doc):
     validate(doc)
     records={}
+    unresolved={l['id']:{i for p in review_axes(l) if not p['resolved'] for i in p['wall_ids']} for l in doc['levels']}
     for entry in doc['history']:
         if entry['operation']['op']!='approve': continue
         w=next(w for w in entry['after']['walls'] if w['id']==entry['operation']['id'])
@@ -63,7 +67,9 @@ def training_records(doc):
         level=next(l for l in doc['levels'] if l['id']==entry['level_id'])
         current=next((x for x in level['walls'] if x['id']==w['id']),None)
         if current!=w: continue
+        if w['id'] in unresolved[level['id']]:continue
         records[(level['id'],w['id'])]={'schema':'doemo.training.architecture/1','source':doc['source'],
                         'level_id':level['id'],'coordinate':level['coordinate'],
-                        'revision':entry['revision'],'validated_by':entry['actor'],'wall':copy.deepcopy(w)}
+                        'revision':entry['revision'],'validated_by':entry['actor'],'wall':copy.deepcopy(w),
+                        'axis_reviews':copy.deepcopy([r for r in valid_reviews(level) if w['id'] in r['wall_ids']])}
     return list(records.values())

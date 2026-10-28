@@ -1,14 +1,16 @@
 # Installer la connexion de Studio aux trois IA RunPod
 
-Livraison **0.3.4**, dépôt privé `julien547/studio`, branche
+Livraison **0.3.5**, dépôt privé `julien547/studio`, branche
 `feat/redessin-ovh-tests`, [PR 1](https://github.com/julien547/studio/pull/1).
 Cette procédure est destinée à la session disposant des accès OVH et RunPod.
 Le code est publié ; **la connexion sur vos serveurs doit encore être installée
 et vérifiée avec les inférences réelles**.
 
-La mise à jour **0.3.4 doit être installée des deux côtés**, OVH et worker RunPod.
-Elle refuse les réponses IA incomplètes et indique le résultat du test de chaque
-moteur. Elle ne modifie ni les poids ni les trois environnements Python.
+La version 0.3.5 ajoute le [contrôle des doubles axes](reconstruction/ovh/CONTROLE_DOUBLES_AXES.md)
+côté OVH. Déployer ensemble le service Python et l’éditeur généré. Un worker RunPod
+0.3.4 déjà installé peut être conservé. Pour une première installation, suivre
+toutes les étapes OVH et RunPod ci-dessous ; les contrôles des sorties IA et l’état
+de chaque moteur sont inclus.
 
 ## Préserver la production
 
@@ -230,5 +232,7 @@ Les portes et passages interrompent cet axe. L’épaisseur du trait est indépe
 de l’épaisseur physique et aucune échelle n’est inventée. Les doubles propositions
 encore produites par le traitement géométrique doivent être corrigées, notamment
 avec « Deux bords → un axe médian », avant validation. L’export validé exclut les
-propositions en attente ; contrôler dans Illustrator qu’aucun mur n’a été approuvé
-deux fois sous la forme de deux tracés parallèles.
+propositions en attente et refuse les paires ambiguës détectées parmi les murs
+approuvés. Résoudre ces paires dans **Doubles axes possibles**, puis contrôler dans
+Illustrator qu’aucun mur n’a été approuvé deux fois sous la forme de deux tracés
+parallèles. Le contrôle géométrique n’est pas exhaustif.

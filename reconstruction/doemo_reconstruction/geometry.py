@@ -253,12 +253,16 @@ def validate(doc):
         if scale is not None:
             if not scale.get('validated_by') or not scale.get('evidence') or not math.isfinite(scale['mm_per_unit']) or scale['mm_per_unit']<=0:
                 raise ValueError("Échelle sans cote validée")
+        from .axis_review import validate_reviews
+        validate_reviews(level)
     return doc
 
 
 def journal_level(level):
     # Keep source pixels once in the project, not twice for every correction.
-    return copy.deepcopy({k:level.get(k) for k in ('id','source_page','walls','scale','floor_validated','stroke_width') if k in level})
+    out=copy.deepcopy({k:level.get(k) for k in ('id','source_page','walls','scale','floor_validated','stroke_width') if k in level})
+    out['axis_reviews']=copy.deepcopy(level.get('axis_reviews',[]))
+    return out
 
 
 def edit(doc, level_id, operation, actor):
@@ -307,6 +311,10 @@ def edit(doc, level_id, operation, actor):
             other=next(x for x in level['walls'] if x['id']==operation['other_id'])
             pieces=merge_parallel_faces(w,other,operation.get('max_separation',24.))
             level['walls']=[x for x in level['walls'] if x['id'] not in (w['id'],other['id'])]+pieces
+        elif op=='distinct_axes':
+            from .axis_review import distinct_review
+            review=distinct_review(level,w['id'],operation['other_id'],actor,operation['note'])
+            level['axis_reviews']=[r for r in level.get('axis_reviews',[]) if r['wall_ids']!=review['wall_ids']]+[review]
         elif op=='update':
             if w['openings'] and any(k in operation for k in ('a','b')):
                 da=[operation.get('a',w['a'])[i]-w['a'][i] for i in (0,1)]
@@ -324,6 +332,8 @@ def edit(doc, level_id, operation, actor):
             connect(w,operation['end'],other,operation['other_end'],operation['max_distance'])
         else:
             raise ValueError("Opération inconnue")
+    from .axis_review import valid_reviews
+    level['axis_reviews']=valid_reviews(level)
     result['revision']+=1
     result['history'].append({'revision':result['revision'],'actor':actor,'level_id':level_id,
                               'operation':operation,'before':before,'after':journal_level(level)})

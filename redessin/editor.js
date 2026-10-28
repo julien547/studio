@@ -4,7 +4,7 @@ let active = null;
 window.doemoEditor = {
   mount: async function(host, initial, user, onChange) {
     const root = host.shadowRoot || host.attachShadow({mode:'open'});
-    root.innerHTML = "<style>\n:host{font:14px system-ui;color:#e8eef6;background:#101925}*{box-sizing:border-box}body{margin:0}header{height:68px;display:flex;align-items:center;gap:24px;padding:12px 22px;border-bottom:1px solid #334052}header strong{font-size:22px;letter-spacing:2px}header span{color:#b7c6d8}.badge{background:#493714;color:#ffd38a;border-radius:16px;padding:6px 12px;font-size:12px}main{display:grid;grid-template-columns:290px 1fr;height:782px}aside{padding:16px;overflow:auto;border-right:1px solid #334052}label{display:block;margin:10px 0;color:#bccadb}button,select,input{font:inherit;border-radius:5px;border:1px solid #46556a;background:#223147;color:white;padding:8px;max-width:100%}button{cursor:pointer}button:hover{background:#38506d}button:disabled{opacity:.45;cursor:default}.row{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0}.row>*{flex:1}input[type=number]{width:114px}input[type=checkbox]{width:auto}.hint{font-size:12px;line-height:1.6;color:#acbed4}.green{background:#15544a}.danger{background:#60352f}#stage{display:flex;flex-direction:column;min-width:0}#tools{padding:10px;background:#192638;display:flex;gap:10px;align-items:center;flex-wrap:wrap}#viewport{overflow:auto;flex:1;background:#66717d;padding:20px}svg{background:white;display:block;width:100%;height:auto;touch-action:none}#message{min-height:36px;padding:10px 18px;color:#ffd38a;background:#192638}h3{font-size:14px;margin-top:22px}#observations{max-height:140px;overflow:auto}#observations div{padding:6px 0;border-bottom:1px solid #344052}#summary{font-variant-numeric:tabular-nums;line-height:1.8}a{color:#9bd6ff}\n[hidden]{display:none!important}main{grid-template-rows:minmax(0,1fr)}#stage,#viewport{min-height:0}</style>\n\n<main><aside>\n<label>Projet JSON <input id=\"load\" type=\"file\" accept=\".json\"></label>\n<label>Niveau <select id=\"level\"></select></label><label><input type=\"checkbox\" id=\"floor\"> Identification du niveau vérifiée</label>\n<div id=\"summary\"></div><p class=\"hint\">Les axes sont noirs. Halo orange : à contrôler. Bleu : sélection. Aucune échelle métrique déduite automatiquement.</p>\n<label>Votre nom <input id=\"actor\" placeholder=\"Dessinateur\"></label>\n<h3>Mur sélectionné</h3><div id=\"selected\" class=\"hint\">Cliquez sur un mur.</div>\n<div class=\"row\"><label>Début X <input type=\"number\" step=\".1\" id=\"ax\"></label><label>Début Y <input type=\"number\" step=\".1\" id=\"ay\"></label></div>\n<div class=\"row\"><label>Fin X <input type=\"number\" step=\".1\" id=\"bx\"></label><label>Fin Y <input type=\"number\" step=\".1\" id=\"by\"></label></div>\n<label>Épaisseur détectée (vide = inconnue) <input type=\"number\" min=\".1\" step=\".1\" id=\"thickness\" value=\"3\"></label>\n<div class=\"row\"><button id=\"apply\">Appliquer</button><button id=\"approve\" class=\"green\">Valider le mur</button></div>\n<div class=\"row\"><button id=\"opening\">Créer une ouverture</button><button id=\"delete\" class=\"danger\">Supprimer</button></div>\n<label>Trait graphique (unités du document) <input type=\"number\" min=\".1\" max=\"50\" step=\".1\" id=\"strokeWidth\" value=\"1\"></label><button id=\"style\">Appliquer le trait</button><div class=\"row\"><button id=\"split\">Couper le mur</button><button id=\"connect\">Raccorder la fin B</button><button id=\"calibrate\">Calibrer une cote</button></div>\n<p class=\"hint\">Déplacez un mur en le faisant glisser. Modifiez ses extrémités pour le prolonger. Un raccord exige le choix explicite de deux murs. Toute modification annule leur validation.</p>\n<button id=\"median\">Deux bords → un axe médian</button><p class=\"hint\">À utiliser seulement si deux traces représentent les bords du même mur. L’axe est créé sur leur portion commune ; les parties qui dépassent sont conservées. Le résultat reste à valider.</p>\n<h3>Ouvertures du mur</h3><select id=\"openingList\"></select><div class=\"row\"><button id=\"editOpening\">Corriger</button><button id=\"removeOpening\">Supprimer l’ouverture</button></div><h3>Zones à contrôler</h3><div id=\"observations\" class=\"hint\"></div>\n<h3>Enregistrer</h3><div class=\"row\"><button id=\"save\">Projet JSON</button><button id=\"svgExport\">SVG validé</button></div><div class=\"row\"><button id=\"draft\">SVG de revue</button><button id=\"training\">Corrections validées</button></div><p class=\"hint\">Enregistrez le JSON pour conserver les corrections. L’export SVG validé ne contient que les murs approuvés du niveau affiché. Ouvrez le SVG dans Illustrator pour contrôler les objets.</p>\n</aside><section id=\"stage\"><div id=\"tools\"><button id=\"add\">Ajouter un mur</button><button id=\"undo\">Annuler</button><button id=\"redo\">Refaire</button><label><input id=\"reference\" type=\"checkbox\" checked> Plan original</label><label><input id=\"candidates\" type=\"checkbox\" checked> Propositions</label><label><input id=\"zones\" type=\"checkbox\" checked> Zones à contrôler</label><button id=\"focus\">Cadrer le niveau</button><button id=\"full\">Page entière</button><label>Zoom <input type=\"range\" id=\"zoom\" min=\"100\" max=\"300\" value=\"100\"></label></div><div id=\"viewport\"><svg id=\"canvas\" xmlns=\"http://www.w3.org/2000/svg\"></svg></div><div id=\"message\" role=\"status\">Chargez un projet ou utilisez la page de test incluse.</div></section></main>\n";
+    root.innerHTML = "<style>\n:host{font:14px system-ui;color:#e8eef6;background:#101925}*{box-sizing:border-box}body{margin:0}header{height:68px;display:flex;align-items:center;gap:24px;padding:12px 22px;border-bottom:1px solid #334052}header strong{font-size:22px;letter-spacing:2px}header span{color:#b7c6d8}.badge{background:#493714;color:#ffd38a;border-radius:16px;padding:6px 12px;font-size:12px}main{display:grid;grid-template-columns:290px 1fr;height:782px}aside{padding:16px;overflow:auto;border-right:1px solid #334052}label{display:block;margin:10px 0;color:#bccadb}button,select,input{font:inherit;border-radius:5px;border:1px solid #46556a;background:#223147;color:white;padding:8px;max-width:100%}button{cursor:pointer}button:hover{background:#38506d}button:disabled{opacity:.45;cursor:default}.row{display:flex;gap:6px;flex-wrap:wrap;margin:9px 0}.row>*{flex:1}input[type=number]{width:114px}input[type=checkbox]{width:auto}.hint{font-size:12px;line-height:1.6;color:#acbed4}.green{background:#15544a}.danger{background:#60352f}#stage{display:flex;flex-direction:column;min-width:0}#tools{padding:10px;background:#192638;display:flex;gap:10px;align-items:center;flex-wrap:wrap}#viewport{overflow:auto;flex:1;background:#66717d;padding:20px}svg{background:white;display:block;width:100%;height:auto;touch-action:none}#message{min-height:36px;padding:10px 18px;color:#ffd38a;background:#192638}h3{font-size:14px;margin-top:22px}#observations{max-height:140px;overflow:auto}#observations div{padding:6px 0;border-bottom:1px solid #344052}#summary{font-variant-numeric:tabular-nums;line-height:1.8}a{color:#9bd6ff}\n[hidden]{display:none!important}main{grid-template-rows:minmax(0,1fr)}#stage,#viewport{min-height:0}</style>\n\n<main><aside>\n<label>Projet JSON <input id=\"load\" type=\"file\" accept=\".json\"></label>\n<label>Niveau <select id=\"level\"></select></label><label><input type=\"checkbox\" id=\"floor\"> Identification du niveau vérifiée</label>\n<div id=\"summary\"></div><p class=\"hint\">Les axes sont noirs. Halo orange : à contrôler. Bleu : sélection. Aucune échelle métrique déduite automatiquement.</p>\n<label>Votre nom <input id=\"actor\" placeholder=\"Dessinateur\"></label>\n<h3>Mur sélectionné</h3><div id=\"selected\" class=\"hint\">Cliquez sur un mur.</div>\n<div class=\"row\"><label>Début X <input type=\"number\" step=\".1\" id=\"ax\"></label><label>Début Y <input type=\"number\" step=\".1\" id=\"ay\"></label></div>\n<div class=\"row\"><label>Fin X <input type=\"number\" step=\".1\" id=\"bx\"></label><label>Fin Y <input type=\"number\" step=\".1\" id=\"by\"></label></div>\n<label>Épaisseur détectée (vide = inconnue) <input type=\"number\" min=\".1\" step=\".1\" id=\"thickness\" value=\"3\"></label>\n<div class=\"row\"><button id=\"apply\">Appliquer</button><button id=\"approve\" class=\"green\">Valider le mur</button></div>\n<div class=\"row\"><button id=\"opening\">Créer une ouverture</button><button id=\"delete\" class=\"danger\">Supprimer</button></div>\n<label>Trait graphique (unités du document) <input type=\"number\" min=\".1\" max=\"50\" step=\".1\" id=\"strokeWidth\" value=\"1\"></label><button id=\"style\">Appliquer le trait</button><div class=\"row\"><button id=\"split\">Couper le mur</button><button id=\"connect\">Raccorder la fin B</button><button id=\"calibrate\">Calibrer une cote</button></div>\n<p class=\"hint\">Déplacez un mur en le faisant glisser. Modifiez ses extrémités pour le prolonger. Un raccord exige le choix explicite de deux murs. Toute modification annule leur validation.</p>\n<button id=\"median\">Deux bords → un axe médian</button><p class=\"hint\">À utiliser seulement si deux traces représentent les bords du même mur. L’axe est créé sur leur portion commune ; les parties qui dépassent sont conservées. Le résultat reste à valider.</p>\n<h3>Doubles axes possibles</h3><p id=\"axisReviewSummary\" class=\"hint\"></p><select id=\"axisPairs\" aria-label=\"Paire de traces à contrôler\"></select>\n<div class=\"row\"><button id=\"showAxisPair\">Voir les deux traces</button><button id=\"mergeAxisPair\">Même mur → axe médian</button></div>\n<button id=\"distinctAxisPair\">Confirmer deux murs distincts</button><p class=\"hint\">Contrôlez le plan original. Deux traces proches peuvent appartenir à des murs différents. La confirmation exige un motif et devient caduque si leur géométrie change. Les axes superposés doivent être corrigés.</p>\n<h3>Ouvertures du mur</h3><select id=\"openingList\"></select><div class=\"row\"><button id=\"editOpening\">Corriger</button><button id=\"removeOpening\">Supprimer l’ouverture</button></div><h3>Zones à contrôler</h3><div id=\"observations\" class=\"hint\"></div>\n<h3>Enregistrer</h3><div class=\"row\"><button id=\"save\">Projet JSON</button><button id=\"svgExport\">SVG validé</button></div><div class=\"row\"><button id=\"draft\">SVG de revue</button><button id=\"training\">Corrections validées</button></div><p class=\"hint\">Enregistrez le JSON pour conserver les corrections. L’export SVG validé ne contient que les murs approuvés du niveau affiché. Ouvrez le SVG dans Illustrator pour contrôler les objets.</p>\n</aside><section id=\"stage\"><div id=\"tools\"><button id=\"add\">Ajouter un mur</button><button id=\"undo\">Annuler</button><button id=\"redo\">Refaire</button><label><input id=\"reference\" type=\"checkbox\" checked> Plan original</label><label><input id=\"candidates\" type=\"checkbox\" checked> Propositions</label><label><input id=\"zones\" type=\"checkbox\" checked> Zones à contrôler</label><button id=\"focus\">Cadrer le niveau</button><button id=\"full\">Page entière</button><label>Zoom <input type=\"range\" id=\"zoom\" min=\"100\" max=\"300\" value=\"100\"></label></div><div id=\"viewport\"><svg id=\"canvas\" xmlns=\"http://www.w3.org/2000/svg\"></svg></div><div id=\"message\" role=\"status\">Chargez un projet ou utilisez la page de test incluse.</div></section></main>\n";
     const realDocument = globalThis.document;
     const document = {
       getElementById: id => root.getElementById(id),
@@ -13,7 +13,7 @@ window.doemoEditor = {
       addEventListener: (...args) => root.addEventListener(...args),
     };
 'use strict';
-let doc=null,index=0,selected=null,mode=null,first=null,drag=null,undo=[],redo=[];
+let doc=null,index=0,selected=null,mode=null,first=null,drag=null,undo=[],redo=[],reviewPair=null,axisPairs=[];
 const $=id=>document.getElementById(id), ns='http://www.w3.org/2000/svg';
 const level=()=>doc.levels[index], chosen=()=>level().walls.find(w=>w.id===selected);
 const clone=x=>JSON.parse(JSON.stringify(x));
@@ -25,6 +25,53 @@ function intervals(w){let cursor=0,out=[];for(const o of [...w.openings].sort((a
   if(o.start>cursor)out.push([cursor,o.start]);cursor=o.end;
 }if(cursor<1)out.push([cursor,1]);return out}
 function axis(w,lo=0,hi=1){return [lo,hi].map(t=>w.a.map((v,i)=>v+(w.b[i]-v)*t))}
+// BEGIN AXIS REVIEW — pure geometry, tested against the Python implementation.
+function axisSnapshot(w){return [w.id,[...w.a],[...w.b],w.thickness,w.openings.map(o=>[o.kind,o.start,o.end]).sort((a,b)=>a[0]<b[0]?-1:a[0]>b[0]?1:a[1]-b[1]||a[2]-b[2])]}
+function closeAxes(first,second){
+ if(first.id===second.id||[first,second].some(w=>w.status==='rejected'))return null;
+ [first,second]=[first,second].sort((a,b)=>a.id<b.id?-1:a.id>b.id?1:0);
+ const [a,b]=[first.a,first.b].sort((p,q)=>p[0]-q[0]||p[1]-q[1]),c=second.a,d=second.b;
+ const length=distance(a,b),other=distance(c,d),ux=(b[0]-a[0])/length,uy=(b[1]-a[1])/length;
+ if(Math.abs(ux*(d[1]-c[1])-uy*(d[0]-c[0]))/other>Math.sin(Math.PI/180))return null;
+ const project=p=>(p[0]-a[0])*ux+(p[1]-a[1])*uy,projected=[c,d].map(project);
+ const spans=[first,second].map(w=>intervals(w).map(([lo,hi])=>axis(w,lo,hi).map(project).sort((x,y)=>x-y))),overlaps=[];
+ for(const [start,end]of spans[0])for(const [os,oe]of spans[1]){
+  const lo=Math.max(start,os),hi=Math.min(end,oe);if(hi-lo<6)continue;
+  const offsets=[lo,hi].map(t=>{const f=(t-projected[0])/(projected[1]-projected[0]),q=c.map((v,k)=>v+(d[k]-v)*f);return ux*(q[1]-a[1])-uy*(q[0]-a[0])});
+  const separation=Math.max(...offsets.map(Math.abs));
+  if(separation>24||(offsets[0]*offsets[1]<0&&separation>1e-6))continue;
+  overlaps.push({first:[lo,hi].map(t=>[a[0]+ux*t,a[1]+uy*t]),length:hi-lo,separation});
+ }
+ if(!overlaps.length)return null;const separation=Math.max(...overlaps.map(p=>p.separation));
+ return {wall_ids:[first.id,second.id],spans:overlaps,overlap:overlaps.reduce((n,p)=>n+p.length,0),separation,relation:separation<=1e-6?'coincident':'parallel',snapshots:[axisSnapshot(first),axisSnapshot(second)]};
+}
+function validAxisReviews(l){
+ checkAxisReviews(l);
+ const walls=new Map(l.walls.filter(w=>w.status!=='rejected').map(w=>[w.id,w]));
+ return (l.axis_reviews||[]).filter(r=>r.wall_ids.every(id=>walls.has(id))&&JSON.stringify(r.snapshots)===JSON.stringify(r.wall_ids.map(id=>axisSnapshot(walls.get(id)))));
+}
+function reviewAxes(l,approvedOnly=false){
+ const walls=l.walls.filter(w=>w.status!=='rejected'&&(!approvedOnly||w.status==='approved'));
+ const boxes=walls.map(w=>[Math.min(w.a[0],w.b[0]),Math.max(w.a[0],w.b[0]),Math.min(w.a[1],w.b[1]),Math.max(w.a[1],w.b[1]),w]).sort((a,b)=>a[0]-b[0]||(a[4].id<b[4].id?-1:1));
+ const decisions=new Set(validAxisReviews(l).map(r=>JSON.stringify(r.wall_ids))),pairs=[];
+ for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){
+  const [,right,top,bottom,w]=boxes[i],[left,,ot,ob,v]=boxes[j];
+  if(left>right+24)break;if(ot>bottom+24||top>ob+24)continue;
+  const pair=closeAxes(w,v);if(pair){pair.resolved=pair.relation!=='coincident'&&decisions.has(JSON.stringify(pair.wall_ids));pairs.push(pair)}
+ }
+ return pairs.sort((a,b)=>Number(a.resolved)-Number(b.resolved)||b.overlap-a.overlap||(JSON.stringify(a.wall_ids)<JSON.stringify(b.wall_ids)?-1:1));
+}
+function checkAxisReviews(l){
+ const reviews=l.axis_reviews||[],seen=new Set();if(!Array.isArray(reviews)||reviews.length>10000)throw Error('Contrôles des axes invalides');
+ for(const r of reviews){
+  if(!r||JSON.stringify(Object.keys(r).sort())!==JSON.stringify(['decision','note','snapshots','validated_by','wall_ids']))throw Error('Contrôle des axes incomplet');
+  const ids=r.wall_ids,key=JSON.stringify(ids);
+  if(!Array.isArray(ids)||ids.length!==2||!ids.every(x=>typeof x==='string')||ids[0]>=ids[1]||seen.has(key))throw Error('Paire d’axes invalide');seen.add(key);
+  if(r.decision!=='distinct_walls'||typeof r.validated_by!=='string'||!r.validated_by.trim()||typeof r.note!=='string'||!r.note.trim()||r.note.trim().length>500)throw Error('Décision humaine et motif requis');
+  if(!Array.isArray(r.snapshots)||r.snapshots.length!==2||r.snapshots.some((s,i)=>!Array.isArray(s)||s.length!==5||s[0]!==ids[i]))throw Error('Géométrie de contrôle absente');
+ }
+}
+// END AXIS REVIEW
 function pathData(w,lo,hi){const [a,b]=axis(w,lo,hi);return `M ${a[0]} ${a[1]} L ${b[0]} ${b[1]}`}
 function check(d){
  if(d.schema!=='doemo.architecture/1'||!Array.isArray(d.levels)||!d.levels.length||!Number.isInteger(d.revision)||d.revision<0||!Array.isArray(d.history))throw Error('Projet incompatible');
@@ -37,13 +84,13 @@ function check(d){
    if(w.a.length!==2||w.b.length!==2||![...w.a,...w.b].every(Number.isFinite)||distance(w.a,w.b)<1e-6||(w.thickness!==null&&(!Number.isFinite(w.thickness)||w.thickness<=0)))throw Error('Mur invalide');
    if(!['pending','approved','rejected'].includes(w.status))throw Error('État invalide');
    for(const p of [w.a,w.b])if(p[0]<0||p[0]>l.width||p[1]<0||p[1]>l.height)throw Error('Mur hors page');intervals(w);
-  }
+  }checkAxisReviews(l);
  }return d;
 }
-function journal(l){return clone({id:l.id,source_page:l.source_page,walls:l.walls,scale:l.scale,floor_validated:l.floor_validated,stroke_width:l.stroke_width??1})}
+function journal(l){return clone({id:l.id,source_page:l.source_page,walls:l.walls,scale:l.scale,floor_validated:l.floor_validated,stroke_width:l.stroke_width??1,axis_reviews:l.axis_reviews||[]})}
 function mutate(operation,fn){try{
  const name=actor(),snapshot=journal(level()),before=clone(snapshot);
- try{fn();check(doc)}catch(e){Object.assign(level(),snapshot);throw e}
+ try{fn();check(doc);level().axis_reviews=validAxisReviews(level())}catch(e){Object.assign(level(),snapshot);throw e}
  undo.push({levelId:level().id,snapshot});if(undo.length>40)undo.shift();redo=[];
  doc.revision++;doc.history.push({revision:doc.revision,actor:name,level_id:level().id,operation,before,after:journal(level())});
  onChange();render();say('Correction en mémoire. Cliquez sur Enregistrer sur OVH.');
@@ -66,6 +113,13 @@ function fields(){
  }
 }
 function render(){if(!doc)return;const l=level(),svg=$('canvas');svg.replaceChildren();
+ const report=reviewAxes(l);axisPairs=report.filter(p=>!p.resolved);
+ if(reviewPair&&!axisPairs.some(p=>JSON.stringify(p.wall_ids)===JSON.stringify(reviewPair)))reviewPair=null;
+ $('axisReviewSummary').textContent=`${axisPairs.length} paire(s) à contrôler · ${report.length-axisPairs.length} paire(s) confirmée(s) distincte(s). Ce contrôle géométrique ne reconnaît pas les murs.`;
+ $('axisPairs').replaceChildren();const empty=document.createElement('option');empty.value='';empty.textContent='Choisir une paire';$('axisPairs').append(empty);
+ for(const [i,p]of axisPairs.entries()){const o=document.createElement('option');o.value=i;o.textContent=`${i+1} · ${p.relation==='coincident'?'axes superposés':'axes proches'} · écart ${p.separation.toFixed(2)} · commun ${p.overlap.toFixed(1)}`;$('axisPairs').append(o)}
+ if(reviewPair)$('axisPairs').value=String(axisPairs.findIndex(p=>JSON.stringify(p.wall_ids)===JSON.stringify(reviewPair)));
+ for(const id of ['showAxisPair','mergeAxisPair','distinctAxisPair'])$(id).disabled=!reviewPair;
  const ai=Object.values(l.ai_evidence||{}).at(-1)||{},observations=[...(l.observations||[]),...(ai.zones||[])];
  if($('reference').checked&&typeof l.reference==='string'&&l.reference.startsWith('data:image/png;base64,'))element('image',{href:l.reference,x:0,y:0,width:l.width,height:l.height,opacity:.65});
  if($('zones').checked)for(const z of observations){const b=z.bbox,r=element('rect',{x:b[0],y:b[1],width:b[2]-b[0],height:b[3]-b[1],fill:'#b55eea','fill-opacity':.08,stroke:'#9f4ac8','stroke-width':.6,'stroke-dasharray':'3 2','pointer-events':'none'});element('title',{},r).textContent=z.reason}
@@ -74,7 +128,8 @@ function render(){if(!doc)return;const l=level(),svg=$('canvas');svg.replaceChil
   const g=element('g',{'data-id':w.id}),width=l.stroke_width??1;element('title',{},g).textContent=`${w.id} · ${w.status} · épaisseur détectée : ${w.thickness??'inconnue'}`;
   for(const [lo,hi]of intervals(w)){
    const d=pathData(w,lo,hi);
-   if(w.id===selected||(w.status==='pending'&&$('zones').checked))element('path',{d,fill:'none',stroke:w.id===selected?'#1678e0':'#d78b18','stroke-width':width+2,'stroke-opacity':.5,'pointer-events':'none'},g);
+   const highlighted=w.id===selected||reviewPair?.includes(w.id);
+   if(highlighted||(w.status==='pending'&&$('zones').checked))element('path',{d,fill:'none',stroke:highlighted?'#1678e0':'#d78b18','stroke-width':width+2,'stroke-opacity':.5,'pointer-events':'none'},g);
    element('path',{d,fill:'none',stroke:'#000000','stroke-width':width,'stroke-linecap':'butt'},g);
    element('path',{d,fill:'none',stroke:'transparent','stroke-width':Math.max(5,width),'pointer-events':'stroke'},g);
   }
@@ -85,7 +140,7 @@ function render(){if(!doc)return;const l=level(),svg=$('canvas');svg.replaceChil
  $('floor').checked=!!l.floor_validated;$('undo').disabled=!undo.length;$('redo').disabled=!redo.length;
  $('observations').replaceChildren();for(const z of observations){const e=document.createElement('div');e.textContent=z.reason;$('observations').append(e)}for(const t of ai.texts||[]){const e=document.createElement('div');e.textContent='OCR à contrôler : '+t.text;$('observations').append(e)}fields();
 }
-function load(d){doc=check(d);index=0;selected=null;undo=[];redo=[];$('level').replaceChildren();for(const [i,l]of doc.levels.entries()){const o=document.createElement('option');o.value=i;o.textContent=l.name;$('level').append(o)}focus();render();say('Projet chargé. Les propositions exigent une validation humaine.')}
+function load(d){doc=check(d);index=0;selected=null;reviewPair=null;undo=[];redo=[];$('level').replaceChildren();for(const [i,l]of doc.levels.entries()){const o=document.createElement('option');o.value=i;o.textContent=l.name;$('level').append(o)}focus();render();say('Projet chargé. Les propositions exigent une validation humaine.')}
 function xy(e){const p=$('canvas').createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform($('canvas').getScreenCTM().inverse());return [q.x,q.y]}
 $('canvas').addEventListener('pointerdown',e=>{
  if(!doc)return;const p=xy(e),target=e.target.closest('[data-id]');
@@ -158,15 +213,27 @@ $('calibrate').onclick=()=>{const w=chosen();if(!w)return say('Sélectionnez un 
 $('floor').onchange=()=>{const value=$('floor').checked;mutate({op:'identify_floor',validated:value},()=>{level().floor_validated=value})};
 $('connect').onclick=()=>{if(!chosen())return say('Sélectionnez d’abord un mur.');mode='connect';say('Cliquez près de l’extrémité du second mur à raccorder à la fin B. Les deux validations seront annulées.')};
 $('median').onclick=()=>{if(!chosen())return say('Sélectionnez d’abord une trace de bord.');mode='median';say('Cliquez sur l’autre bord du même mur. L’axe commun remplacera les deux traces sur leur recouvrement. Échap pour annuler.')};
+$('axisPairs').onchange=()=>{const p=$('axisPairs').value===''?null:axisPairs[+$('axisPairs').value];reviewPair=p?.wall_ids||null;selected=reviewPair?.[0]||null;mode=drag=null;render()};
+$('showAxisPair').onclick=()=>{
+ if(!reviewPair)return;const walls=level().walls.filter(w=>reviewPair.includes(w.id)),points=walls.flatMap(w=>[w.a,w.b]);
+ const xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),x=Math.min(...xs),y=Math.min(...ys),right=Math.max(...xs),bottom=Math.max(...ys);
+ const viewport=$('viewport'),ratio=Math.max(1,viewport.clientWidth-40)/Math.max(1,viewport.clientHeight-40);
+ let width=right-x+30,height=bottom-y+30;if(width/height<ratio)width=height*ratio;else height=width/ratio;
+ $('candidates').checked=true;$('reference').checked=true;$('zoom').value=100;$('canvas').style.width='100%';render();
+ $('canvas').setAttribute('viewBox',`${(x+right-width)/2} ${(y+bottom-height)/2} ${width} ${height}`);viewport.scrollTop=viewport.scrollLeft=0;
+ say('Contrôlez ces deux traces bleues sur le plan original. Les traits exportés restent noirs.');
+};
+$('mergeAxisPair').onclick=()=>{if(reviewPair)median(...reviewPair.map(id=>level().walls.find(w=>w.id===id)))};
+$('distinctAxisPair').onclick=()=>{if(!reviewPair)return;const p=closeAxes(...reviewPair.map(id=>level().walls.find(w=>w.id===id)));if(!p||p.relation==='coincident')return say('Deux axes superposés doivent être corrigés ; ils ne peuvent pas être confirmés distincts.');const note=prompt('Pourquoi ces traces représentent-elles deux murs distincts ?');if(note===null)return;mutate({op:'distinct_axes',id:p.wall_ids[0],other_id:p.wall_ids[1],note},()=>{if(!note.trim()||note.trim().length>500)throw Error('Motif requis (500 caractères maximum).');const review={decision:'distinct_walls',wall_ids:p.wall_ids,snapshots:p.snapshots,validated_by:actor(),note:note.trim()};level().axis_reviews=(level().axis_reviews||[]).filter(r=>JSON.stringify(r.wall_ids)!==JSON.stringify(p.wall_ids)).concat([review])})};
 $('add').onclick=()=>{mode='add';first=null;say('Cliquez sur le début du nouveau mur, puis sur sa fin.')};
 $('undo').onclick=()=>historyMove(undo,redo,'undo');$('redo').onclick=()=>historyMove(redo,undo,'redo');
-$('level').onchange=()=>{index=+$('level').value;selected=null;mode=null;focus();render()};
+$('level').onchange=()=>{index=+$('level').value;selected=null;mode=null;reviewPair=null;focus();render()};
 for(const id of ['reference','candidates','zones'])$(id).onchange=render;
 $('focus').onclick=focus;$('full').onclick=()=>{$('canvas').setAttribute('viewBox',`0 0 ${level().width} ${level().height}`)};
 $('zoom').oninput=()=>{$('canvas').style.width=$('zoom').value+'%'};
 function download(name,text,type='application/json'){const u=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
 $('save').onclick=()=>{if(doc)download('doemo-architecture.json',JSON.stringify(doc,null,2))};
-function svgExport(preview){if(!doc)return;const l=level(),svg=document.createElementNS(ns,'svg');svg.setAttribute('xmlns',ns);svg.setAttribute('viewBox',`0 0 ${l.width} ${l.height}`);svg.setAttribute('width',l.width+(l.unit==='pt'?'pt':'px'));svg.setAttribute('height',l.height+(l.unit==='pt'?'pt':'px'));
+function svgExport(preview){if(!doc)return;const l=level();if(!preview&&reviewAxes(l,true).some(p=>!p.resolved))return say('Doubles axes possibles parmi les murs validés : corriger ou confirmer deux murs distincts avant l’export');const svg=document.createElementNS(ns,'svg');svg.setAttribute('xmlns',ns);svg.setAttribute('viewBox',`0 0 ${l.width} ${l.height}`);svg.setAttribute('width',l.width+(l.unit==='pt'?'pt':'px'));svg.setAttribute('height',l.height+(l.unit==='pt'?'pt':'px'));
  const ref=element('g',{id:'reference',style:'display:none'},svg);element('image',{href:l.reference,width:l.width,height:l.height},ref);
  for(const name of ['walls','doors','windows','stairs','rooms','texts','fire_equipment']){const g=element('g',{id:name},svg);if(name==='walls')for(const w of l.walls){
  if(w.status==='rejected'||(!preview&&w.status!=='approved'))continue;
@@ -174,7 +241,7 @@ function svgExport(preview){if(!doc)return;const l=level(),svg=document.createEl
  }}download((preview?'revue-':'valide-')+l.id+'.svg',new XMLSerializer().serializeToString(svg),'image/svg+xml');
 }
 $('svgExport').onclick=()=>svgExport(false);$('draft').onclick=()=>svgExport(true);
-$('training').onclick=()=>{const records=new Map();for(const h of doc.history){if(h.operation.op!=='approve')continue;const old=h.after.walls.find(w=>w.id===h.operation.id),l=doc.levels.find(l=>l.id===h.level_id),now=l.walls.find(w=>w.id===h.operation.id);if(old&&JSON.stringify(old)===JSON.stringify(now))records.set(l.id+':'+old.id,{schema:'doemo.training.architecture/1',source:doc.source,level_id:l.id,coordinate:l.coordinate,revision:h.revision,validated_by:h.actor,wall:old})}download('corrections-validees.jsonl',[...records.values()].map(r=>JSON.stringify(r)).join('\n'),'application/x-ndjson')};
+$('training').onclick=()=>{const records=new Map(),unresolved=new Map(doc.levels.map(l=>[l.id,new Set(reviewAxes(l).filter(p=>!p.resolved).flatMap(p=>p.wall_ids))]));for(const h of doc.history){if(h.operation.op!=='approve')continue;const old=h.after.walls.find(w=>w.id===h.operation.id),l=doc.levels.find(l=>l.id===h.level_id),now=l.walls.find(w=>w.id===h.operation.id);if(old&&JSON.stringify(old)===JSON.stringify(now)&&!unresolved.get(l.id).has(old.id))records.set(l.id+':'+old.id,{schema:'doemo.training.architecture/1',source:doc.source,level_id:l.id,coordinate:l.coordinate,revision:h.revision,validated_by:h.actor,wall:old,axis_reviews:validAxisReviews(l).filter(r=>r.wall_ids.includes(old.id))})}download('corrections-validees.jsonl',[...records.values()].map(r=>JSON.stringify(r)).join('\n'),'application/x-ndjson');say('Export des corrections : les murs impliqués dans une paire non résolue sont exclus.')};
 $('load').onchange=async e=>{try{load(JSON.parse(await e.target.files[0].text()))}catch(err){say(err.message)}};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){mode=first=drag=null;say('Opération annulée.')}});
 

@@ -7,13 +7,13 @@ Mise à jour du 28 octobre 2026. Le moteur PDF et les modules existants conserve
 | Étape | État | Livrable et condition de passage |
 | --- | --- | --- |
 | Import et coordonnées | Prototype implémenté | PDF vectoriels récupérés avant analyse raster ; scan conservé ; régions de niveaux sur une même page sans déplacement de coordonnées. Tester les documents représentatifs, rotations et recadrages avant généralisation. |
-| Reconstruction des murs | Prototype local implémenté | Paires de bords parallèles, axes et épaisseurs en unités du document, raccords explicites, export en un trait noir médian par mur. Les cadres, équipements et marches produisent encore des faux positifs. |
+| Reconstruction des murs | Prototype et contrôle des doubles axes livrés | Paires de bords parallèles, axes et épaisseurs en unités du document, raccords explicites, traits noirs médians. L’éditeur repère les paires proches et exige leur examen avant export lorsqu’elles sont approuvées. Les cadres, équipements et marches produisent encore des faux positifs ; la règle d’un axe par mur physique reste à vérifier par le dessinateur. |
 | Édition et validation | Prototype implémenté | Ajouter, supprimer, déplacer, prolonger, raccorder, changer l’épaisseur, réserver/corriger une ouverture, couper, annuler/refaire et sauvegarder. Les modifications annulent l’approbation. |
 | Prototype Animalis | Généré sur R−1 et RDC, à valider | Scan reçu `mon-plan (1).pdf`, A3, une page, deux niveaux. Deux régions distinctes, référence conservée et propositions éditables. Zéro mur approuvé automatiquement. Pas de calibration métrique. |
 | Segmentation spécialisée | À sélectionner et entraîner ou acquérir | Comparer code, poids ET données ; obtenir des droits commerciaux explicites. Worker ONNX isolé préparé, sans modèle fourni. Ajouter masques sémantiques, confiance et post-traitement topologique. |
 | Portes, fenêtres, escaliers et pièces | À développer | Reconnaissance sémantique et géométrie paramétrique ; conserver les passages, escaliers et limites non résolus ; ne pas déduire un contour fermé en bouchant une ouverture. |
-| Trois IA existantes | À intégrer aux services réels | Infrastructure précisée : RunPod RTX A6000, Qwen3.5-9B, PaddleOCR et RTMDet. Connecteurs isolés, API privée et contrôleur de tâches développés ; accès SSH et recette RunPod à terminer. Le checkpoint COCO est exclu du module murs. Réutiliser uniquement pour OCR, classification ou contrôle visuel mesurable ; ne pas leur déléguer la validation géométrique. |
-| Éditeur Studio et persistance serveur | À intégrer | Raccordement à l’application React et aux sessions existantes, travaux privés, verrouillage/révisions, droits par projet, sauvegarde durable, journal d’audit et quotas. Le prototype est un éditeur HTML local avec traitement CLI. |
+| Trois IA existantes | Raccordement livré, inférences réelles à vérifier | RunPod RTX A6000, Qwen3.5-9B, PaddleOCR et RTMDet. API privée signée, adaptateurs isolés, contrôle des sorties et état de démarrage par moteur livrés. La session de déploiement réalise la recette OVH–RunPod. RTMDet COCO est exclu du module murs. |
+| Éditeur Studio et persistance serveur | Livraison web et procédure disponibles | Éditeur dans l’iframe du menu actuel, sessions PHP, socket privé, projets par utilisateur, tâches persistantes, contrôle des révisions et journal des corrections. Tests locaux avec PHP et navigateur ; installation et recette sur les serveurs réels confiées à l’autre session. |
 | Connecteur Illustrator | Contrat et import JSX préparés, branchement à faire | Adapter le connecteur local existant au contrat versionné ; calques natifs, objets indépendants, référence embarquée masquée, absence d’écrasement des fichiers. Recette sur la version Illustrator du dessinateur. |
 | Apprentissage DOEMO | Journal local et export JSONL implémentés | Enregistre uniquement des murs explicitement approuvés et encore identiques à leur dernière approbation. Ajouter identité serveur, droits d’usage des documents, jeux séparés par chantier et versionnement avant entraînement. |
 
@@ -35,7 +35,7 @@ Voir `reconstruction/README.md` pour exécuter et vérifier le prototype.
 
 La branche `feat/studio-host` de `julien547/doemo-app` possède déjà une feuille de route Studio Plans et un moteur v0.24. Le nouveau banc de ce dépôt ne remplace pas les fonctions précédemment livrées. L’adaptateur d’analyse v3 préserve la correspondance canevas/source ; les essais Animalis du moteur existant sont conservés séparément (264 et 133 propositions, aucune ouverture reconnue). L’ajout à la feuille de route de cette application est préparé dans une branche de revue distincte, sans données du plan ; sa publication suit l’autorisation du propriétaire.
 
-## Priorité courante — module spécialisé DOEMO Walls 0.2
+## Étape initiale — module spécialisé DOEMO Walls 0.2
 
 Le document de référence courant est `2(2).pdf`, page 1 exclusivement. Le module murs possède son contrat de masques architecturaux et son moteur d’axes ; il n’est pas une quatrième utilisation de RTMDet. Épaisseur détectée et trait graphique sont indépendants. L’API refuse la détection sémantique de murs tant qu’un modèle spécialisé et ses droits ne sont pas qualifiés.
 
@@ -104,3 +104,32 @@ avec des moteurs simulés, sous un menu dans une iframe, sans bandeau. Aucun
 déploiement ni inférence réelle RunPod effectués dans cette session. La règle
 reste un seul trait noir plein médian par mur ; les doubles propositions doivent
 être corrigées avant validation et la segmentation spécialisée reste à développer.
+
+## Contrôles des IA 0.3.4
+
+Les réponses incomplètes sont refusées avant de déclarer une inférence réussie.
+Qwen doit couvrir toutes les zones fournies, sans créer de géométrie. Les trois
+tests de démarrage sont tentés même si l’un échoue, avec état par moteur visible
+dans Studio. Le worker ne se déclare pas disponible pour l’arrêt pendant ces tests.
+111 tests locaux et le parcours navigateur avec moteurs simulés passent. Les
+inférences réelles restent à vérifier sur RunPod ; aucune réinstallation des IA
+n’est effectuée par ce module.
+
+## Contrôle des doubles axes 0.3.5
+
+Le panneau **Doubles axes possibles** guide la revue des traces proches. Le
+dessinateur peut les ramener à un axe médian ou confirmer deux murs distincts
+avec un motif. Les décisions sont liées à la géométrie et attribuées à la session
+authentifiée sur OVH ; les modifications imposent un nouvel examen.
+
+Les exports validés SVG/Illustrator refusent les paires approuvées encore ambiguës.
+L’apprentissage exclut les murs impliqués dans une paire non résolue. Le contrôle
+préserve les ouvertures et ne ferme aucun passage. 128 tests Python et le parcours
+Chromium de correction passent, avec comparaison des calculs Python/JavaScript.
+
+La page 1 conserve 381 propositions ; le contrôle signale 468 paires proches,
+concernant 294 propositions. Ces signalements ne sont pas des doublons avérés et
+ne mesurent pas une précision. Aucun mur ni aucune échelle n’a été validé. Voir
+[la procédure et les limites](../reconstruction/ovh/CONTROLE_DOUBLES_AXES.md).
+La qualification d’un modèle sémantique spécialisé, l’annotation humaine de référence
+et les essais réels RunPod/Illustrator restent les prochaines conditions de passage.

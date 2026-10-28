@@ -135,6 +135,9 @@ class Workbench:
                         raise ValueError('Référence ou coordonnées modifiées')
                 if level.get('scale') and level.get('scale') != before.get('scale'):
                     level['scale']['validated_by'] = actor
+                for review in level.get('axis_reviews', []):
+                    if review not in before.get('axis_reviews', []):
+                        review['validated_by'] = actor
             if not isinstance(doc.get('history'), list) or len(doc['history']) > 3000:
                 raise ValueError('Historique invalide')
             previous = old.get('history', [])
@@ -142,6 +145,11 @@ class Workbench:
                 raise ValueError('Historique serveur modifié')
             for entry in doc['history'][len(previous):]:
                 entry['actor'] = actor
+                prior_level = next((l for l in old['levels'] if l['id'] == entry.get('level_id')), {})
+                for stage in ('before', 'after'):
+                    for review in entry.get(stage, {}).get('axis_reviews', []):
+                        if review not in prior_level.get('axis_reviews', []):
+                            review['validated_by'] = actor
             encoded = canonical(doc)
             db.execute('UPDATE projects SET document=?,version=version+1 WHERE id=?', (encoded, project_id))
             db.execute('INSERT INTO saves VALUES(?,?,?,?,?)',
@@ -296,7 +304,7 @@ def create_app(workbench, start_worker=True):
 
     @app.get('/health')
     def health(user=Depends(actor)):
-        return {'ready': True, 'version': '0.3.4', 'runpod_configured': bool(workbench.remote_url and workbench.key_path),
+        return {'ready': True, 'version': '0.3.5', 'runpod_configured': bool(workbench.remote_url and workbench.key_path),
                 'runpod_inference_verified': False, 'specialized_segmentation': 'not_qualified', 'user': user}
 
     @app.get('/runpod/status')

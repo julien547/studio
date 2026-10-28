@@ -28,6 +28,11 @@ ouvertures ne sont pas reconnues automatiquement par cette version. Aucun mur ni
 aucune échelle n’est approuvé automatiquement. Les coordonnées de la page restent
 inchangées ; le trait graphique et l’épaisseur physique sont indépendants.
 
+La livraison 0.3.5 ajoute le [contrôle des doubles axes](CONTROLE_DOUBLES_AXES.md) :
+repérage des paires proches, sélection guidée, correction vers une médiane ou
+confirmation de deux murs distincts. Les exports validés refusent les paires
+détectées encore ambiguës ; les projets et SVG de revue restent accessibles.
+
 Pour terminer le raccordement réel des IA, suivre la
 [procédure commune OVH–RunPod](RACCORDEMENT_RUNPOD.md). Le bouton d’analyse devient
 disponible après un contrôle réussi du service et des trois tests de démarrage.
