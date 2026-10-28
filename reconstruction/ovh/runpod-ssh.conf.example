@@ -1,0 +1,12 @@
+# Managed by the existing RunPod controller after identifying the CURRENT Pod.
+# Values below are placeholders; this file is not installed automatically.
+Host doemo-runpod-active
+    HostName HOST_FROM_CURRENT_RUNPOD
+    Port PORT_FROM_CURRENT_RUNPOD
+    User USER_FROM_CURRENT_RUNPOD
+    IdentityFile /etc/doemo-redessin/runpod-ssh-private
+    UserKnownHostsFile /etc/doemo-redessin/runpod_known_hosts
+    IdentitiesOnly yes
+    BatchMode yes
+    StrictHostKeyChecking yes
+    ConnectTimeout 15

@@ -1,0 +1,4 @@
+# Install only in an isolated environment after the selected model's rights review.
+onnxruntime==1.23.2
+numpy>=2.2,<3
+Pillow==12.1.1

@@ -1,0 +1,176 @@
+# Feuille de route DOEMO Studio
+
+Mise à jour du 28 octobre 2026. Le moteur PDF et les modules existants conservent leurs périmètres. Le module de reconstruction architecturale est ajouté comme chantier distinct, destiné à produire des objets géométriques éditables dans Illustrator.
+
+## Reconstruction architecturale
+
+| Étape | État | Livrable et condition de passage |
+| --- | --- | --- |
+| Import et coordonnées | Axes PDF natifs livrés en 0.3.7 | Traits pleins repris directement, rectangles simples réduits à leur médiane, pages mixtes conservées ; limites des chemins complexes affichées. Scans et coordonnées originales préservés. Les formes PDF composées et leur visibilité restent à développer. |
+| Reconstruction des murs | Prototype et contrôle des doubles axes livrés | Paires de bords parallèles, axes et épaisseurs en unités du document, raccords explicites, traits noirs médians. L’éditeur repère les paires proches et exige leur examen avant export lorsqu’elles sont approuvées. Les cadres, équipements et marches produisent encore des faux positifs ; la règle d’un axe par mur physique reste à vérifier par le dessinateur. |
+| Édition et validation | Prototype implémenté | Ajouter, supprimer, déplacer, prolonger, raccorder, changer l’épaisseur, réserver/corriger une ouverture, couper, annuler/refaire et sauvegarder. Les modifications annulent l’approbation. |
+| Prototype Animalis | Généré sur R−1 et RDC, à valider | Scan reçu `mon-plan (1).pdf`, A3, une page, deux niveaux. Deux régions distinctes, référence conservée et propositions éditables. Zéro mur approuvé automatiquement. Pas de calibration métrique. |
+| Segmentation spécialisée | À sélectionner et entraîner ou acquérir | Comparer code, poids ET données ; obtenir des droits commerciaux explicites. Worker ONNX isolé préparé, sans modèle fourni. Ajouter masques sémantiques, confiance et post-traitement topologique. |
+| Portes, fenêtres, escaliers et pièces | À développer | Reconnaissance sémantique et géométrie paramétrique ; conserver les passages, escaliers et limites non résolus ; ne pas déduire un contour fermé en bouchant une ouverture. |
+| Trois IA existantes | Raccordement livré, inférences réelles à vérifier | RunPod RTX A6000, Qwen3.5-9B, PaddleOCR et RTMDet. API privée signée, adaptateurs isolés, contrôle des sorties et état de démarrage par moteur livrés. La session de déploiement réalise la recette OVH–RunPod. RTMDet COCO est exclu du module murs. |
+| Éditeur Studio et persistance serveur | Livraison web et procédure disponibles | Éditeur dans l’iframe du menu actuel, sessions PHP, socket privé, projets par utilisateur, tâches persistantes, contrôle des révisions et journal des corrections. Tests locaux avec PHP et navigateur ; installation et recette sur les serveurs réels confiées à l’autre session. |
+| Connecteur Illustrator | Contrat et import JSX préparés, branchement à faire | Adapter le connecteur local existant au contrat versionné ; calques natifs, objets indépendants, référence embarquée masquée, absence d’écrasement des fichiers. Recette sur la version Illustrator du dessinateur. |
+| Apprentissage DOEMO | Journal local et export JSONL implémentés | Enregistre uniquement des murs explicitement approuvés et encore identiques à leur dernière approbation. Ajouter identité serveur, droits d’usage des documents, jeux séparés par chantier et versionnement avant entraînement. |
+
+## Conditions de recette
+
+Sur R−1 et RDC Animalis, le dessinateur doit confirmer les deux régions, contrôler la superposition de chaque mur, corriger les faux positifs et les raccords, vérifier chaque porte/fenêtre, puis approuver les géométries. L’échelle exige une cote linéaire ou un relevé fiable validé ; les surfaces 84 m² et 166 m² et la mention imprimée 1/100 ne constituent pas une calibration validée.
+
+Le passage en production exige : aucun passage artificiellement fermé après correction ; aucune géométrie incertaine dans l’export approuvé ; objets de murs indépendants et calques vérifiés dans Illustrator ; conservation des coordonnées et de la référence ; rechargement fidèle des corrections ; absence d’entraînement sur une proposition non approuvée. Mesurer précision, rappel, erreur géométrique et temps de correction sur un jeu annoté avant d’annoncer un taux de qualité.
+
+## Licences des approches étudiées
+
+- [CubiCasa5K, licence du dépôt](https://github.com/CubiCasa/CubiCasa5k/blob/master/LICENSE) : CC BY-NC 4.0, consultée le 28 octobre 2026. Pas d’intégration commerciale des éléments couverts sans droits complémentaires. Aucun poids ni jeu de données CubiCasa n’a été téléchargé ou intégré.
+- [CubiCasa5K, méthode multi-tâches et FloorTrans](https://github.com/CubiCasa/CubiCasa5k) : segmentation et points de jonction sont utiles comme principes d’architecture. Les versions de PyTorch et CUDA du dépôt d’origine sont anciennes ; ne pas les ajouter à l’environnement du moteur PDF.
+- [FloorplanTransformation, licence du code](https://github.com/art-programmer/FloorplanTransformation/blob/master/LICENSE) : MIT. Conserver les mentions si du code est repris ; la licence du code seule ne règle pas les droits des poids et données. Aucun code tiers de ce dépôt n’a été intégré.
+
+Voir `reconstruction/README.md` pour exécuter et vérifier le prototype.
+
+## Raccordement au module existant
+
+La branche `feat/studio-host` de `julien547/doemo-app` possède déjà une feuille de route Studio Plans et un moteur v0.24. Le nouveau banc de ce dépôt ne remplace pas les fonctions précédemment livrées. L’adaptateur d’analyse v3 préserve la correspondance canevas/source ; les essais Animalis du moteur existant sont conservés séparément (264 et 133 propositions, aucune ouverture reconnue). L’ajout à la feuille de route de cette application est préparé dans une branche de revue distincte, sans données du plan ; sa publication suit l’autorisation du propriétaire.
+
+## Étape initiale — module spécialisé DOEMO Walls 0.2
+
+Le document de référence courant est `2(2).pdf`, page 1 exclusivement. Le module murs possède son contrat de masques architecturaux et son moteur d’axes ; il n’est pas une quatrième utilisation de RTMDet. Épaisseur détectée et trait graphique sont indépendants. L’API refuse la détection sémantique de murs tant qu’un modèle spécialisé et ses droits ne sont pas qualifiés.
+
+Le prototype comprend : post-traitement de masques testé sur données synthétiques ; regroupement expérimental des contours du scan ; SVG noirs ouverts et JSX `/2` ; éditeur avec coupe, correction d’ouverture et annuler/refaire ; file OVH durable et idempotente ; authentification à signature et expiration ; runners séparés ; restauration non destructive ; découverte RunPod par volume/marqueur ; garde d’arrêt après 30 minutes réelles d’inactivité. Aucun déploiement, appel RunPod ou essai Adobe effectué.
+
+L’essai page 1 produit 400 candidats bruts puis 101 axes de revue, dont 37 diagonaux, avec 221 traces isolées non interprétées. Aucune ouverture reconnue, aucun mur approuvé, aucune échelle validée. Le résultat reste incomplet et ne constitue pas un plan exploitable sans correction. Les taux de détection et le temps de correction nécessitent des annotations humaines.
+
+Prochaines conditions de passage : accès SSH et réseau sécurisé ; audit puis tests fonctionnels des trois IA ; validation d’un modèle de segmentation et des droits sur code/poids/données ; annotation de la page 1 ; comparaison mesurée ; raccordement React/Illustrator et recette utilisateur. L’autorisation de publier la feuille de route dans la branche de revue est acquise ; aucun document client n’est versionné.
+
+## État RunPod actualisé par le propriétaire
+
+Les trois environnements Qwen3.5-9B, PaddleOCR et RTMDet ont été restaurés et vérifiés sur le nouveau Pod RTX A6000. CUDA, le cache PaddleX et les quatre fichiers de poids Qwen sont signalés présents. Cet état rapporté remplace les observations antérieures de chemins manquants. La session Codex n’a pas d’accès TCP/SSH opérationnel et ne prétend pas avoir vérifié directement ces installations ni exécuté les inférences.
+
+Correctif local 0.2.1 : inventaire de l’identité du Pod, du montage et des interpréteurs ; restauration conditionnée au bon hôte et à l’espace disponible ; conservation des composants présents ; identité du worker vérifiée après migration ; provenance d’exécution des résultats. Les scripts de restauration sont désormais un secours : l’architecture permanente est une image Docker privée versionnée confiée par le propriétaire à une autre session.
+
+Paquet 0.2.2 : lanceur du service d’inférence sans restauration, configuration vérifiée avant démarrage, client signé pour la page 1, reprise du même identifiant après un délai réseau, vérification de la provenance et du Pod. Le transport privé et l’exécution réelle des trois adaptateurs sur RunPod restent à vérifier. La segmentation architecturale reste distincte et non qualifiée.
+
+## Livraison OVH 0.3.0
+
+Le module de test web est publié dans [studio PR 1](https://github.com/julien547/studio/pull/1). Il ajoute l’import d’une page, la file de traitement locale, l’éditeur d’axes, la sauvegarde privée par utilisateur et l’export SVG validé, derrière la session DOEMO. Le lien du menu React est livré dans [doemo-app PR 2](https://github.com/julien547/doemo-app/pull/2).
+
+**Mise à jour production : la PR doemo-app 2 est obsolète et ne doit pas être
+déployée.** Le menu actuel et l’iframe proviennent de `doemo-app/feat/studio-host`.
+Respecter [l’avertissement de production](../AVERTISSEMENT-MODIFICATIONS-STUDIO.md).
+
+La [procédure OVH](../reconstruction/ovh/DEPLOIEMENT_OVH.md) décrit l’installation isolée, le service systemd, le pont PHP sur socket Unix, la connexion RunPod facultative, la recette et le retour arrière. Le propriétaire a confié le déploiement réel à une autre session. Les branches ne sont pas fusionnées et le VPS n’a pas été modifié depuis ce fil.
+
+50 tests Python passent. Un parcours Chromium avec PHP, socket Python et stockage réels en local valide l’import de la page 1, la correction, la sauvegarde et le SVG. L’extraction de cette livraison produit 327 propositions de revue ; ce comptage n’est pas une précision mesurée. La segmentation spécialisée, les inférences réelles RunPod et la recette Adobe restent à qualifier.
+
+## Raccordement 0.3.1 — priorité avant l’essai IA
+
+Le contrôle de connexion est implémenté dans Studio et dans une commande de recette
+du service OVH actif. Une configuration renseignée ne prouve plus la disponibilité
+des moteurs : le contrôle signé exige l’identité du worker courant, trois versions
+locales vérifiées et les tests de démarrage réussis. 64 tests locaux passent ; les
+tests d’inférence utilisent des doubles. Le branchement réel reste à faire suivant
+la [transmission OVH–RunPod](../reconstruction/ovh/RACCORDEMENT_RUNPOD.md), par la
+session désignée pour déployer. Aucun déploiement ni appel GPU réel effectué ici.
+
+## Axes médians 0.3.2
+
+L’extraction conserve maintenant les intervalles de bords non utilisés après un
+premier appariement et n’étend pas les axes au-delà des observations communes.
+L’éditeur ajoute la correction humaine « Deux bords → un axe médian », avec
+conservation des portions restantes, protection des ouvertures et annuler/refaire.
+88 tests Python et le parcours Chromium de cette correction passent.
+
+La page 1 produit 381 propositions non validées. Les doubles traces et les faux
+candidats ne sont pas tous résolus automatiquement : aucune qualité architecturale
+n’est déduite du nombre de propositions. Voir la
+[recette et les limites](../reconstruction/ovh/CORRECTION_AXES.md). La segmentation
+spécialisée et les inférences réelles sur RunPod restent à qualifier séparément.
+
+## Connexion applicative 0.3.3
+
+La priorité est le raccordement des trois moteurs déjà présents sur RunPod.
+La [procédure d’installation complète](../INSTALLATION-CONNEXION-IA.md) livre la
+configuration OVH, les clés de service, le lancement automatique du worker dans
+l’image existante, le transport privé et la recette dans l’application cadrée.
+Le navigateur vérifie les moteurs à l’ouverture et affiche les textes et zones
+reçus après analyse. Le prototype de segmentation par tuiles est conservé hors de
+cette livraison et n’est pas publié comme fonction opérationnelle.
+
+96 tests Python passent. Le parcours PHP → socket → worker HTTP signé est vérifié
+avec des moteurs simulés, sous un menu dans une iframe, sans bandeau. Aucun
+déploiement ni inférence réelle RunPod effectués dans cette session. La règle
+reste un seul trait noir plein médian par mur ; les doubles propositions doivent
+être corrigées avant validation et la segmentation spécialisée reste à développer.
+
+## Contrôles des IA 0.3.4
+
+Les réponses incomplètes sont refusées avant de déclarer une inférence réussie.
+Qwen doit couvrir toutes les zones fournies, sans créer de géométrie. Les trois
+tests de démarrage sont tentés même si l’un échoue, avec état par moteur visible
+dans Studio. Le worker ne se déclare pas disponible pour l’arrêt pendant ces tests.
+111 tests locaux et le parcours navigateur avec moteurs simulés passent. Les
+inférences réelles restent à vérifier sur RunPod ; aucune réinstallation des IA
+n’est effectuée par ce module.
+
+## Contrôle des doubles axes 0.3.5
+
+Le panneau **Doubles axes possibles** guide la revue des traces proches. Le
+dessinateur peut les ramener à un axe médian ou confirmer deux murs distincts
+avec un motif. Les décisions sont liées à la géométrie et attribuées à la session
+authentifiée sur OVH ; les modifications imposent un nouvel examen.
+
+Les exports validés SVG/Illustrator refusent les paires approuvées encore ambiguës.
+L’apprentissage exclut les murs impliqués dans une paire non résolue. Le contrôle
+préserve les ouvertures et ne ferme aucun passage. 128 tests Python et le parcours
+Chromium de correction passent, avec comparaison des calculs Python/JavaScript.
+
+La page 1 conserve 381 propositions ; le contrôle signale 468 paires proches,
+concernant 294 propositions. Ces signalements ne sont pas des doublons avérés et
+ne mesurent pas une précision. Aucun mur ni aucune échelle n’a été validé. Voir
+[la procédure et les limites](../reconstruction/ovh/CONTROLE_DOUBLES_AXES.md).
+La qualification d’un modèle sémantique spécialisé, l’annotation humaine de référence
+et les essais réels RunPod/Illustrator restent les prochaines conditions de passage.
+
+## Conservation des ouvertures 0.3.6
+
+La correction explicite de deux bords vers un axe médian conserve maintenant les
+ouvertures, y compris sur les portions restantes et lorsque les bords sont orientés
+en sens opposés. Les passages communs sont réunis ; les portions pleines entre des
+ouvertures disjointes restent présentes. Les indications contradictoires conservent
+leur provenance et imposent un contrôle humain du type et de la position.
+
+Les ouvertures transférées et les murs résultants repassent en attente. Le bouton
+**Valider l’ouverture** permet de confirmer chaque réservation avant de valider
+le mur. Un recouvrement entièrement occupé par les ouvertures refuse la fusion.
+Les SVG restent composés de segments noirs colinéaires interrompus aux passages.
+
+144 tests Python et le parcours Chromium synthétique passent. Le test navigateur
+est livré dans le dépôt, avec sa procédure d’exécution. Les sauvegardes/rechargements
+OVH, l’export et la sélection des corrections d’apprentissage sont vérifiés en local.
+Voir [la procédure 0.3.6](../reconstruction/ovh/FUSION_MURS_OUVERTURES.md). Cette
+livraison ne constitue pas une reconnaissance automatique des portes/fenêtres,
+une inférence RunPod réelle ou une validation dans Adobe Illustrator.
+
+## Import des traits PDF natifs 0.3.7
+
+Un trait plein admissible est repris sur son propre axe, sans seconde ligne
+requise et sans épaisseur physique inventée. Les rectangles simples allongés
+donnent une seule médiane. Les traits voisins indépendants restent à interpréter
+par le dessinateur ; l’import ne les fusionne pas arbitrairement. Les coupures
+entre sous-tracés, les matrices, recadrages et rotations sont conservés.
+
+Les chemins complexes, pointillés, découpages et Form XObjects restent différés
+pour la récupération native ; cette limite est affichée dans l’éditeur. Les
+pages mixtes gardent les propositions natives et raster, avec contrôle nécessaire
+des doublons et des ouvertures. Une page purement vectorielle ne contourne pas
+les exclusions par une vectorisation de pixels. La récupération complète des
+formes PDF et la prise en compte des occultations restent à développer.
+
+168 tests Python et le parcours navigateur passent. Un nouvel essai privé de la
+page 1 scannée conserve exactement les 381 propositions antérieures. Aucun projet
+existant n’est recalculé, aucun mur n’est approuvé automatiquement. Voir la
+[procédure d’import et de recette](../reconstruction/ovh/IMPORT_AXES_PDF.md).
+Les inférences réelles RunPod et le modèle spécialisé restent à qualifier.

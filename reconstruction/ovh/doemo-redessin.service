@@ -1,0 +1,35 @@
+[Unit]
+Description=DOEMO architectural reconstruction test workbench
+After=network.target
+
+[Service]
+Type=simple
+User=doemo-redessin
+Group=www-data
+WorkingDirectory=/opt/doemo-redessin/current
+EnvironmentFile=/etc/doemo-redessin/service.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=OPENBLAS_NUM_THREADS=1
+Environment=OMP_NUM_THREADS=1
+Environment=DOEMO_REDESSIN_SOCKET=/run/doemo-redessin/api.sock
+Environment=DOEMO_REDESSIN_DATA=/var/lib/doemo-redessin
+ExecStart=/opt/doemo-redessin/venv/bin/python -m doemo_reconstruction.workbench
+RuntimeDirectory=doemo-redessin
+RuntimeDirectoryMode=0750
+StateDirectory=doemo-redessin
+StateDirectoryMode=0700
+UMask=0007
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+KillMode=control-group
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/doemo-redessin /run/doemo-redessin
+MemoryMax=4G
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target
