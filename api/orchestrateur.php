@@ -10,7 +10,7 @@ if (!in_array($role, ['admin', 'administration'], true)) studio_json(403, ['ok' 
 session_write_close();
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') studio_json(405, ['ok' => false, 'error' => 'Méthode refusée.']);
 
-$tokenFile = '/etc/doemo-studio/orchestrateur-lecture.env';
+$tokenFile = '/etc/doemo-orchestrateur-lecture/jeton.env';
 $env = is_readable($tokenFile) ? (string)file_get_contents($tokenFile) : '';
 if (!preg_match('/^DOEMO_ORCH_READ_TOKEN=([A-Za-z0-9_\-]{32,})$/m', $env, $m)) studio_json(503, ['ok' => false, 'error' => 'Orchestrateur non configuré.']);
 

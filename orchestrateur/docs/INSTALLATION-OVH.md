@@ -15,6 +15,12 @@ Le service est durci : `NoNewPrivileges`, système de fichiers en lecture seule 
 la base, pas d'accès à `/home`, `/tmp` privé. Le jeton d'administration a été **généré sur le
 serveur** ; il n'apparaît ni dans le dépôt ni dans une conversation.
 
+## Tableau de bord (Réglages › Orchestrateur IA)
+
+Page réservée aux rôles `admin` / `administration`. Elle passe par `/var/www/studio/api/orchestrateur.php`,
+qui lit un **jeton de lecture seule** dans `/etc/doemo-orchestrateur-lecture/jeton.env` (`root:www-data`, 0640, dossier 0750) :
+ce jeton ne permet que `GET /v1/admin/overview`. Le jeton d'administration n'est jamais lisible par Apache.
+
 ## Exploitation
 
 ```sh
