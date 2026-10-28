@@ -35,3 +35,8 @@ input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(192,57,43,.18)}
 .main .tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:32px;box-shadow:var(--shadow)}
 .main h1{margin:0 0 8px;font-size:24px}.main p{color:var(--muted);margin:0}
 @media (max-width:860px){.wrap{grid-template-columns:1fr}.hero{display:none}.panel{min-height:100vh}}
+
+.logo-box{display:flex;justify-content:center;margin:0 0 22px}
+.logo{display:block;width:240px;max-width:78%;height:auto}
+@media (prefers-color-scheme:dark){.logo-box{background:#fff;border-radius:12px;padding:12px 16px;margin-bottom:22px}.logo{width:200px}}
+.hero{justify-content:flex-end;gap:28px}

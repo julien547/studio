@@ -5,7 +5,7 @@ Espace interne DOEMO : page de connexion et socle de l'application d'orientation
 Adresse du module d'orientation : **https://studio.doemo.fr/app/orientation**.
 
 ## Fonctionnement
-- `index.html`, `style.css`, `login.js` : page de connexion.
+- `index.html`, `style.css`, `login.js`, `logo-studio.png` (logo sur fond transparent) : page de connexion.
 - `app/` : application React (menu du haut : Studio Plans, Orientation des plans), générée depuis le dépôt doemo-app (`npx vite build -c vite.studio.config.js`, branche `feat/studio-host`) et copiée dans `/var/www/studio/app`. Non versionnée ici.
 - `api/proxy.php` : relais same-origin vers `api_doemo.php` (actions `studio_*` uniquement) ; le jeton de session reste côté serveur.
 - `api/login.php` : vérifie le mot de passe auprès de l'API DOEMO (`session_login`, donc Dolibarr, anti-force-brute inclus) et n'accepte que les rôles internes `admin`, `administration`, `dessinateur`, `technicien`, `expedition`. Les comptes clients sont refusés et leur jeton révoqué.
