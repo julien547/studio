@@ -12,8 +12,13 @@ import numpy as np
 from PIL import Image
 import pypdfium2 as pdfium
 from pypdf import PdfReader
-from .geometry import pair_boundaries, distance
+from .geometry import pair_boundaries, distance, merge_collinear_fragments, drop_page_frames
 from .pdf_vectors import recover_vectors, transform
+
+# Raster cleanup, as a fraction of the longest page side: fragments of one wall cut by the scan are joined when they
+# lie within 0.4 % of one line and are at most 0.6 % apart (smaller than any door at the usual 1/200 to 1/50 plans).
+MERGE_OFFSET_FRACTION = .004
+MERGE_GAP_FRACTION = .006
 
 
 def image_url(image):
@@ -93,6 +98,7 @@ def reconstruct(source, pages=None):
             if number<1 or number>(len(pdf) if pdf else 1):
                 raise ValueError('Page inexistante')
             paths,texts,native_walls=[],[],[]
+            frames,fusion=0,None
             has_images=False
             if pdf:
                 page=pdf[number-1]
@@ -121,7 +127,11 @@ def reconstruct(source, pages=None):
             method='mixed' if has_images and native_walls else ('raster_baseline' if has_images or not pdf else 'vector')
             walls=list(native_walls)
             if method in ('raster_baseline','mixed'):
-                walls.extend(pair_boundaries(raster_lines(image,width,height,ocr)))
+                raster_walls=pair_boundaries(raster_lines(image,width,height,ocr))
+                span=max(width,height)
+                raster_walls,frames=drop_page_frames(raster_walls,width,height)
+                raster_walls,fusion=merge_collinear_fragments(raster_walls,MERGE_OFFSET_FRACTION*span,MERGE_GAP_FRACTION*span,bounds=(width,height))
+                walls.extend(raster_walls)
             # Clipped/outside geometry is retained in raw vectors but cannot be accepted as walls.
             walls=[w for w in walls if all(0<=p[0]<=width and 0<=p[1]<=height for p in (w['a'],w['b']))]
             warnings=['Valider l’étage et chaque mur : mobilier, cotes et cadres peuvent produire des candidats.',
@@ -132,6 +142,10 @@ def reconstruct(source, pages=None):
                 warnings.append(f'{deferred} tracé(s) PDF conservé(s) dans la référence et les données brutes, sans axe vectoriel automatique : contrôler les murs manquants.')
             if native_walls:
                 warnings.append('Les traits PDF sont des axes proposés, sans identification architecturale. Vérifier leur visibilité sur la référence et résoudre les doubles axes éventuels.')
+            if fusion and fusion['output']<fusion['input']:
+                warnings.append(f"Nettoyage du scan : {fusion['input']} fragments de murs rassemblés en {fusion['output']} propositions (alignés, même épaisseur, sans combler d'ouverture).")
+            if frames:
+                warnings.append(f"{frames} cadre(s) de feuille écarté(s) des propositions de murs.")
             if method=='mixed':
                 warnings.append('Page mixte : propositions vectorielles et raster superposées. Contrôler les doublons, les annotations et les ouvertures avant validation.')
             result['levels'].append({'id':f'page-{number}','source_page':number,

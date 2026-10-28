@@ -422,3 +422,125 @@ def joined_polygon(w, walls, start=0., end=1.):
             if distance(point,p)<=4*max(w['thickness'],v['thickness']):
                 out[idx]=point
     return out
+
+
+def merge_collinear_fragments(walls, max_offset, max_gap, *, max_angle_degrees=1., thickness_ratio=2., bounds=None):
+    """Join raster wall fragments that are the same wall cut by the scan.
+
+    Only candidates produced by ``pair_boundaries`` (method ``parallel_boundaries``, pending, no openings) are
+    considered. Two fragments are merged when they are parallel within ``max_angle_degrees``, lie within
+    ``max_offset`` of one line, have compatible thickness and are separated by at most ``max_gap`` along that line
+    (overlaps and touching ends included). Gaps larger than ``max_gap`` are NEVER bridged: openings and distinct
+    walls stay distinct, as everywhere else in this module. The merged wall keeps every member's evidence plus one
+    ``collinear_fragment_merge/1`` record so the review can still see what it came from.
+    Returns ``(walls, report)``; walls that are not eligible keep their order and content.
+    """
+    if not all(math.isfinite(v) and v >= 0 for v in (max_offset, max_gap, max_angle_degrees)) or thickness_ratio < 1:
+        raise ValueError('Tolérances de fusion invalides')
+    eligible = [i for i, w in enumerate(walls)
+                if w.get('method') == 'parallel_boundaries' and w.get('status') == 'pending' and not w.get('openings')]
+    parent = {i: i for i in eligible}
+
+    def find(i):
+        while parent[i] != i:
+            parent[i] = parent[parent[i]]
+            i = parent[i]
+        return i
+
+    info = {}
+    for i in eligible:
+        a, b = walls[i]['a'], walls[i]['b']
+        length = distance(a, b)
+        info[i] = (a, b, length, ((b[0]-a[0])/length, (b[1]-a[1])/length))
+    sin_limit = math.sin(math.radians(max_angle_degrees))
+    reach = max_offset + max_gap
+    order = sorted(eligible, key=lambda i: min(walls[i]['a'][0], walls[i]['b'][0]))
+    for pos, i in enumerate(order):
+        a1, b1, l1, (ux, uy) = info[i]
+        right = max(a1[0], b1[0]) + reach
+        for j in order[pos+1:]:
+            a2, b2, l2, (vx, vy) = info[j]
+            if min(a2[0], b2[0]) > right:
+                break
+            if find(i) == find(j) or abs(ux*vy-uy*vx) > sin_limit:
+                continue
+            t1, t2 = walls[i]['thickness'], walls[j]['thickness']
+            if t1 is not None and t2 is not None and max(t1, t2) > thickness_ratio*min(t1, t2):
+                continue
+            # The longer fragment defines the reference line.
+            (ra, rb, rl, (rx, ry)), (oa, ob) = ((a1, b1, l1, (ux, uy)), (a2, b2)) if l1 >= l2 else ((a2, b2, l2, (vx, vy)), (a1, b1))
+            if any(abs(rx*(p[1]-ra[1])-ry*(p[0]-ra[0])) > max_offset for p in (oa, ob)):
+                continue
+            lo1, hi1 = sorted(((p[0]-ra[0])*rx+(p[1]-ra[1])*ry) for p in (ra, rb))
+            lo2, hi2 = sorted(((p[0]-ra[0])*rx+(p[1]-ra[1])*ry) for p in (oa, ob))
+            if max(lo2-hi1, lo1-hi2) > max_gap:
+                continue
+            parent[find(j)] = find(i)
+    groups = {}
+    for i in eligible:
+        groups.setdefault(find(i), []).append(i)
+    out, done, merged_groups = [], set(), 0
+    for i, w in enumerate(walls):
+        if i not in parent:
+            out.append(w)
+            continue
+        root = find(i)
+        if root in done:
+            continue
+        done.add(root)
+        members = groups[root]
+        if len(members) == 1:
+            out.append(w)
+            continue
+        lengths = [info[m][2] for m in members]
+        total = sum(lengths)
+        ref = max(members, key=lambda m: info[m][2])
+        ux, uy = info[ref][3]
+        cx = sum((info[m][0][0]+info[m][1][0])/2*info[m][2] for m in members)/total
+        cy = sum((info[m][0][1]+info[m][1][1])/2*info[m][2] for m in members)/total
+        ts = [((p[0]-cx)*ux+(p[1]-cy)*uy) for m in members for p in (info[m][0], info[m][1])]
+        start, end = [cx+ux*min(ts), cy+uy*min(ts)], [cx+ux*max(ts), cy+uy*max(ts)]
+        if bounds is not None:
+            start = [min(max(start[0], 0.), bounds[0]), min(max(start[1], 0.), bounds[1])]
+            end = [min(max(end[0], 0.), bounds[0]), min(max(end[1], 0.), bounds[1])]
+        if distance(start, end) < 1e-6:
+            out.extend(walls[m] for m in members)
+            continue
+        thick = [(walls[m]['thickness'], info[m][2]) for m in members if walls[m]['thickness'] is not None]
+        thickness = sum(t*l for t, l in thick)/sum(l for _, l in thick) if thick else None
+        evidence = [e for m in members for e in walls[m]['evidence']]
+        evidence.append({'algorithm': 'collinear_fragment_merge/1', 'merged_wall_ids': [walls[m]['id'] for m in members],
+                         'max_offset': max_offset, 'max_gap': max_gap, 'semantic_status': 'unknown',
+                         'review': ['wall_or_symbol', 'junctions', 'openings']})
+        out.append(wall(start, end, thickness, method='parallel_boundaries',
+                        confidence=max(walls[m]['confidence'] for m in members), evidence=evidence))
+        merged_groups += 1
+    return out, {'input': len(walls), 'output': len(out), 'merged_groups': merged_groups}
+
+
+def drop_page_frames(walls, width, height, *, span=.9, margin=.06):
+    """Remove axis-aligned candidates that run along (almost) the whole sheet edge: the drawing frame, never a wall.
+
+    A candidate is dropped only if it is horizontal or vertical within 1 degree, is at least ``span`` of the page
+    dimension long AND lies within ``margin`` of the matching border. Returns ``(walls, dropped_count)``.
+    """
+    kept, dropped = [], 0
+    limit = math.sin(math.radians(1.))
+    for w in walls:
+        a, b = w['a'], w['b']
+        length = distance(a, b)
+        horizontal = abs(b[1]-a[1]) <= limit*length
+        vertical = abs(b[0]-a[0]) <= limit*length
+        frame = False
+        if w.get('method') == 'parallel_boundaries' and w.get('status') == 'pending':
+            if horizontal and length >= span*width:
+                y = (a[1]+b[1])/2
+                frame = y <= margin*height or y >= (1-margin)*height
+            elif vertical and length >= span*height:
+                x = (a[0]+b[0])/2
+                frame = x <= margin*width or x >= (1-margin)*width
+        if frame:
+            dropped += 1
+        else:
+            kept.append(w)
+    return kept, dropped
