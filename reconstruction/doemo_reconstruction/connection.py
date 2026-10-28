@@ -31,10 +31,25 @@ def inspect_worker(remote):
             raise ValueError('Unverified model version')
         verified = all(model.get(k) is True for k in
                        ('configured', 'environment_present', 'functional_inference_verified'))
-        summary.append({'id': name, 'version': version, 'startup_inference_verified': verified})
+        # Older workers omit per-engine startup details; their existing checks still apply.
+        startup_state = 'passed' if verified else 'pending'
+        error_code = None
+        if 'startup' in health:
+            startup = health['startup']
+            if not isinstance(startup, dict) or not isinstance(startup.get(name), dict):
+                raise ValueError('Invalid startup status')
+            startup_state, error_code = startup[name].get('state'), startup[name].get('error_code')
+            if startup_state not in ('pending', 'running', 'passed', 'failed') or error_code not in (
+                    None, 'gpu_unavailable', 'timeout', 'invalid_output', 'inference_failed'):
+                raise ValueError('Invalid startup status')
+            if (startup_state == 'failed') != (error_code is not None):
+                raise ValueError('Inconsistent startup status')
+            verified = verified and startup_state == 'passed'
+        summary.append({'id': name, 'version': version, 'startup_inference_verified': verified,
+                        'startup_state': startup_state, 'error_code': error_code})
         if verified:
             versions[name] = version
-    if health.get('warmup_error') or health['unsaved']:
+    if health.get('warmup_error') or health['unsaved'] or any(m['startup_state']=='failed' for m in summary):
         state = 'not_ready'
     elif health['draining'] or health['active']:
         state = 'busy'

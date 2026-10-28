@@ -101,6 +101,7 @@ def test_ovh_signed_calls_reach_each_adapter_and_keep_walls_pending(tmp_path, mo
             return out
     worker = Worker(Engines(), tmp_path / 'runpod')
     worker.ready = True
+    worker.startup = {name: {'state': 'passed', 'error_code': None} for name in ENGINES}
     bench = Workbench(tmp_path / 'ovh', 'https://private.example', str(key))
     ids, doc = ready_project(bench)
     doc['source']['sha256'] = 'a' * 64

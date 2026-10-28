@@ -1,6 +1,6 @@
-# Vérification de la livraison OVH 0.3.3
+# Vérification de la livraison OVH 0.3.4
 
-Le 28 octobre 2026, 96 tests Python passent. Ils couvrent les axes noirs, les
+Le 28 octobre 2026, 111 tests Python passent. Ils couvrent les axes noirs, les
 ouvertures, la validation humaine, les contrats d’inférence, l’authentification
 du worker, les reprises après interruption, l’isolation des projets par utilisateur
 et la détection des sauvegardes concurrentes. Les tests d’IA utilisent des doubles ;
@@ -63,3 +63,23 @@ murs. Une erreur d’aller-retour JSON du pont PHP a été corrigée : les objet
 restent des objets, au lieu de devenir des tableaux qui bloquaient la sauvegarde.
 Les bandeaux sont absents du wrapper et de l’éditeur intégré. Aucun GPU réel n’a
 été appelé ; la recette RunPod reste à exécuter par la session de déploiement.
+
+La livraison 0.3.4 contrôle les sorties avant de déclarer une inférence réussie :
+Qwen couvre toutes les zones demandées ; les coordonnées et scores sont finis et
+bornés ; les listes OCR/RTMDet ne peuvent pas être tronquées silencieusement.
+Un test avec un véritable sous-processus et un runner synthétique vérifie que la
+configuration reste celle du démarrage et qu’une réponse vide de Qwen est refusée.
+Les appels PaddleOCR 3 et Qwen sont testés avec des doubles de leurs bibliothèques,
+sans installer leurs dépendances GPU. Le paramètre `enable_thinking=False` demande
+une réponse JSON directe au template local Qwen ; son comportement effectif reste
+à vérifier avec la version Transformers et le modèle présents sur RunPod.
+
+Les tests vérifient aussi que le démarrage contrôle les trois moteurs malgré un
+échec, que les états ne divulguent pas les messages privés, et qu’un arrêt ne peut
+pas être préparé pendant ces inférences. Les règles des axes noirs, des ouvertures
+et de la validation humaine restent couvertes par la suite complète.
+
+Le parcours Chromium 0.3.4 repasse avec PHP, socket Unix, worker HTTP signé et
+trois moteurs simulés : menu/iframe conservés, observations persistantes, murs
+inchangés. Une réponse de statut simulant l’échec de PaddleOCR affiche cet échec,
+conserve les succès de Qwen/RTMDet et désactive l’analyse. Aucun appel GPU réel.

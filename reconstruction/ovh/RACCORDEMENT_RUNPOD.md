@@ -1,7 +1,7 @@
 # Raccorder réellement les trois IA à l’éditeur OVH
 
 Transmission à la session qui déploie OVH et à celle qui prépare l’image RunPod.
-Livraison 0.3.3, branche `feat/redessin-ovh-tests`, [PR Studio 1](https://github.com/julien547/studio/pull/1).
+Livraison 0.3.4, branche `feat/redessin-ovh-tests`, [PR Studio 1](https://github.com/julien547/studio/pull/1).
 Commencer par [INSTALLATION-CONNEXION-IA.md](../../INSTALLATION-CONNEXION-IA.md) :
 configuration OVH, clés, lancement automatique RunPod et préservation du menu actuel.
 **Le raccordement réel n’a pas été exécuté depuis cette session.** Les chemins
@@ -80,7 +80,7 @@ des résultats non sauvegardés avant toute décision d’arrêt.
 
 ## 3. Vérifier le service actif depuis OVH
 
-Après installation de la version 0.3.3 selon [DEPLOIEMENT_OVH.md](DEPLOIEMENT_OVH.md) :
+Après installation de la version 0.3.4 selon [DEPLOIEMENT_OVH.md](DEPLOIEMENT_OVH.md) :
 
 ```bash
 sudo -u doemo-redessin /opt/doemo-redessin/venv/bin/python \
@@ -103,6 +103,26 @@ signale un problème de contrôle du service OVH. Aucun test n’installe de mod
 | `not_ready` | Erreur de démarrage ou résultat persistant à réconcilier |
 | `busy` | Travail en cours ou worker en cours de mise à l’arrêt |
 | `ready` | Lancer la recette sur le plan ; la qualité architecturale reste à contrôler |
+
+Depuis 0.3.4, chaque entrée de `engines` contient aussi `startup_state` et un
+`error_code` éventuel. Les détails techniques restent dans les journaux privés :
+
+| Code du moteur | Contrôle ciblé |
+| --- | --- |
+| `gpu_unavailable` | Vérifier le GPU du Pod courant et `nvidia-smi` ; aucune conclusion sur la présence des venvs |
+| `timeout` | L’inférence a dépassé 900 secondes ; examiner les journaux et l’utilisation du GPU |
+| `invalid_output` | Réponse absente, incomplète ou incompatible avec le contrat ; vérifier l’adaptateur et les versions locales |
+| `inference_failed` | Échec du processus du moteur ; examiner `/workspace/doemo-studio/exports/engine-logs/` |
+
+Un échec n’empêche pas le contrôle des deux autres moteurs. Il ne lance aucune
+réinstallation ni nouvel essai en boucle. Le bouton d’analyse reste bloqué tant
+que les trois moteurs n’ont pas réussi. Pendant les contrôles, le worker refuse
+`/drain` et retourne `stop_safe: false` au contrôleur d’arrêt existant.
+
+Une réponse Qwen doit couvrir chaque zone demandée, une fois, en utilisant
+`unknown`/`uncertain: true` si nécessaire. Une liste OCR ou RTMDet vide est valide
+si aucun texte ou objet n’est trouvé, mais une liste manquante ou des coordonnées
+hors image sont refusées. Ces contrôles ne mesurent pas la précision des modèles.
 
 ## 4. Recette réelle indispensable
 

@@ -1,10 +1,14 @@
 # Installer la connexion de Studio aux trois IA RunPod
 
-Livraison **0.3.3**, dépôt privé `julien547/studio`, branche
+Livraison **0.3.4**, dépôt privé `julien547/studio`, branche
 `feat/redessin-ovh-tests`, [PR 1](https://github.com/julien547/studio/pull/1).
 Cette procédure est destinée à la session disposant des accès OVH et RunPod.
 Le code est publié ; **la connexion sur vos serveurs doit encore être installée
 et vérifiée avec les inférences réelles**.
+
+La mise à jour **0.3.4 doit être installée des deux côtés**, OVH et worker RunPod.
+Elle refuse les réponses IA incomplètes et indique le résultat du test de chaque
+moteur. Elle ne modifie ni les poids ni les trois environnements Python.
 
 ## Préserver la production
 
@@ -144,6 +148,13 @@ de détection/reconnaissance et de la configuration/checkpoint RTMDet. Remplacer
 versions `to-verify` par des identifiants de modèles locaux vérifiés. L’exemple
 incomplet est volontairement refusé. Ne pas télécharger d’autres poids pour le remplir.
 
+Pour PaddleOCR 3, si les modèles locaux nécessitent un nom explicite, renseigner
+aussi `detection_model_name` et `recognition_model_name` dans la section `paddleocr`,
+avec les noms exacts relevés dans leurs configurations locales. Ces champs sont
+optionnels ; la langue `fr` ne remplace pas le choix des poids locaux. Les répertoires
+des modèles restent obligatoires. Une modification de `models.json` prend effet
+au prochain démarrage du worker : attendre la fin des tâches avant cette mise à jour.
+
 Avant démarrage, vérifier la configuration avec le même lancement :
 
 ```bash
@@ -153,6 +164,10 @@ Avant démarrage, vérifier la configuration avec le même lancement :
 Ce contrôle vérifie les fichiers, pas l’inférence. Au lancement normal, chaque
 moteur effectue son test d’inférence, séquentiellement. Une erreur reste visible
 dans `/health` et les journaux privés ; elle ne déclenche aucune réinstallation.
+Si un moteur échoue, les deux autres sont quand même testés. Le service reste
+indisponible pour l’analyse tant que les trois tests ne passent pas. `warming_up`
+et `stop_safe: false` empêchent de considérer ce contrôle comme une période d’arrêt
+possible ; le contrôleur existant doit respecter cet état.
 
 ## 4. Assurer le transport permanent
 
@@ -187,6 +202,8 @@ sudo -u doemo-redessin /opt/doemo-redessin/venv/bin/python \
 Le contrôle doit retourner `state: ready`, `can_analyze: true`, les trois moteurs
 avec `startup_inference_verified: true` et le code de sortie 0. Les états d’erreur
 sont détaillés dans [RACCORDEMENT_RUNPOD.md](reconstruction/ovh/RACCORDEMENT_RUNPOD.md).
+Chaque moteur indique aussi `startup_state` : `pending`, `running`, `passed` ou
+`failed`. Un échec d’inférence ne signifie pas que son environnement est absent.
 
 Dans **l’application habituelle**, ouvrir **Structure bâtiment → Redessin des murs** :
 

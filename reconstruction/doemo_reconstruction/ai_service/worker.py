@@ -23,6 +23,8 @@ class Worker:
         self.engines=engines;self.root=Path(root);self.root.mkdir(parents=True,exist_ok=True)
         self.lock=threading.Lock();self.active=0;self.unsaved=0;self.draining=False;self.ready=False
         self.warmup_error=None
+        self.warming_up=False
+        self.startup={name:{'state':'pending','error_code':None} for name in ('paddleocr','qwen','rtmdet')}
         self.pod_id=os.environ.get('RUNPOD_POD_ID')
         self.instance_id=str(uuid.uuid4())
         for directory in self.root.iterdir():
@@ -35,18 +37,42 @@ class Worker:
 
     def warmup(self):
         from PIL import Image,ImageDraw
+        import subprocess
+        with self.lock:
+            if self.warming_up or self.ready or self.active or self.draining:return
+            self.warming_up=True
         try:
-            import subprocess
             subprocess.run(['nvidia-smi','--query-gpu=name,memory.total','--format=csv,noheader'],check=True,capture_output=True,timeout=20)
+        except Exception:
+            with self.lock:
+                self.warmup_error='GPUCheckFailed'
+                self.startup={name:{'state':'failed','error_code':'gpu_unavailable'} for name in self.startup}
+                self.warming_up=False
+            return
+        try:
             with tempfile.TemporaryDirectory(prefix='doemo-probe-',dir='/tmp') as tmp:
                 image=Image.new('RGB',(640,360),'white');draw=ImageDraw.Draw(image)
                 draw.rectangle((50,70,590,300),outline='black',width=4);draw.text((220,150),'DOEMO 321',fill='black')
                 path=Path(tmp)/'probe.png';image.save(path)
                 request={'image_path':str(path),'regions':[{'id':'test','bbox':[0,0,640,360]}]}
-                for name in ('paddleocr','qwen','rtmdet'):self.engines.run(name,request)
-            self.ready=True
-        except Exception as error:
-            self.warmup_error=type(error).__name__
+                for name in self.startup:
+                    with self.lock:self.startup[name]={'state':'running','error_code':None}
+                    try:
+                        self.engines.run(name,request)
+                    except Exception as error:
+                        code=('timeout' if isinstance(error,subprocess.TimeoutExpired) else
+                              'invalid_output' if isinstance(error,(ValueError,TypeError,KeyError)) else
+                              'inference_failed')
+                        with self.lock:self.startup[name]={'state':'failed','error_code':code}
+                    else:
+                        with self.lock:self.startup[name]={'state':'passed','error_code':None}
+            with self.lock:
+                self.ready=all(item['state']=='passed' for item in self.startup.values())
+                self.warmup_error=None if self.ready else 'EngineWarmupFailed'
+        except Exception:
+            with self.lock:self.warmup_error='WarmupSetupFailed'
+        finally:
+            with self.lock:self.warming_up=False
 
     def health(self):
         stop_safe=False
@@ -59,7 +85,9 @@ class Worker:
             except Exception:pass
         with self.lock:return {'ready':self.ready,'active':self.active,'queued':0,'unsaved':self.unsaved,
                                'pod_id':self.pod_id,'worker_instance_id':self.instance_id,
-                               'stop_safe':stop_safe,
+                               'stop_safe':stop_safe and not self.warming_up,
+                               'warming_up':self.warming_up,
+                               'startup':{name:dict(value) for name,value in self.startup.items()},
                                'draining':self.draining,'warmup_error':self.warmup_error}
 
     def infer(self,job_id,request):
@@ -123,7 +151,7 @@ def create_worker(worker,public_key,*,warmup=True):
     @app.post('/drain',dependencies=[Depends(authenticated)])
     def drain():
         with worker.lock:
-            if worker.active or worker.unsaved:return {'drained':False}
+            if worker.active or worker.unsaved or worker.warming_up:return {'drained':False}
             worker.draining=True;return {'drained':True}
     @app.post('/infer/{job_id}',dependencies=[Depends(authenticated)])
     def infer(job_id:str,request:dict):

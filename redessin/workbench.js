@@ -42,9 +42,14 @@
       };
       byId('aiStatus').textContent = labels[status.state] || 'État RunPod non reconnu.';
       const names = {qwen: 'Qwen — lecture des zones', paddleocr: 'PaddleOCR — textes', rtmdet: 'RTMDet — diagnostic d’objets'};
+      const errors = {gpu_unavailable: 'GPU indisponible', timeout: 'délai de test dépassé',
+        invalid_output: 'réponse incomplète ou invalide', inference_failed: 'échec du test d’inférence'};
       for (const engine of status.engines || []) {
         const item = document.createElement('li');
-        item.textContent = (names[engine.id] || engine.id) + ' : ' + (engine.startup_inference_verified ? 'test de démarrage réussi' : 'test de démarrage non confirmé');
+        const state = engine.startup_inference_verified ? 'test de démarrage réussi'
+          : engine.startup_state === 'failed' ? errors[engine.error_code] || 'échec du test de démarrage'
+          : engine.startup_state === 'running' ? 'test de démarrage en cours' : 'test de démarrage non confirmé';
+        item.textContent = (names[engine.id] || engine.id) + ' : ' + state;
         byId('engineStatus').append(item);
       }
       if (status.state === 'ready' && status.can_analyze === true) {

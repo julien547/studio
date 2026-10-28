@@ -6,6 +6,7 @@ import subprocess
 import tempfile
 import signal
 import uuid
+from .outputs import validate_output
 
 PYTHONS={'qwen':'/opt/doemo-qwen-venv/bin/python','paddleocr':'/opt/doemo-ocr-venv/bin/python',
          'rtmdet':'/opt/doemo-rtmdet-venv/bin/python'}
@@ -32,10 +33,13 @@ class Engines:
         if not Path(PYTHONS[name]).is_file():raise RuntimeError('Environnement absent : restauration nécessaire')
         with tempfile.TemporaryDirectory(prefix='doemo-engine-',dir='/tmp') as tmp:
             root=Path(tmp);(root/'request.json').write_text(json.dumps(request))
+            # Use the startup snapshot throughout this worker's lifetime. Editing the
+            # persistent config during a job cannot silently switch model versions.
+            (root/'config.json').write_text(json.dumps(self.config))
             # Logs remain local and bounded by the operator, never leak environment/secrets via API.
             with (root/'engine.log').open('wb') as log:
                 command=[PYTHONS[name],str(self.runner),'--engine',name,'--request',str(root/'request.json'),
-                    '--config',str(self.config_path),'--output',str(root/'output.json')]
+                    '--config',str(root/'config.json'),'--output',str(root/'output.json')]
                 process=subprocess.Popen(command,stdout=log,stderr=log,start_new_session=True,
                     env={**os.environ,'HF_HUB_OFFLINE':'1','TRANSFORMERS_OFFLINE':'1',
                          'PIP_CACHE_DIR':'/tmp/doemo-pip-cache','UV_CACHE_DIR':'/tmp/doemo-uv-cache'})
@@ -54,6 +58,11 @@ class Engines:
                     raise
             if (root/'output.json').stat().st_size>8*1024**2:raise ValueError('Réponse IA trop volumineuse')
             result=json.loads((root/'output.json').read_text())
+            from PIL import Image
+            with Image.open(request['image_path']) as image:
+                width,height=image.size
+            validate_output(name,result,version=self.config[name]['version'],
+                            regions=request['regions'],width=width,height=height)
         import time
         self.last_success[name]=time.time()
         return result
