@@ -10,6 +10,7 @@ import { AdvancedApp } from "./main";
 import "./studio.css";
 import { GpuPanel, gpuLabels } from "./GpuPanel";
 import { TrainingPage } from "./training/TrainingPage";
+import { CirculationsPage } from "./CirculationsPage";
 
 type User = { login: string; role: string };
 type Entry = {
@@ -148,6 +149,8 @@ function Root() {
         <a href="/">Se connecter à DOEMO Studio</a>
       </p>
     );
+  if (window.location.pathname.replace(/\/$/, "") === "/circulations")
+    return <CirculationsPage onBack={()=>{window.location.href='/releves/';}}/>;
   if (window.location.pathname.replace(/\/$/, "") === "/entrainement")
     return (
       <TrainingPage
@@ -624,6 +627,7 @@ function Studio({
             Entraînement IA
           </button>
         )}
+        <button onClick={()=>void run('Enregistrement…',async()=>{await editor.save();window.location.href='/circulations';})}>Circulations</button>
         {p && (
           <>
             <label className="file-button">

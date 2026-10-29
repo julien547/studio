@@ -116,6 +116,8 @@ def create_app(root=None):
     attach_gpu(app, store, actor, admin)
     from .training import attach_training
     attach_training(app, store, admin, get, doc)
+    from .circulation_api import attach as attach_circulations
+    attach_circulations(app,store,actor,admin,get,doc)
 
     @app.get("/health")
     def health():

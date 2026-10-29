@@ -19,6 +19,7 @@ import {
 } from "./types";
 import { GpuPanel } from "../GpuPanel";
 import "./training.css";
+import {CirculationCorrections} from './CirculationCorrections';
 const tabs = [
   "Annotations",
   "Datasets",
@@ -132,6 +133,7 @@ export function TrainingPage({
         </div>
       </aside>
       <main className="training-main">
+        <CirculationCorrections/>
         <header>
           <p className="training-eyebrow">Corrections → datasets → modèles</p>
           <h1>Entraînement IA</h1>

@@ -125,6 +125,8 @@ def standalone(root=None, origin=None, dist=None):
         return RedirectResponse('/releves/')
 
     @app.get('/releves/')
+    @app.get('/circulations')
+    @app.get('/circulations/')
     @app.get('/entrainement')
     @app.get('/entrainement/')
     def index():

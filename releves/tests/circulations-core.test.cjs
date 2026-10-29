@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict');
+const c=require('../illustrator/circulations-core.js');
+const shell=[[0,0],[10,0],[10,10],[0,10],[0,0]];
+assert.equal(c.oriented(shell,true).length,4);
+assert.deepEqual(c.oriented(shell,false),[[0,10],[10,10],[10,0],[0,0]]);
+const value={schema_version:'doemo.circulations-export/1',units:'pt',coordinate_system:'illustrator_document_y_up',source_sha256:'1'.repeat(64),architecture_sha256:'2'.repeat(64),color_space:'RGB',artboards:[[0,100,100,0]],color:{approved:true,mode:'RGB',values:[150,190,130],opacity:100,tint:100},regions:[{id:'a',artboard:0,status:'validated',category:'circulation',shape:{shell,holes:[]}}]};
+assert.equal(c.validate(value),value);
+assert.throws(()=>c.validate({...value,regions:[{...value.regions[0],status:'rejected'}]}));
+assert.throws(()=>c.validate({...value,regions:[value.regions[0],value.regions[0]]}));
+assert.throws(()=>c.validate({...value,units:'mm'}));
+console.log('6 contrôles du contrat Illustrator circulations réussis.');
