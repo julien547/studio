@@ -124,3 +124,22 @@ def test_reconstruct_mask_turns_a_predicted_wall_raster_into_segments(tmp_path):
     segments = labels_to_segments(labels, record, 'a' * 64)
     assert len(segments) >= 4
     assert length_scores(segments, [r for r in RECT if r != RECT[-1]], W, H)['recall'] > .9
+
+
+def test_a_flooded_or_degenerate_raster_gives_no_segments_instead_of_crashing(tmp_path):
+    from segmentation.walls_training.evaluate import labels_to_segments
+    png = tmp_path / 'p.png'; plan_png(png)
+    record = {'path': str(png), 'width': W, 'height': H}
+    assert labels_to_segments(np.ones((H, W), np.uint8), record, 'a' * 64) == []          # tout « mur » : pas de pixel de fond
+    assert labels_to_segments(np.zeros((H, W), np.uint8), record, 'a' * 64) == []
+
+
+def test_validated_rights_file_makes_the_manifest_acceptable_without_editing_it(tmp_path):
+    pytest.importorskip('onnx'); pytest.importorskip('onnxruntime')
+    from segmentation.walls_training.train import main
+    rights = Path(__file__).resolve().parents[1] / 'segmentation/walls_training/rights.julien-2026-10-29.json'
+    out = tmp_path / 'run'
+    main(['--bundle', str(make_bundle(tmp_path)), '--out', str(out), '--size', '128', '--epochs', '1', '--base', '4', '--batch', '2',
+          '--repeat', '1', '--device', 'cpu', '--workers', '0', '--rights', str(rights)])
+    meta = run_onnx.checked_manifest(out / 'walls.onnx', out / 'manifest.json')
+    assert all(part['reviewed_by'].startswith('Julien Moulin') for part in meta['rights'].values())

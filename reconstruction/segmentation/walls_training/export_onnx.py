@@ -1,7 +1,7 @@
 """Export ONNX + manifeste conformes à segmentation/run_onnx.py (RGB NCHW float32 [0,1] -> logits NCHW, 11 classes).
 
-Les droits (code, poids, données d'entraînement) restent À FAUX : aucune revue n'est simulée. Julien doit renseigner
-`commercial_use`, `evidence_url` et `reviewed_by` pour chaque composant avant tout usage (checked_manifest refuse sinon)."""
+Sans fichier de droits, tout reste À FAUX (aucune revue simulée) et checked_manifest refuse le modèle. La revue de Julien du 29/10/2026
+est dans rights.julien-2026-10-29.json (--rights) ; elle ne vaut que pour les données et la portée décrites dans DROITS-2026-10-29.md."""
 import hashlib
 import json
 import torch
@@ -33,12 +33,12 @@ def verify(path, model, size=1024, tolerance=1e-3):
     return diff
 
 
-def manifest(onnx_path, manifest_path, size=1024, training=None):
+def manifest(onnx_path, manifest_path, size=1024, training=None, rights=None):
     sha = hashlib.sha256(open(onnx_path, 'rb').read()).hexdigest()
     pending = {'commercial_use': False, 'evidence_url': '', 'reviewed_by': ''}
     data = {'sha256': sha, 'input_contract': 'rgb_nchw_0_1', 'output_contract': 'nchw_logits',
             'input_size': [size, size], 'classes': CLASSES,
-            'rights': {'code': dict(pending), 'weights': dict(pending), 'training_data': dict(pending)},
+            'rights': rights or {'code': dict(pending), 'weights': dict(pending), 'training_data': dict(pending)},
             'trained_classes': ['background', 'wall'], 'training': training or {}}
     with open(manifest_path, 'w') as f:
         json.dump(data, f, indent=1, ensure_ascii=False)

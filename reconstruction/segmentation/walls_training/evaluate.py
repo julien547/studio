@@ -18,10 +18,20 @@ def predict_labels(model, record, size, device):
     return cv2.resize(labels, (record['width'], record['height']), interpolation=cv2.INTER_NEAREST)
 
 
+FLOOD = .5     # au-delà de 50 % de pixels « mur », le raster n'est pas une segmentation : c'est un masque inondé
+
+
 def labels_to_segments(labels, record, model_sha):
+    """Raster -> segments. Un masque inondé (début d'entraînement) ou refusé par le moteur donne 0 segment, jamais une exception :
+    reconstruct_mask déborde (épaisseur infinie) quand aucun pixel de fond n'existe."""
+    if float((labels == 1).mean()) > FLOOD:
+        return []
     image_sha = hashlib.sha256(open(record['path'], 'rb').read()).hexdigest()
-    result = reconstruct_mask(labels, classes=CLASSES, source_sha256=image_sha, model_sha256=model_sha,
-                              document_size=(record['width'], record['height']), image_to_document=[1, 0, 0, 1, 0, 0])
+    try:
+        result = reconstruct_mask(labels, classes=CLASSES, source_sha256=image_sha, model_sha256=model_sha,
+                                  document_size=(record['width'], record['height']), image_to_document=[1, 0, 0, 1, 0, 0])
+    except ValueError:
+        return []
     return [(w['a'][0], w['a'][1], w['b'][0], w['b'][1]) for w in result['walls']]
 
 

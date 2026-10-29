@@ -1,0 +1,5 @@
+{
+  "code": {"commercial_use": true, "evidence_url": "reconstruction/segmentation/walls_training/DROITS-2026-10-29.md", "reviewed_by": "Julien Moulin (confirmation du 29/10/2026)"},
+  "weights": {"commercial_use": true, "evidence_url": "reconstruction/segmentation/walls_training/DROITS-2026-10-29.md", "reviewed_by": "Julien Moulin (confirmation du 29/10/2026)"},
+  "training_data": {"commercial_use": true, "evidence_url": "reconstruction/segmentation/walls_training/DROITS-2026-10-29.md", "reviewed_by": "Julien Moulin (confirmation du 29/10/2026)"}
+}

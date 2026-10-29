@@ -40,6 +40,7 @@ def main(argv=None):
     a.add_argument('--wall-weight', type=float, default=6.); a.add_argument('--eval-every', type=int, default=5)
     a.add_argument('--device', default='auto'); a.add_argument('--workers', type=int, default=2)
     a.add_argument('--seed', type=int, default=0); a.add_argument('--train-fraction', type=float, default=1.)
+    a.add_argument('--rights', default=None, help='JSON des droits validés (voir rights.julien-2026-10-29.json) ; sinon tout reste à faux')
     args = a.parse_args(argv)
     torch.manual_seed(args.seed); np.random.seed(args.seed)
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
@@ -79,7 +80,8 @@ def main(argv=None):
     export(model, onnx_path, args.size); diff = verify(onnx_path, model, args.size)
     final = {'validation': evaluate(model, records['validation'], args.size, torch.device('cpu'), '0' * 64),
              'test': evaluate(model, records['test'], args.size, torch.device('cpu'), '0' * 64)}
-    sha = manifest(onnx_path, out / 'manifest.json', args.size,
+    rights = json.loads(Path(args.rights).read_text()) if args.rights else None
+    sha = manifest(onnx_path, out / 'manifest.json', args.size, rights=rights,
                    training={'plans': {k: len(v) for k, v in records.items()}, 'train_used': len(train), 'epochs': args.epochs,
                              'bundle_sha256': hashlib.sha256(open(args.bundle, 'rb').read()).hexdigest(), 'onnx_max_abs_diff': diff,
                              'metrics': final, 'baseline_engine_before_training': BASELINE})
