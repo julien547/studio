@@ -1,0 +1,6 @@
+# Environnement d'ENTRAÎNEMENT (GPU/pod ou poste). Le moteur de production n'en a pas besoin.
+torch>=2.5
+numpy>=2.0
+opencv-python-headless>=4.9
+onnx>=1.16
+onnxruntime>=1.18
