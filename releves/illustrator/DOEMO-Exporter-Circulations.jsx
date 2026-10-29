@@ -10,7 +10,7 @@
         var inv=DOEMO_CIRC_NATIVE.inventory(doc),paths=[],texts=[],levels=[],counter=0,warnings=[];
         function role(name){var n=name.toUpperCase();if(n.indexOf('DOEMO:SEUIL')>=0)return 'door_threshold';if(n.indexOf('DOEMO:PASSAGE')>=0)return 'passage';if(n.indexOf('DOEMO:OBSTACLE')>=0)return 'obstacle';if(n.indexOf('DOEMO:VERT_EXISTANT')>=0)return 'existing_green';if(n.indexOf('DOEMO:MUR')>=0)return 'wall';return 'unknown';}
         function visit(o,parentRole,layer,visible,clipped){var r=role(o.name)||parentRole,i;if(r==='unknown')r=parentRole;var isClip=clipped||o.clipped||o.clipping;
-            if(o.type==='PathItem'&&o.nodes.length>=2){
+            if(o.type==='PathItem'&&o.nodes.length>=2&&(!o.guides||r!=='unknown'||(o.name||'').indexOf('DOEMO:EMPRISE:')===0)){
                 var name=o.name||'',nodes=o.nodes;
                 if(name.indexOf('DOEMO:EMPRISE:')===0){
                     if(!o.closed||isClip)throw Error('Emprise fermée, sans masque requise.');
@@ -23,14 +23,14 @@
         }
         function walk(l,parentVisible,parentRole){var r=role(l.name);if(r==='unknown')r=parentRole;for(var i=0;i<l.items.length;i++)visit(l.items[i],r,l.name,parentVisible&&l.visible,false);for(i=0;i<l.layers.length;i++)walk(l.layers[i],parentVisible&&l.visible,r);}
         for(var i=0;i<inv.layers.length;i++)walk(inv.layers[i],true,'unknown');
-        if(!levels.length)throw Error('Définir une emprise fermée par niveau, nommée DOEMO:EMPRISE:RDC (ou R+1), dans une copie de préparation. Qualifier les calques DOEMO:MUR, DOEMO:SEUIL et DOEMO:OBSTACLE. Aucun contour de bâtiment ne sera inventé.');
-        // Text membership is resolved by the backend region test; one entry per level.
-        var levelTexts=[];for(i=0;i<texts.length;i++)for(var k=0;k<levels.length;k++)levelTexts.push({text:texts[i].text,point:texts[i].point,level:levels[k].id});
+        // Raw texts are assigned spatially after level qualification in DOEMO.
+        // No footprint is invented when the source has no named helper paths.
+        var levelTexts=texts;
         var sha=DOEMO.sha256(DOEMO_CIRC_NATIVE.read(doc.fullName,true));
         var output=File.saveDialog('Exporter la géométrie pour la page Circulations DOEMO','*.json');if(!output)return;
         DOEMO_CIRC_NATIVE.write(output,{schema_version:'doemo.circulations-source/1',provider:'illustrator',document_id:DOEMO_CIRC_NATIVE.hash(doc.fullName.fsName).substring(0,24),source_name:doc.fullName.name,
             source_sha256:sha,architecture_sha256:DOEMO_CIRC_NATIVE.hash(inv),units:'pt',coordinate_system:'illustrator_document_y_up',color_space:inv.color_space,
             artboards:inv.artboards,levels:levels,paths:paths,texts:levelTexts,inventory:inv});
-        alert('Géométrie exportée. Importez ce JSON dans DOEMO → Circulations pour reconstruire et valider les surfaces. Le fichier source est inchangé.');
+        alert('Géométrie exportée. Importez ce JSON dans DOEMO → Circulations, confirmez les murs et emprises puis validez les surfaces. Le fichier source est inchangé.');
     }catch(e){alert('Extraction circulations interrompue : '+e.message);}finally{app.coordinateSystem=previous;}
 }());

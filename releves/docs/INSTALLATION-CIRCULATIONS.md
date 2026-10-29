@@ -36,6 +36,7 @@ npx playwright test
 ```
 
 ```sh
+node releves/tests/circulations-extractor.test.cjs
 node releves/tests/circulations-core.test.cjs
 node releves/tests/illustrator-core.test.cjs
 ```
@@ -43,8 +44,40 @@ node releves/tests/illustrator-core.test.cjs
 Les tests de calcul couvrent rectangles, L/T/U, diagonales, seuils vers un bureau,
 passages ouverts, obstacles avec trous, vert existant, halls, courbes, emprises,
 murs incomplets, corrections, conflits de version et contrôle d’accès.
-Le navigateur vérifie la revue, l’historique, la nuance et le téléchargement du
-contrat. Ces tests ne simulent pas une réussite d’Illustrator.
+Le navigateur vérifie la revue, l’historique, la nuance, le téléchargement du
+contrat et la préparation d’une source brute sans calques nommés. Le test Node de
+l’exporteur utilise un inventaire simulé pour vérifier l’export sans emprise et
+la conservation de la quarantaine des masques. Il ne remplace pas une exécution Adobe.
+
+La suite préparation ajoute les cas : absence d’emprise (aucune région), indices
+sans mutation automatique, attribution des textes par position, seuil confirmé,
+refus des arcs et des masques, emprises superposées, annulation de la préparation,
+contrôle de propriétaire, conflits de révision et protection des corrections.
+
+### Mise à jour de la préparation des plans bruts
+
+Livrer ensemble le backend (dont `circulation_preparation.py`), le frontend
+recompilé et `DOEMO-Exporter-Circulations.jsx`. Aucun schéma supplémentaire après
+la migration `006` et aucune dépendance GPU supplémentaire ne sont requis.
+L’ancienne extraction avec calques nommés reste compatible. La nouvelle source
+peut contenir `levels: []` et des textes `level: ""` à affecter spatialement.
+
+Deux routes privées, soumises aux mêmes droits de projet :
+
+- `GET /projects/{id}/circulations/{document_id}/preparation` : indices de rôles
+  et contours ; aucune modification. Les listes sont plafonnées, avec compte total.
+- `POST` sur cette route : rôle, emprise, seuil virtuel ou retrait. Révision exigée,
+  recalcul transactionnel, historique et confirmation des corrections existantes.
+
+Les empreintes du AI et de son inventaire restent celles de la source native.
+La version de travail change après qualification. Restaurer un historique de
+préparation est permis seulement pour la même source native, les mêmes plans de
+travail et le même espace colorimétrique.
+
+Vérification locale de cette évolution : **166 tests backend et 12 tests navigateur
+réussis**, compilation TypeScript/Vite réussie, tests Node du contrat, du cœur
+Illustrator et de l’extraction brute réussis. Aucun de ces résultats ne constitue
+une validation de sauvegarde native Adobe ni un déploiement en production.
 
 Pour l’audit local du véritable aperçu PDF embarqué d’un AI, installer PyMuPDF
 dans un environnement de développement séparé et lancer :

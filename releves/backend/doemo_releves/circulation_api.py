@@ -11,6 +11,7 @@ from shapely.geometry import Point
 from .models import Model
 from .store import Conflict
 from . import circulations as geo
+from . import circulation_preparation as prep
 
 
 class Analyze(Model):
@@ -85,6 +86,22 @@ def attach(app,store,actor,admin,get,doc):
         get(ident,who)
         with store.connect() as c:return [dict(r) for r in c.execute('SELECT revision,actor,action,created FROM circulation_history WHERE project_id=? AND document_id=? ORDER BY revision DESC',(ident,cid))]
 
+    @app.get(prefix+'/{cid}/preparation')
+    def preparation_hints(ident:str,cid:str,who=Depends(actor)):
+        get(ident,who)
+        with store.connect() as c:state=read(c,ident,cid)
+        return prep.suggestions(geo.Source.model_validate(state['source']),geo.Rules.model_validate(state['rules']))
+
+    @app.post(prefix+'/{cid}/preparation')
+    def preparation(ident:str,cid:str,data:prep.Preparation,who=Depends(actor)):
+        get(ident,who)
+        with store.connect() as c:
+            c.execute('BEGIN IMMEDIATE');state=read(c,ident,cid)
+            if data.revision!=state['revision']:raise Conflict('Recharger avant préparation')
+            if any(r['origin'].startswith('human') for r in state['regions']) and not data.replace_reviewed:
+                raise Conflict('Confirmer le recalcul après préparation : corrections conservées dans l’historique')
+            return save(c,ident,cid,prep.prepare(state,data),who,'prepare_'+data.operation,data.revision)
+
     @app.put(prefix+'/{cid}')
     def change(ident:str,cid:str,data:Change,who=Depends(actor)):
         get(ident,who)
@@ -95,7 +112,7 @@ def attach(app,store,actor,admin,get,doc):
                 row=c.execute('SELECT state FROM circulation_history WHERE project_id=? AND document_id=? AND revision=?',(ident,cid,data.restore_revision)).fetchone()
                 if not row:raise LookupError('Révision absente')
                 prior=json.loads(row[0])
-                if prior['source_version']!=state['source_version']:raise ValueError('Restauration d’une autre source interdite ; réimporter cette source explicitement')
+                if any(prior['source'][k]!=state['source'][k] for k in ('provider','source_sha256','architecture_sha256','artboards','color_space')):raise ValueError('Restauration d’une autre source interdite ; réimporter cette source explicitement')
                 state=prior
             elif data.operation=='color':
                 if data.color is None:raise ValueError('Nuance requise')

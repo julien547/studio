@@ -54,7 +54,6 @@ class VectorPath(Model):
     @model_validator(mode='after')
     def finite(self):
         if any(not math.isfinite(v) or abs(v)>1e7 for node in self.nodes for v in node):raise ValueError('Coordonnées vectorielles invalides')
-        if self.filled and not self.closed:raise ValueError('Un obstacle rempli doit être fermé')
         return self
 
 
@@ -87,7 +86,7 @@ class Source(Model):
     coordinate_system:Literal['illustrator_document_y_up']='illustrator_document_y_up'
     color_space:Literal['RGB','CMYK']
     artboards:list[tuple[float,float,float,float]]=Field(min_length=1,max_length=100)
-    levels:list[Level]=Field(min_length=1,max_length=100)
+    levels:list[Level]=Field(default_factory=list,max_length=100)
     paths:list[VectorPath]=Field(max_length=20000)
     texts:list[Text]=Field(default_factory=list,max_length=10000)
     inventory:dict=Field(default_factory=dict)
@@ -201,7 +200,7 @@ def reconstruct(source:Source,rules:Rules):
             for shape in shapes(free):
                 g=poly(shape)
                 if g.area<rules.minimum_area_pt2:continue
-                labels=[t.text for t in source.texts if t.level==level.id and g.covers(Point(t.point))]
+                labels=[t.text for t in source.texts if t.level in ('',level.id) and g.covers(Point(t.point))]
                 category,confidence,reason=classify(labels,rules)
                 if unresolved or not (lines or obstacles) or any(p.clipped and p.role!='unknown' for p in source.paths):
                     confidence=min(confidence,.49);reason+=' ; géométrie incomplète'
@@ -209,6 +208,7 @@ def reconstruct(source:Source,rules:Rules):
                 result.append(dict(id=ident,level=level.id,artboard=level.artboard,shape=shape,category=category,
                                    confidence=confidence,reason=reason,labels=labels,status='proposed',
                                    suggested=category=='circulation' and confidence>=rules.confidence_threshold,origin='vector_rules',original_category=category))
+    if not source.levels:warnings.append('Préparation requise : définir et confirmer l’emprise réelle de chaque niveau avant calcul')
     if not lines and not obstacles:warnings.append('Aucune limite architecturale qualifiée : annoter les rôles des tracés avant calcul')
     if rules.gap_tolerance_pt:warnings.append('Tolérance d’inspection '+str(rules.gap_tolerance_pt)+' pt ; aucun raccord automatique de traits disjoints')
     return dict(schema_version=VERSION,source=source.model_dump(),source_version=digest(source.model_dump()),rules=rules.model_dump(),regions=result,

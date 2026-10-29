@@ -2,8 +2,9 @@
 
 ## Ce que cette version permet
 
-Le module calcule des régions vectorielles à partir des limites préparées dans
-Illustrator, propose leur catégorie à partir des textes, permet leur correction
+Le module accepte la géométrie native d’un plan brut, propose des tracés à
+qualifier, puis calcule des régions à partir des limites confirmées dans DOEMO
+ou préparées dans Illustrator. Il propose leur catégorie à partir des textes et permet leur correction
 dans DOEMO et prépare leur import sur un nouveau calque. Le connecteur enregistre
 une **nouvelle copie AI native depuis Adobe Illustrator**, puis la rouvre pour
 contrôler l’inventaire et les surfaces enregistrées.
@@ -12,8 +13,9 @@ contrôler l’inventaire et les surfaces enregistrées.
 tests locaux du calcul et de l’interface ne remplacent pas la première sauvegarde
 native réelle. Aucun AI final n’a été produit ou rouvert par la session Linux.
 Un fichier Illustrator brut, aux murs/portes non identifiés, n’est pas encore
-traité de manière entièrement automatique. Cette première version demande la
-qualification des limites et des emprises ci-dessous. Les masques et chemins
+traité de manière entièrement automatique. La qualification des limites et des
+emprises peut maintenant se faire dans DOEMO, sans renommer les calques du AI.
+Les propositions demandent une confirmation visuelle. Les masques et chemins
 composés ambigus restent hors calcul, avec avertissement.
 
 ## 1. Installer les scripts sur le poste du dessinateur
@@ -37,13 +39,19 @@ Le dossier peut être téléchargé avec le ZIP du dépôt GitHub, puis extrait.
 Le déploiement de la page et du backend relève de la session serveur : voir
 [INSTALLATION-CIRCULATIONS.md](INSTALLATION-CIRCULATIONS.md).
 
-## 2. Préparer une copie du plan
+## 2. Choisir le mode de préparation
 
 Garder le fichier d’origine intact. Enregistrer une **copie de préparation `.ai`**.
 Les objets originaux y restent éditables : aucun aplatissement, aucune conversion
 des textes, aucune rastérisation des murs.
 
-La première version exploite les noms d’objets ou de calques suivants :
+**Plan brut :** enregistrer le AI, l’exporter directement avec le script puis
+préparer les murs et les niveaux dans DOEMO (section 4). Il n’est plus nécessaire
+de créer des calques `DOEMO:MUR` ou une emprise nommée pour pouvoir exporter.
+Les repères Illustrator ordinaires sont ignorés ; les objets composés ou masqués
+restent inventoriés mais exclus du calcul.
+
+**Plan déjà préparé :** les noms d’objets ou de calques suivants restent reconnus :
 
 | Nom | Rôle |
 | --- | --- |
@@ -92,12 +100,52 @@ source. Les coordonnées sont celles du document Illustrator, en points,
 avec l’axe Y dirigé vers le haut.
 
 Le script n’enregistre pas de modification du plan. En l’absence d’emprise,
-il s’arrête avec un message explicatif : il n’invente pas le contour du bâtiment.
+il exporte une source à préparer : aucune région n’est calculée tant qu’un
+contour de niveau n’a pas été confirmé. Les textes sont ensuite affectés aux
+régions par leur position.
 
 ## 4. Reconstruire dans DOEMO
 
 Après installation du module, ouvrir **Circulations** depuis l’atelier ou accéder
 à `/circulations/`. Choisir le projet puis importer le JSON extrait.
+
+### Plan brut : préparer les murs et les niveaux
+
+1. Choisir le **plan de travail** à examiner puis cliquer **Proposer les tracés à
+   vérifier**. DOEMO repère des noms de calques architecturaux, des tracés sombres
+   et allongés et des remplissages verts. Ce sont des indices, pas des rôles acquis.
+2. Dans **Proposition à examiner**, choisir un tracé ; il apparaît en violet.
+   Pour une sélection manuelle, utiliser **Sélectionner des tracés**, cliquer un
+   trait et maintenir Majuscule pour en sélectionner plusieurs.
+3. Choisir le **rôle confirmé** et cliquer **Confirmer le rôle des tracés**.
+   Vérifier particulièrement les cotes, le mobilier et les symboles : leurs
+   formes peuvent ressembler à des murs. Le vert d’une légende n’est pas une
+   circulation existante.
+4. Saisir le **nom du niveau**. Sélectionner un vrai contour fermé puis cliquer
+   **Utiliser le contour sélectionné comme emprise**, ou **Tracer l’emprise réelle**
+   et cliquer ses sommets. Confirmer le contour. Il doit rester dans le plan de
+   travail et ne pas chevaucher un autre niveau. Pour remplacer une emprise,
+   réutiliser exactement le même nom de niveau.
+5. Pour séparer une pièce du couloir, choisir son niveau puis **Tracer un seuil
+   entre jambages**. Cliquer les deux jambages et confirmer. À moins de 8 pixels
+   d’un sommet natif, le clic s’y aimante pour éviter un petit interstice.
+   Ne pas fermer un passage entre deux circulations. Aucun seuil n’est créé
+   automatiquement et aucun trait de seuil n’est ajouté au AI final.
+6. Utiliser **Revenir aux régions** pour contrôler les surfaces calculées.
+
+Les propositions de contours viennent uniquement de boucles vectorielles
+fermées existantes. Le contour d’une pièce ou du cartouche peut en faire partie :
+confirmer l’emprise du bâtiment, jamais son simple rectangle englobant. Si le bon
+contour n’existe pas, le tracer. Les chemins composés/masqués exclus doivent être
+préparés dans Illustrator ; les qualifier comme murs depuis cette page est refusé.
+
+Les limites et seuils créés dans DOEMO sont des données de calcul. Les coordonnées
+et empreintes du AI source restent inchangées. **Annuler / Rétablir** fonctionne
+aussi pour cette préparation. Modifier les limites après une correction humaine
+demande confirmation : les régions sont recalculées et doivent être revues ;
+les versions précédentes restent conservées dans l’historique.
+
+### Règles du calcul
 
 Dans « Règles de reconstruction », régler :
 

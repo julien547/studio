@@ -145,3 +145,89 @@ def test_completed_ocr_hints_cannot_change_contours_or_rejected_regions(tmp_path
     assert '[0.0, 0.0, 100.0, 100.0]' in examples[0]['data']['convention']
     assert json.loads(examples[0]['data']['interpretation'])['correction_type']=='reject'
     assert client.post('/projects/training/circulation-corrections/'+key+'/example',json={'source_document_id':d['id'],'page':1}).json()==reply.json()
+
+
+def raw_source():
+    s=doorway().model_dump();s['levels']=[]
+    for p in s['paths']:p.update(role='unknown',stroke=['GrayColor',100],layer='Plan')
+    for t in s['texts']:t['level']=''
+    s['paths'].insert(0,dict(line('outline',[(0,0),(100,0),(100,100),(0,100)],role='unknown',closed=True),stroke=['GrayColor',100]))
+    return g.Source.model_validate(s)
+
+
+def test_raw_source_hints_are_non_mutating_and_never_invent_footprints():
+    from doemo_releves import circulation_preparation as prep
+    s=raw_source();before=s.model_dump();state=g.reconstruct(s,g.Rules())
+    assert state['regions']==[] and any('Préparation requise' in w for w in state['warnings'])
+    hints=prep.suggestions(s,g.Rules())
+    assert hints['automatic_changes'] is False and {v['id'] for v in hints['roles']}=={'outline','w1','w2'}
+    assert [v['id'] for v in hints['outlines']]==['outline']
+    assert s.model_dump()==before
+    s.paths=s.paths[1:];assert prep.suggestions(s,g.Rules())['outlines']==[]
+    # A filled, open Illustrator path can be inventoried but is not a closed obstacle.
+    s.paths[0].filled=True
+    g.Source.model_validate(s.model_dump())
+
+
+def test_preparation_preserves_native_source_and_closes_only_confirmed_threshold():
+    from doemo_releves import circulation_preparation as prep
+    s=raw_source();state=g.reconstruct(s,g.Rules())
+    def apply(operation,**kw):
+        nonlocal state
+        state=prep.prepare(state,prep.Preparation(revision=0,operation=operation,**kw));return state
+    apply('footprint',ids=['outline'],level_id='rdc',artboard=0)
+    assert len(state['regions'])==1
+    apply('roles',ids=['w1','w2'],role='wall')
+    assert not any(r['suggested'] for r in state['regions'])
+    assert any('incompatibles' in r['reason'] for r in state['regions'])
+    apply('threshold',level_id='rdc',points=[(40,45),(40,55)])
+    assert len(state['regions'])==2 and {r['category'] for r in state['regions']}=={'circulation','room'}
+    for key in ('source_sha256','architecture_sha256','artboards','inventory'):
+        assert state['source'][key]==s.model_dump()[key]
+    for p in s.paths:assert next(v['nodes'] for v in state['source']['paths'] if v['id']==p.id)==p.nodes
+    with pytest.raises(ValueError,match='déjà présent'):apply('threshold',level_id='rdc',points=[(40,55),(40,45)])
+    with pytest.raises(ValueError,match='hors emprise'):apply('threshold',level_id='rdc',points=[(-1,45),(40,45)])
+    with pytest.raises(ValueError,match='virtuels'):apply('remove_threshold',ids=['w1'])
+    virtual=next(p['id'] for p in state['source']['paths'] if p['id'].startswith('virtual-threshold-'))
+    apply('remove_threshold',ids=[virtual]);assert len(state['regions'])==1
+    with pytest.raises(ValueError,match='superposés'):apply('footprint',ids=['outline'],level_id='another')
+    apply('remove_level',level_id='rdc');assert state['regions']==[]
+
+
+def test_preparation_rejects_masked_paths_arcs_and_filled_open_obstacles():
+    from doemo_releves import circulation_preparation as prep
+    s=raw_source();s.paths[1].clipped=True
+    s.paths[2].nodes[0]=(40,55,41,55,41,55)
+    state=g.reconstruct(s,g.Rules())
+    with pytest.raises(ValueError,match='masqué'):prep.prepare(state,prep.Preparation(revision=0,operation='roles',ids=['w1'],role='wall'))
+    with pytest.raises(ValueError,match='segment droit'):prep.prepare(state,prep.Preparation(revision=0,operation='roles',ids=['w2'],role='door_threshold'))
+    with pytest.raises(ValueError,match='fermé'):prep.prepare(state,prep.Preparation(revision=0,operation='roles',ids=['w2'],role='obstacle'))
+    with pytest.raises(ValueError,match='invalide'):prep.prepare(state,prep.Preparation(revision=0,operation='roles',ids=['absent']))
+    assert state['source']==s.model_dump()
+
+
+def test_api_preparation_history_ownership_and_review_protection(tmp_path):
+    client=TestClient(create_app(tmp_path),headers={'X-Doemo-User':'alice','X-Doemo-Role':'admin'})
+    project=client.post('/projects',json={'name':'Raw AI'}).json();base='/projects/'+project['id']+'/circulations'
+    s=raw_source();assert client.post(base,json={'source':s.model_dump()}).status_code==200
+    path=base+'/fixture-plan';prep=path+'/preparation'
+    assert client.get(prep,headers={'X-Doemo-User':'bob','X-Doemo-Role':'dessinateur'}).status_code==404
+    assert client.get(prep).json()['automatic_changes'] is False
+    command={'revision':0,'operation':'footprint','level_id':'rdc','ids':['outline']}
+    result=client.post(prep,json=command);assert result.status_code==200,result.text
+    assert result.json()['revision']==1 and len(result.json()['regions'])==1
+    assert client.post(prep,json=command).status_code==409
+    restored=client.put(path,json={'revision':1,'operation':'restore','restore_revision':0}).json()
+    assert restored['regions']==[] and restored['source']['levels']==[]
+    restored=client.put(path,json={'revision':2,'operation':'restore','restore_revision':1}).json()
+    region=restored['regions'][0]['id']
+    assert client.put(path,json={'revision':3,'operation':'reject','ids':[region]}).status_code==200
+    command={'revision':4,'operation':'roles','ids':['w1','w2'],'role':'wall'}
+    assert client.post(prep,json=command).status_code==409
+    result=client.post(prep,json={**command,'replace_reviewed':True});assert result.status_code==200,result.text
+    assert all(r['status']=='proposed' for r in result.json()['regions'])
+    assert client.get(path+'/history').json()[0]['action']=='prepare_roles'
+    # History restoration across different native files remains forbidden.
+    new=result.json()['source'];new['source_sha256']='9'*64
+    assert client.post(base,json={'source':new,'revision':5}).status_code==200
+    assert client.put(path,json={'revision':6,'operation':'restore','restore_revision':1}).status_code==422
