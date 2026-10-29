@@ -4,6 +4,7 @@ Format volontairement voisin des exports de training_data.py (.json/.jsonl/.png 
     images/<ref>.png
     walls.jsonl : {"ref","image","width","height","split","document_sha256","segments":[[x1,y1,x2,y2],...]}
 """
+import hashlib
 import json
 import math
 import zipfile
@@ -12,16 +13,21 @@ from pathlib import Path, PurePosixPath
 SPLITS = ('train', 'validation', 'test')
 
 
-def build(coco_zip, murs_jsonl, destination):
-    """Croise l'export de détection (images + splits par document) avec les murs vérifiés."""
+def build(coco_zip, murs_jsonl, destination, jeu_root=None, extra_split='train'):
+    """Croise l'export de détection (images + splits par document) avec les murs vérifiés.
+
+    Les plans vérifiés qui ne sont PAS dans l'export de détection (validés depuis) sont ajoutés au split `extra_split`
+    (« train » par défaut) quand `jeu_root` est donné : validation et test restent ceux de l'export, donc les mesures avant/après
+    restent comparables. Leur `document_sha256` est l'empreinte de l'image (un plan = un document)."""
     with zipfile.ZipFile(coco_zip) as z:
         coco = json.loads(z.read('coco.json'))
         images = {i['ref']: i for i in coco['images']}
-        murs = {}
+        murs, files = {}, {}
         for line in Path(murs_jsonl).read_text().splitlines():
             row = json.loads(line)
             if row.get('verifie') and row['segments']:
                 murs[Path(row['image']).parent.name] = row['segments']
+                files[Path(row['image']).parent.name] = row['image']
         keep = [r for r in images if r in murs]
         if not keep:
             raise ValueError('Aucun plan commun entre les boîtes et les murs vérifiés')
@@ -32,8 +38,20 @@ def build(coco_zip, murs_jsonl, destination):
                 out.writestr(f'images/{ref}.png', z.read(im['file_name']))
                 rows.append({'ref': ref, 'image': f'images/{ref}.png', 'width': im['width'], 'height': im['height'],
                              'split': im['split'], 'document_sha256': im['document_sha256'], 'segments': murs[ref]})
+            extras = sorted(r for r in murs if r not in images) if jeu_root else []
+            if extras:
+                import cv2
+            for ref in extras:
+                image = cv2.imread(str(Path(jeu_root) / files[ref]), cv2.IMREAD_COLOR)
+                if image is None:
+                    continue
+                height, width = image.shape[:2]
+                png = cv2.imencode('.png', image)[1].tobytes()
+                out.writestr(f'images/{ref}.png', png)
+                rows.append({'ref': ref, 'image': f'images/{ref}.png', 'width': width, 'height': height, 'split': extra_split,
+                             'document_sha256': hashlib.sha256(png).hexdigest(), 'segments': murs[ref]})
             out.writestr('walls.jsonl', '\n'.join(json.dumps(r) for r in rows) + '\n')
-    return len(keep)
+    return len(rows)
 
 
 def unpack(bundle, destination):

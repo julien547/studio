@@ -143,3 +143,23 @@ def test_validated_rights_file_makes_the_manifest_acceptable_without_editing_it(
           '--repeat', '1', '--device', 'cpu', '--workers', '0', '--rights', str(rights)])
     meta = run_onnx.checked_manifest(out / 'walls.onnx', out / 'manifest.json')
     assert all(part['reviewed_by'].startswith('Julien Moulin') for part in meta['rights'].values())
+
+
+def test_plans_validated_after_the_detection_export_join_train_only(tmp_path):
+    base = make_bundle(tmp_path)                                  # 6 plans P0..P5 dans l'export (splits 4/1/1)
+    coco = tmp_path / 'coco_export.zip'
+    with zipfile.ZipFile(coco, 'w') as z, zipfile.ZipFile(base) as src:
+        rows = [json.loads(line) for line in src.read('walls.jsonl').decode().splitlines()]
+        for r in rows:
+            z.writestr(r['image'], src.read(r['image']))
+        z.writestr('coco.json', json.dumps({'images': [{'ref': r['ref'], 'file_name': r['image'], 'width': W, 'height': H,
+                                                        'split': r['split'], 'document_sha256': r['document_sha256']} for r in rows]}))
+    jeu = tmp_path / 'jeu'; (jeu / 'P6').mkdir(parents=True); plan_png(jeu / 'P6' / 'releve.jpg', shift=2)
+    lines = [json.dumps({'image': f"P{k}/releve.jpg", 'ref': f'P{k}', 'verifie': True, 'segments': RECT}) for k in range(7)]
+    lines.append(json.dumps({'image': 'P7/releve.jpg', 'ref': 'P7', 'verifie': False, 'segments': RECT}))      # non vérifié : exclu
+    murs = tmp_path / 'murs.jsonl'; murs.write_text('\n'.join(lines))
+    out = tmp_path / 'plus.zip'
+    assert bundle.build(coco, murs, out, jeu_root=jeu) == 7
+    records = bundle.unpack(out, tmp_path / 'u')
+    assert {k: len(v) for k, v in records.items()} == {'train': 5, 'validation': 1, 'test': 1}
+    assert any(r['ref'] == 'P6' for r in records['train']) and not any(r['ref'] == 'P7' for v in records.values() for r in v)
