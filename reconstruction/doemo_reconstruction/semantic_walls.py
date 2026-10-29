@@ -22,11 +22,17 @@ import cv2
 import numpy as np
 from collections import defaultdict
 
-from .geometry import distance, wall
+from .geometry import distance, merge_collinear_fragments, wall
 from .wall_module import CLASSES, reconstruct_mask
 
+UPRIGHT_ANGLE = .5          # degrés : en dessous, le plan est considéré droit (inclinaison de scan négligeable)
+STRAIGHT_ANGLE = 15.        # degrés : un mur à moins de 15° de l'horizontale/verticale du plan est redressé
+ALIGN_FRACTION = .004       # des murs parallèles à moins de 0,4 % de la page partagent la même ordonnée/abscisse
+MIN_OBLIQUE_FRACTION = .025  # un mur oblique plus court est un crochet (arc de porte, marche d'escalier), pas un mur
+CORNER_FRACTION = .015      # une extrémité à moins de 1,5 % d'un mur perpendiculaire vient s'y appuyer (coin / T)
 SIMPLIFY_FRACTION = .0025   # tolérance de simplification d'une chaîne, en fraction du grand côté de la page
 MIN_CHAIN_FRACTION = .012   # une chaîne plus courte (poussière, éperon du squelette) n'est pas proposée
+MERGE_GAP_FRACTION = .006   # même écart maximal que le nettoyage des scans : une porte n'est jamais comblée
 FLOOD = .5       # plus de 50 % de pixels « mur » : masque inondé, pas une segmentation
 EMPTY = .0005    # moins de 0,05 % : le modèle ne voit rien
 
@@ -87,6 +93,109 @@ def simplify_chains(walls, epsilon, min_length):
     return out, dropped
 
 
+def dominant_angle(walls):
+    """Orientation principale du plan (degrés, dans [-45, 45[) : pic de l'histogramme des directions modulo 90°, pondéré par la longueur,
+    affiné par la moyenne pondérée des murs à moins de 4° du pic (sinon un plan parfaitement droit serait donné à 0,5°)."""
+    angles, lengths = [], []
+    for w in walls:
+        a = np.degrees(np.arctan2(w['b'][1] - w['a'][1], w['b'][0] - w['a'][0]))
+        angles.append((a + 45) % 90 - 45)
+        lengths.append(distance(w['a'], w['b']))
+    angles, lengths = np.array(angles), np.array(lengths)
+    histogram = np.zeros(90)
+    for a, l in zip(angles, lengths):
+        histogram[min(89, int(a + 45))] += l
+    smooth = np.convolve(np.r_[histogram[-2:], histogram, histogram[:2]], np.ones(5) / 5, mode='valid')
+    peak = float(np.argmax(smooth)) - 45 + .5
+    distance_to_peak = (angles - peak + 45) % 90 - 45
+    near = np.abs(distance_to_peak) <= 4
+    return float(peak + np.average(distance_to_peak[near], weights=lengths[near])) if near.any() else peak
+
+
+def _cluster(values, weights, tolerance):
+    """Regroupe des valeurs 1D à moins de `tolerance` les unes des autres ; renvoie la valeur moyenne pondérée de chaque valeur d'entrée."""
+    order = sorted(range(len(values)), key=lambda i: values[i])
+    out, group = [0.] * len(values), [order[0]] if order else []
+    def close(g):
+        mean = sum(values[i] * weights[i] for i in g) / sum(weights[i] for i in g)
+        for i in g:
+            out[i] = mean
+    for i in order[1:]:
+        if values[i] - values[group[-1]] <= tolerance:
+            group.append(i)
+        else:
+            close(group)
+            group = [i]
+    if group:
+        close(group)
+    return out
+
+
+def straighten_walls(walls, width, height):
+    """Murs du modèle -> murs DROITS : le squelette d'un masque est irrégulier (pentes de 1-3°, petits crochets, coins ouverts).
+
+    1. orientation principale du plan ; 2. tout mur à moins de STRAIGHT_ANGLE de cet axe ou de sa perpendiculaire devient exactement
+    parallèle à l'axe ; 3. les murs parallèles proches partagent la même ordonnée/abscisse ; 4. les extrémités proches d'un mur
+    perpendiculaire viennent s'y appuyer (coins et T). Les murs obliques (réellement obliques) ne sont pas modifiés ; aucun trou n'est comblé
+    entre deux murs alignés (c'est merge_collinear_fragments, avec son propre écart maximal, qui les rassemble).
+    Les petits obliques (< MIN_OBLIQUE_FRACTION de la page) sont écartés.
+    Retourne (murs, angle principal)."""
+    if not walls:
+        return walls, 0.
+    span = max(width, height)
+    angle = dominant_angle(walls)
+    theta = np.radians(0. if abs(angle) < UPRIGHT_ANGLE else angle)     # plan droit à moins de 0,5° près : axes exacts de l'image
+    c, s = np.cos(theta), np.sin(theta)
+    to_frame = lambda p: (p[0] * c + p[1] * s, -p[0] * s + p[1] * c)
+    from_frame = lambda u, v: [u * c - v * s, u * s + v * c]
+    items = []
+    for w in walls:
+        (u0, v0), (u1, v1) = to_frame(w['a']), to_frame(w['b'])
+        angle = np.degrees(np.arctan2(v1 - v0, u1 - u0)) % 180
+        kind = 'h' if min(angle, 180 - angle) <= STRAIGHT_ANGLE else ('v' if abs(angle - 90) <= STRAIGHT_ANGLE else 'o')
+        items.append({'w': w, 'kind': kind, 'u': [u0, u1], 'v': [v0, v1], 'length': distance(w['a'], w['b'])})
+    for orientation, along, across in (('h', 'u', 'v'), ('v', 'v', 'u')):
+        group = [it for it in items if it['kind'] == orientation]
+        if not group:
+            continue
+        levels = [sum(it[across]) / 2 for it in group]
+        levels = _cluster(levels, [it['length'] for it in group], ALIGN_FRACTION * span)
+        for it, level in zip(group, levels):
+            it[across] = [level, level]
+            it[along] = sorted(it[along])
+    tolerance = CORNER_FRACTION * span
+    horizontals = [it for it in items if it['kind'] == 'h']
+    verticals = [it for it in items if it['kind'] == 'v']
+    def snap(ends_owner, others, along, across):
+        for it in ends_owner:
+            for end in (0, 1):
+                best = None
+                for o in others:
+                    gap = abs(it[along][end] - o[along][0])
+                    inside = min(o[across]) - tolerance <= it[across][0] <= max(o[across]) + tolerance
+                    if gap <= tolerance and inside and (best is None or gap < best[0]):
+                        best = (gap, o[along][0])
+                if best:
+                    it[along][end] = best[1]
+    snap(horizontals, verticals, 'u', 'v')      # extrémités gauche/droite d'un mur horizontal -> abscisse d'un mur vertical
+    snap(verticals, horizontals, 'v', 'u')      # extrémités haute/basse d'un mur vertical -> ordonnée d'un mur horizontal
+    out = []
+    for it in items:
+        w = it['w']
+        if it['kind'] == 'o' and it['length'] < MIN_OBLIQUE_FRACTION * span:
+            continue
+        a, b = (from_frame(it['u'][0], it['v'][0]), from_frame(it['u'][1], it['v'][1])) if it['kind'] != 'o' else (w['a'], w['b'])
+        a = [min(max(a[0], 0.), float(width)), min(max(a[1], 0.), float(height))]
+        b = [min(max(b[0], 0.), float(width)), min(max(b[1], 0.), float(height))]
+        if distance(a, b) < 1e-6:
+            continue
+        straight = wall(a, b, w['thickness'], method=w['method'], confidence=0.,
+                        evidence=[{**w['evidence'][0], 'straightened': it['kind'] != 'o'}] + list(w['evidence'][1:]))
+        straight['kind'] = w.get('kind', 'wall')
+        out.append(straight)
+    return out, float(np.degrees(theta))
+
+
 def propose(image, width, height, source_sha256, text_boxes=(), report=None):
     """image : PIL.Image de la page rendue ; width/height : taille du document (unités de la page).
 
@@ -142,8 +251,13 @@ def propose(image, width, height, source_sha256, text_boxes=(), report=None):
         return None, None, 'géométrie refusée : ' + str(error)[:120]
     span = max(width, height)
     walls, dropped = simplify_chains(result['walls'], SIMPLIFY_FRACTION * span, MIN_CHAIN_FRACTION * span)
+    skeleton_walls = len(walls)
+    if walls:
+        walls, axis = straighten_walls(walls, width, height)
+        walls, _ = merge_collinear_fragments(walls, ALIGN_FRACTION * span, 1.5 * MERGE_GAP_FRACTION * span, bounds=(width, height),
+                                             methods=('architectural_mask_medial_axis',))
     if report is not None:
-        report.update(skeleton_segments=len(result['walls']), proposed=len(walls), dropped_chains=dropped)
+        report.update(skeleton_segments=len(result['walls']), proposed=len(walls), dropped_chains=dropped, after_simplification=skeleton_walls)
     if not walls:
         return None, None, 'aucun mur après reconstruction'
     return walls, model_sha, None

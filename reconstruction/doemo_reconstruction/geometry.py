@@ -424,7 +424,8 @@ def joined_polygon(w, walls, start=0., end=1.):
     return out
 
 
-def merge_collinear_fragments(walls, max_offset, max_gap, *, max_angle_degrees=1., thickness_ratio=2., bounds=None):
+def merge_collinear_fragments(walls, max_offset, max_gap, *, max_angle_degrees=1., thickness_ratio=2., bounds=None,
+                              methods=('parallel_boundaries',)):
     """Join raster wall fragments that are the same wall cut by the scan.
 
     Only candidates produced by ``pair_boundaries`` (method ``parallel_boundaries``, pending, no openings) are
@@ -438,7 +439,7 @@ def merge_collinear_fragments(walls, max_offset, max_gap, *, max_angle_degrees=1
     if not all(math.isfinite(v) and v >= 0 for v in (max_offset, max_gap, max_angle_degrees)) or thickness_ratio < 1:
         raise ValueError('Tolérances de fusion invalides')
     eligible = [i for i, w in enumerate(walls)
-                if w.get('method') == 'parallel_boundaries' and w.get('status') == 'pending' and not w.get('openings')]
+                if w.get('method') in methods and w.get('status') == 'pending' and not w.get('openings')]
     parent = {i: i for i in eligible}
 
     def find(i):
@@ -512,8 +513,11 @@ def merge_collinear_fragments(walls, max_offset, max_gap, *, max_angle_degrees=1
         evidence.append({'algorithm': 'collinear_fragment_merge/1', 'merged_wall_ids': [walls[m]['id'] for m in members],
                          'max_offset': max_offset, 'max_gap': max_gap, 'semantic_status': 'unknown',
                          'review': ['wall_or_symbol', 'junctions', 'openings']})
-        out.append(wall(start, end, thickness, method='parallel_boundaries',
-                        confidence=max(walls[m]['confidence'] for m in members), evidence=evidence))
+        merged = wall(start, end, thickness, method=walls[ref]['method'],
+                      confidence=max(walls[m]['confidence'] for m in members), evidence=evidence)
+        if 'kind' in walls[ref]:
+            merged['kind'] = 'partition' if sum(info[m][2] for m in members if walls[m].get('kind') == 'partition') > total / 2 else 'wall'
+        out.append(merged)
         merged_groups += 1
     return out, {'input': len(walls), 'output': len(out), 'merged_groups': merged_groups}
 

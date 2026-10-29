@@ -170,3 +170,69 @@ def test_a_broken_chain_is_not_bridged_and_partition_kind_follows_the_majority()
 def test_the_page_reports_how_many_skeleton_segments_became_walls(scan, model_dir):
     level = reconstruct(scan)['levels'][0]
     assert any('Nettoyage du modèle' in w and 'micro-segments' in w for w in level['warnings'])
+
+
+def semantic_wall(a, b, thickness=6., kind='wall', chain=0, segment=0):
+    from doemo_reconstruction.geometry import wall
+    w = wall(a, b, thickness, method='architectural_mask_medial_axis', confidence=0.,
+             evidence=[{'chain': chain, 'segment': segment, 'source_sha256': 's' * 64, 'model_sha256': 'm' * 64}])
+    w['kind'] = kind
+    return w
+
+
+def slope(w):
+    import math
+    return abs(math.degrees(math.atan2(w['b'][1] - w['a'][1], w['b'][0] - w['a'][0]))) % 180
+
+
+def test_a_wobbly_skeleton_becomes_exactly_horizontal_and_vertical_walls_that_meet():
+    walls = [semantic_wall([100, 200], [500, 207], chain=0), semantic_wall([104, 303], [503, 299], chain=1),
+             semantic_wall([300, 120], [306, 420], chain=2)]
+    straight, theta = semantic_walls.straighten_walls(walls, 800, 600)
+    assert len(straight) == 3 and abs(theta) < 1.5
+    horizontal = [w for w in straight if slope(w) < 1e-6 or abs(slope(w) - 180) < 1e-6]
+    assert len(horizontal) == 2                                                    # exactement horizontaux, plus de pente
+    vertical = [w for w in straight if abs(slope(w) - 90) < 1e-6]
+    assert len(vertical) == 1 and vertical[0]['a'][0] == vertical[0]['b'][0]
+    assert all(w['evidence'][0]['straightened'] for w in straight) and all(w['kind'] == 'wall' for w in straight)
+
+
+def test_nearly_parallel_walls_share_one_ordinate_and_corners_close():
+    walls = [semantic_wall([50, 100], [297, 101], chain=0), semantic_wall([310, 100], [600, 99], chain=1),
+             semantic_wall([302, 90], [304, 400], chain=2)]
+    straight, _ = semantic_walls.straighten_walls(walls, 800, 600)
+    h = sorted((w for w in straight if slope(w) < 1 or slope(w) > 179), key=lambda w: w['a'][0])
+    assert h[0]['a'][1] == pytest.approx(h[1]['a'][1], abs=1e-6)                   # même ordonnée
+    v = next(w for w in straight if abs(slope(w) - 90) < 1)
+    assert h[0]['b'][0] == pytest.approx(v['a'][0], abs=1e-6) == pytest.approx(h[1]['a'][0], abs=1e-6)      # les deux murs viennent s'appuyer sur le vertical
+
+
+def test_real_oblique_walls_are_kept_and_small_hooks_are_dropped():
+    walls = [semantic_wall([100, 100], [500, 100], chain=0), semantic_wall([100, 300], [400, 450], chain=1),   # diagonale réelle
+             semantic_wall([200, 200], [212, 214], chain=2)]                                                    # crochet de 18 unités
+    straight, _ = semantic_walls.straighten_walls(walls, 800, 600)
+    assert len(straight) == 2
+    oblique = [w for w in straight if 5 < slope(w) < 85]
+    assert len(oblique) == 1 and oblique[0]['a'] == [100, 300] and oblique[0]['b'] == [400, 450]
+
+
+def test_a_scan_tilted_by_a_few_degrees_keeps_its_tilt_but_walls_become_perpendicular():
+    import math
+    t = math.radians(3)
+    rot = lambda x, y: [x * math.cos(t) - y * math.sin(t) + 300, x * math.sin(t) + y * math.cos(t) + 100]
+    walls = [semantic_wall(rot(0, 0), rot(400, 4), chain=0), semantic_wall(rot(0, 200), rot(402, 198), chain=1),
+             semantic_wall(rot(5, 0), rot(1, 200), chain=2)]
+    straight, theta = semantic_walls.straighten_walls(walls, 900, 700)
+    assert theta == pytest.approx(3, abs=1.2)
+    h = [w for w in straight if slope(w) < 45 or slope(w) > 135][0]; v = next(w for w in straight if 45 < slope(w) < 135)
+    assert abs(abs(slope(v) - slope(h)) % 180 - 90) < 1e-6                         # exactement perpendiculaires
+
+
+def test_merge_can_join_the_model_walls_and_keeps_their_method_and_kind():
+    from doemo_reconstruction.geometry import merge_collinear_fragments
+    parts = [semantic_wall([0, 50], [100, 50], kind='partition', chain=0), semantic_wall([102, 50], [200, 50], kind='partition', chain=1)]
+    merged, report = merge_collinear_fragments(parts, 3., 5., methods=('architectural_mask_medial_axis',))
+    assert report['merged_groups'] == 1 and len(merged) == 1
+    assert merged[0]['method'] == 'architectural_mask_medial_axis' and merged[0]['kind'] == 'partition'
+    untouched, _ = merge_collinear_fragments(parts, 3., 5.)                        # par défaut : seulement parallel_boundaries
+    assert len(untouched) == 2
