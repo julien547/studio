@@ -14,6 +14,7 @@ import pypdfium2 as pdfium
 from pypdf import PdfReader
 from .geometry import pair_boundaries, distance, merge_collinear_fragments, drop_page_frames
 from .pdf_vectors import recover_vectors, transform
+from . import semantic_walls
 
 # Raster cleanup, as a fraction of the longest page side: fragments of one wall cut by the scan are joined when they
 # lie within 0.4 % of one line and are at most 0.6 % apart (smaller than any door at the usual 1/200 to 1/50 plans).
@@ -99,6 +100,7 @@ def reconstruct(source, pages=None):
                 raise ValueError('Page inexistante')
             paths,texts,native_walls=[],[],[]
             frames,fusion=0,None
+            semantic,semantic_note=None,None
             has_images=False
             if pdf:
                 page=pdf[number-1]
@@ -127,11 +129,21 @@ def reconstruct(source, pages=None):
             method='mixed' if has_images and native_walls else ('raster_baseline' if has_images or not pdf else 'vector')
             walls=list(native_walls)
             if method in ('raster_baseline','mixed'):
-                raster_walls=pair_boundaries(raster_lines(image,width,height,ocr))
-                span=max(width,height)
-                raster_walls,frames=drop_page_frames(raster_walls,width,height)
-                raster_walls,fusion=merge_collinear_fragments(raster_walls,MERGE_OFFSET_FRACTION*span,MERGE_GAP_FRACTION*span,bounds=(width,height))
-                walls.extend(raster_walls)
+                semantic_sha=None
+                if semantic_walls.configured():
+                    semantic,semantic_sha,semantic_note=semantic_walls.propose(image,width,height,digest,ocr)
+                if semantic is not None and semantic_walls.mode()=='replace':
+                    walls.extend(semantic)
+                    result['models']['segmentation']=semantic_sha
+                else:
+                    raster_walls=pair_boundaries(raster_lines(image,width,height,ocr))
+                    span=max(width,height)
+                    raster_walls,frames=drop_page_frames(raster_walls,width,height)
+                    raster_walls,fusion=merge_collinear_fragments(raster_walls,MERGE_OFFSET_FRACTION*span,MERGE_GAP_FRACTION*span,bounds=(width,height))
+                    walls.extend(raster_walls)
+                    if semantic is not None:
+                        walls.extend(semantic)
+                        result['models']['segmentation']=semantic_sha
             # Clipped/outside geometry is retained in raw vectors but cannot be accepted as walls.
             walls=[w for w in walls if all(0<=p[0]<=width and 0<=p[1]<=height for p in (w['a'],w['b']))]
             warnings=['Valider l’étage et chaque mur : mobilier, cotes et cadres peuvent produire des candidats.',
@@ -146,6 +158,10 @@ def reconstruct(source, pages=None):
                 warnings.append(f"Nettoyage du scan : {fusion['input']} fragments de murs rassemblés en {fusion['output']} propositions (alignés, même épaisseur, sans combler d'ouverture).")
             if frames:
                 warnings.append(f"{frames} cadre(s) de feuille écarté(s) des propositions de murs.")
+            if semantic is not None:
+                warnings.append(f"Murs proposés par le modèle de segmentation entraîné (empreinte {result['models']['segmentation'][:12]}…) : aucun n'est validé, contrôler chacun.")
+            elif semantic_note:
+                warnings.append(f"Modèle de murs non utilisé ({semantic_note}) : propositions du moteur géométrique.")
             if method=='mixed':
                 warnings.append('Page mixte : propositions vectorielles et raster superposées. Contrôler les doublons, les annotations et les ouvertures avant validation.')
             result['levels'].append({'id':f'page-{number}','source_page':number,
