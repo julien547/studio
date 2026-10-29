@@ -126,3 +126,47 @@ def test_walls_are_scaled_from_image_pixels_to_document_units_and_text_is_exclud
     assert max(p[0] for w in walls for p in (w['a'], w['b'])) == pytest.approx(640, abs=8)      # 80 % de 800 : document = 2 x image
     over_text = semantic_walls.propose(image, 800, 600, 'b' * 64, text_boxes=[{'bbox': [0, 0, 800, 600]}])
     assert over_text[0] is None                                                              # tout le raster masqué par l'OCR
+
+
+def chain(points, chain_id=0, thickness=6., kind='wall'):
+    from doemo_reconstruction.geometry import wall
+    walls = []
+    for index, (a, b) in enumerate(zip(points, points[1:])):
+        w = wall(a, b, thickness, method='architectural_mask_medial_axis', confidence=0.,
+                 evidence=[{'chain': chain_id, 'segment': index, 'source_sha256': 's' * 64, 'model_sha256': 'm' * 64}])
+        w['kind'] = kind
+        walls.append(w)
+    return walls
+
+
+def test_a_staircase_of_micro_segments_becomes_one_wall_with_provenance():
+    points = [[x, 100 + (x % 2) * .4] for x in range(0, 200)]                  # 199 segments de 1 unité, léger zigzag
+    merged, dropped = semantic_walls.simplify_chains(chain(points), epsilon=2., min_length=14.)
+    assert dropped == 0 and len(merged) == 1
+    w = merged[0]
+    assert w['a'] == [0, 100] and w['b'][0] == 199 and w['thickness'] == pytest.approx(6.) and w['kind'] == 'wall'
+    assert w['evidence'][0]['simplified_from_segments'] == 199 and w['evidence'][0]['model_sha256'] == 'm' * 64
+
+
+def test_an_l_shaped_chain_keeps_its_corner_and_dust_is_dropped():
+    path = [[x, 50] for x in range(0, 100)] + [[100, y] for y in range(50, 150)]
+    dust = [[10, 10], [11, 10], [12, 11], [13, 11]]
+    merged, dropped = semantic_walls.simplify_chains(chain(path, 0) + chain(dust, 1), epsilon=2., min_length=14.)
+    assert dropped == 1 and len(merged) == 2
+    assert {tuple(w['b']) for w in merged} >= {(100, 50), (100, 149)}
+
+
+def test_a_broken_chain_is_not_bridged_and_partition_kind_follows_the_majority():
+    first = chain([[x, 20] for x in range(0, 60)], 0, kind='partition')
+    second = chain([[x, 20] for x in range(80, 140)], 0, kind='partition')
+    second = [w for w in second]
+    for k, w in enumerate(second):
+        w['evidence'][0]['segment'] = 100 + k                                      # même chaîne, après un trou de 20 unités
+    merged, _ = semantic_walls.simplify_chains(first + second, epsilon=2., min_length=14.)
+    assert len(merged) == 2 and all(w['kind'] == 'partition' for w in merged)
+    assert merged[0]['b'][0] == 59 and merged[1]['a'][0] == 80
+
+
+def test_the_page_reports_how_many_skeleton_segments_became_walls(scan, model_dir):
+    level = reconstruct(scan)['levels'][0]
+    assert any('Nettoyage du modèle' in w and 'micro-segments' in w for w in level['warnings'])

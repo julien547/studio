@@ -100,7 +100,7 @@ def reconstruct(source, pages=None):
                 raise ValueError('Page inexistante')
             paths,texts,native_walls=[],[],[]
             frames,fusion=0,None
-            semantic,semantic_note=None,None
+            semantic,semantic_note,semantic_report=None,None,{}
             has_images=False
             if pdf:
                 page=pdf[number-1]
@@ -131,7 +131,8 @@ def reconstruct(source, pages=None):
             if method in ('raster_baseline','mixed'):
                 semantic_sha=None
                 if semantic_walls.configured():
-                    semantic,semantic_sha,semantic_note=semantic_walls.propose(image,width,height,digest,ocr)
+                    semantic_report={}
+                    semantic,semantic_sha,semantic_note=semantic_walls.propose(image,width,height,digest,ocr,report=semantic_report)
                 if semantic is not None and semantic_walls.mode()=='replace':
                     walls.extend(semantic)
                     result['models']['segmentation']=semantic_sha
@@ -160,6 +161,8 @@ def reconstruct(source, pages=None):
                 warnings.append(f"{frames} cadre(s) de feuille écarté(s) des propositions de murs.")
             if semantic is not None:
                 warnings.append(f"Murs proposés par le modèle de segmentation entraîné (empreinte {result['models']['segmentation'][:12]}…) : aucun n'est validé, contrôler chacun.")
+                if semantic_report.get('dropped_chains') is not None:
+                    warnings.append(f"Nettoyage du modèle : {semantic_report['skeleton_segments']} micro-segments du squelette rassemblés en {semantic_report['proposed']} murs ; {semantic_report['dropped_chains']} poussière(s) écartée(s).")
             elif semantic_note:
                 warnings.append(f"Modèle de murs non utilisé ({semantic_note}) : propositions du moteur géométrique.")
             if method=='mixed':
