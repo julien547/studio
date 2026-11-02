@@ -72,9 +72,8 @@ test("authenticated project, source floors, annotation vs equipment, autosave, u
     .getByLabel("Mot de passe", { exact: true })
     .fill("test-only-long-password");
   await page.getByRole("button", { name: "Se connecter", exact: true }).click();
-  await expect(
-    page.getByRole("heading", { name: "Chaque détail compte." }),
-  ).toBeVisible();
+  await expect(page.getByText("Déposez votre relevé ici")).toBeVisible();
+  await expect(page.locator(".dashboard")).toHaveCount(0);
   const gpuPanel = page.getByRole("region", { name: "Gestion du serveur GPU" });
   await expect(
     gpuPanel.getByRole("button", { name: "Démarrer le GPU" }),
@@ -86,16 +85,18 @@ test("authenticated project, source floors, annotation vs equipment, autosave, u
   await expect(gpuPanel.getByText("Pod : 41m7oy6qjaj2ji")).toBeVisible();
   await expect(gpuPanel.getByText("● Qwen3.5-9B · en attente")).toBeVisible();
   await gpuPanel.getByRole("button", { name: "Masquer", exact: true }).click();
+  const previousProject = await page
+    .getByLabel("Projet", { exact: true })
+    .inputValue();
   await page
     .getByRole("button", { name: "＋ Nouveau projet", exact: true })
     .click();
-  await page
-    .getByLabel("Bâtiment / nom du projet")
-    .fill("Animalis · essai navigateur");
-  await page.getByLabel("Référence", { exact: true }).fill("E2E-ANIMALIS");
-  await page
-    .getByRole("button", { name: "Créer le projet", exact: true })
-    .click();
+  await expect(page.getByLabel("Projet", { exact: true })).not.toHaveValue(
+    previousProject,
+  );
+  await expect(
+    page.getByRole("button", { name: "Créer le projet", exact: true }),
+  ).toHaveCount(0);
   await expect(page.getByText("Déposez votre relevé ici")).toBeVisible();
   const survey = process.env.DOEMO_TEST_SURVEY;
   if (survey)

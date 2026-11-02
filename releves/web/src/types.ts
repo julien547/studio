@@ -88,6 +88,33 @@ export type State = {
   mappings: Mapping[];
   mapping_version: number;
   library_id: string | null;
+  structure_pages?: StructurePage[];
+};
+export type StructureWall = {
+  id: string;
+  a: [number, number];
+  b: [number, number];
+  thickness: number | null;
+  openings: {
+    start: number;
+    end: number;
+    kind: "door" | "window" | "passage";
+    status: "pending" | "approved";
+  }[];
+  status: "pending" | "approved" | "rejected";
+  method: string;
+  confidence: number;
+};
+export type StructurePage = {
+  source_document_id: string;
+  source_page: number;
+  source_sha256: string;
+  width: number;
+  height: number;
+  unit: "px" | "pt";
+  walls: StructureWall[];
+  analysis_ids: string[];
+  warnings: string[];
 };
 export type Doc = {
   id: string;

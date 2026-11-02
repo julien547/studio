@@ -1004,3 +1004,13 @@ small {
 .gpu-events time {
   font-variant-numeric: tabular-nums;
 }
+.unified-label { color: #49349b; white-space: nowrap; }
+.structure-panel { padding: 18px; border-bottom: 1px solid #e2e5eb; background: #f7f6fc; }
+.structure-panel h2 { margin: 0 0 8px; font-size: 15px; }
+.structure-panel p { font-size: 12px; line-height: 1.5; }
+.structure-panel label { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; font-size: 12px; }
+.structure-panel input, .structure-panel select { min-width: 0; width: 100%; }
+.structure-panel button { margin: 5px 0; }
+.structure-panel small, .document-rail > small { display: block; font-size: 11px; line-height: 1.5; color: #687084; }
+.structure-warning { color: #855915; }
+.tool-wall svg { cursor: crosshair; }

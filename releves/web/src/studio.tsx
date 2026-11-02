@@ -5,7 +5,23 @@ import { useEditor } from "./useEditor";
 import { PlanCanvas, Tool } from "./PlanCanvas";
 import { clearReview } from "./geometry";
 import { wholePage, moveBox } from "./editorGeometry";
-import type { Annotation, Box, Library, Project, Review, State } from "./types";
+import {
+  moveWall,
+  sourcePoint,
+  restoreStructureHistory,
+} from "./structureGeometry";
+import { StructurePanel } from "./StructurePanel";
+import type {
+  Annotation,
+  Box,
+  Library,
+  Point,
+  Project,
+  Review,
+  State,
+  StructurePage,
+  StructureWall,
+} from "./types";
 import { AdvancedApp } from "./main";
 import "./studio.css";
 import { GpuPanel, gpuLabels } from "./GpuPanel";
@@ -38,6 +54,7 @@ type Job = {
     annotations: Annotation[];
     warnings: string[];
     observations: Record<string, unknown>[];
+    structure_page?: StructurePage;
   };
 };
 const emptyReview: Review = {
@@ -70,6 +87,8 @@ const workflows: Record<string, string> = {
   validated: "Validé",
 };
 const errorText = (e: unknown) => (e instanceof Error ? e.message : String(e));
+const unified =
+  new URLSearchParams(window.location.search).get("workspace") === "unified";
 
 function Login({ onLogin }: { onLogin: (u: User) => void }) {
   const [error, setError] = useState(""),
@@ -209,6 +228,11 @@ function Studio({
     [imageWidth, setImageWidth] = useState(""),
     [imageHeight, setImageHeight] = useState("");
   const [catalogueDraft, setCatalogueDraft] = useState<Entry | null>(null);
+  const [selectedWall, setSelectedWall] = useState("");
+  const [showSource, setShowSource] = useState(true),
+    [showWalls, setShowWalls] = useState(true),
+    [showPictograms, setShowPictograms] = useState(true);
+  const [paperWidth, setPaperWidth] = useState(297);
   const source = p?.documents.find((d) => d.id === documentId),
     pageData = source?.pages[page - 1],
     floor = p?.state.floors.find((f) => f.id === floorId),
@@ -230,6 +254,156 @@ function Studio({
     p && source
       ? url(`/projects/${p.id}/documents/${source.id}/pages/${page}`)
       : "";
+  const structure = p?.state.structure_pages?.find(
+    (s) => s.source_document_id === documentId && s.source_page === page,
+  );
+  useEffect(() => {
+    setSelectedWall("");
+  }, [p?.id, documentId, page, floorId]);
+  function selectAnnotations(ids: string[]) {
+    setSelected(ids);
+    setSelectedWall("");
+  }
+  function selectWall(id: string) {
+    setSelectedWall(id);
+    setSelected([]);
+    setTab("properties");
+  }
+  function editStructure(fn: (s: StructurePage) => StructurePage) {
+    if (!source || !pageData) return;
+    editor.edit((state) => {
+      const previous = state.structure_pages || [];
+      const found = previous.find(
+        (s) => s.source_document_id === documentId && s.source_page === page,
+      );
+      const next = fn(
+        found || {
+          source_document_id: documentId,
+          source_page: page,
+          source_sha256: source.sha256,
+          width: pageData.width,
+          height: pageData.height,
+          unit: "px",
+          walls: [],
+          analysis_ids: [],
+          warnings: [],
+        },
+      );
+      return {
+        ...state,
+        structure_pages: found
+          ? previous.map((s) => (s === found ? next : s))
+          : [...previous, next],
+      };
+    });
+  }
+  function patchWall(id: string, changes: Partial<StructureWall>) {
+    editStructure((s) => ({
+      ...s,
+      walls: s.walls.map((w) => (w.id === id ? { ...w, ...changes } : w)),
+    }));
+  }
+  function drawWall(start: Point, end: Point) {
+    const id = crypto.randomUUID().replaceAll("-", "");
+    editStructure((s) => ({
+      ...s,
+      walls: [
+        ...s.walls,
+        {
+          id,
+          a: sourcePoint(start, s) as [number, number],
+          b: sourcePoint(end, s) as [number, number],
+          thickness: null,
+          openings: [],
+          status: "pending",
+          method: "manual",
+          confidence: 0,
+        },
+      ],
+    }));
+    selectWall(id);
+    setTool("select");
+  }
+  function moveStructureWall(
+    id: string,
+    dx: number,
+    dy: number,
+    endpoint?: "a" | "b",
+    point?: Point,
+  ) {
+    editStructure((s) => ({
+      ...s,
+      walls: s.walls.map((w) => {
+        if (w.id !== id) return w;
+        if (endpoint && point) {
+          const q = sourcePoint(point, s) as [number, number];
+          const other = w[endpoint === "a" ? "b" : "a"];
+          if (Math.hypot(q[0] - other[0], q[1] - other[1]) < 0.01) return w;
+          return { ...w, [endpoint]: q, status: "pending" };
+        }
+        return moveWall(w, dx, dy, s) as StructureWall;
+      }),
+    }));
+  }
+  async function analyseUnified() {
+    if (!p || !source) return;
+    await editor.save();
+    const results = await Promise.allSettled(
+      ["structure", engine].map((engine) =>
+        api(`/projects/${p.id}/jobs`, "POST", {
+          document_id: documentId,
+          page,
+          engine,
+        }),
+      ),
+    );
+    setJobs(await api(`/projects/${p.id}/jobs`));
+    setTab("analyses");
+    const failed = results.flatMap((r, i) =>
+      r.status === "rejected"
+        ? [`${i === 0 ? "Murs" : "Relevé"} : ${errorText(r.reason)}`]
+        : [],
+    );
+    setNotice(
+      `${results.filter((r) => r.status === "fulfilled").length} traitement(s) mis en file sur la même page. Les résultats seront proposés séparément.`,
+    );
+    if (failed.length) throw Error(failed.join(" · "));
+  }
+  async function exportUnified() {
+    if (!p || !source) return;
+    if (!Number.isFinite(paperWidth) || paperWidth < 50 || paperWidth > 2000)
+      throw Error("Largeur imprimée : entre 50 et 2 000 mm.");
+    await editor.save();
+    const params = new URLSearchParams({
+      document_id: documentId,
+      page: String(page),
+      paper_width_mm: String(paperWidth),
+    });
+    const response = await fetch(
+      url(`/projects/${p.id}/unified-export?${params}`),
+      { credentials: "same-origin" },
+    );
+    if (!response.ok) {
+      const detail = await response.json().catch(() => ({}));
+      throw Error(
+        typeof detail.detail === "string"
+          ? detail.detail
+          : "Export PDF indisponible.",
+      );
+    }
+    const href = URL.createObjectURL(await response.blob());
+    const link = document.createElement("a");
+    link.href = href;
+    link.download = `DOEMO-plan-commun-page-${page}-travail.pdf`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(href), 1000);
+    const unresolved = Number(response.headers.get("X-Doemo-Unresolved") || 0);
+    setNotice(
+      unresolved
+        ? `PDF de travail : ${unresolved} placement(s) à compléter. Consultez les indications dans le fichier.`
+        : "PDF commun téléchargé : murs, annotations et équipements dans le même repère. Version de travail à vérifier.",
+    );
+  }
   async function run(label: string, fn: () => Promise<void>) {
     setBusy(label);
     setError("");
@@ -347,6 +521,16 @@ function Studio({
     }));
   }
   function remove() {
+    if (unified && selectedWall) {
+      editStructure((s) => ({
+        ...s,
+        walls: s.walls.map((w) =>
+          w.id === selectedWall ? { ...w, status: "rejected" } : w,
+        ),
+      }));
+      setSelectedWall("");
+      return;
+    }
     if (!selected.length) return;
     editor.edit((s) => ({
       ...s,
@@ -557,6 +741,7 @@ function Studio({
         )}
       </header>
       <div className="studio-nav" inert={!!busy}>
+        {unified && <strong className="unified-label">Plan unifié</strong>}
         <select
           aria-label="Projet"
           value={p?.id || ""}
@@ -595,6 +780,16 @@ function Studio({
             <button onClick={() => void run("Export…", exportData)}>
               Exporter les données
             </button>
+            {unified && (
+              <button
+                disabled={!source}
+                onClick={() =>
+                  void run("Export du plan commun…", exportUnified)
+                }
+              >
+                Exporter le PDF commun
+              </button>
+            )}
             <button
               onClick={() =>
                 void run("Ouverture Illustrator…", async () => {
@@ -794,6 +989,49 @@ function Studio({
               </button>
             </div>
             <h2>Affichage</h2>
+            {unified && (
+              <>
+                <label className="check">
+                  <input
+                    type="checkbox"
+                    checked={showSource}
+                    onChange={(e) => setShowSource(e.target.checked)}
+                  />
+                  Source
+                </label>
+                <label className="check">
+                  <input
+                    type="checkbox"
+                    checked={showWalls}
+                    onChange={(e) => setShowWalls(e.target.checked)}
+                  />
+                  Murs
+                </label>
+                <label className="check">
+                  <input
+                    type="checkbox"
+                    checked={showPictograms}
+                    onChange={(e) => setShowPictograms(e.target.checked)}
+                  />
+                  Pictogrammes
+                </label>
+                <label>
+                  Largeur imprimée de la page (mm)
+                  <input
+                    aria-label="Largeur imprimée de la page (mm)"
+                    type="number"
+                    min={50}
+                    max={2000}
+                    value={paperWidth}
+                    onChange={(e) => setPaperWidth(Number(e.target.value))}
+                  />
+                </label>
+                <small>
+                  Format d’impression, indépendant des dimensions réelles du
+                  bâtiment. Le PDF contient la page entière et tous les calques.
+                </small>
+              </>
+            )}
             <label className="check">
               <input
                 type="checkbox"
@@ -879,6 +1117,34 @@ function Studio({
                 </button>
               ))}
               <i />
+              {unified && (
+                <>
+                  <button
+                    aria-label="Dessiner un mur"
+                    aria-pressed={tool === "wall"}
+                    className={tool === "wall" ? "active" : ""}
+                    disabled={!source}
+                    onClick={() => {
+                      setTool("wall");
+                      setSelected([]);
+                    }}
+                  >
+                    ╱ <span>Mur</span>
+                  </button>
+                  <button
+                    className="primary"
+                    disabled={!source}
+                    onClick={() =>
+                      void run(
+                        "Mise en file des deux analyses…",
+                        analyseUnified,
+                      )
+                    }
+                  >
+                    Analyser murs et relevé
+                  </button>
+                </>
+              )}
               <button
                 aria-label="Annuler"
                 title="Annuler · ⌘Z"
@@ -951,7 +1217,43 @@ function Studio({
                   selected={selected}
                   showBoxes={showBoxes}
                   showAnchors={showAnchors}
-                  onSelect={setSelected}
+                  onSelect={selectAnnotations}
+                  structure={unified ? structure : undefined}
+                  showSource={!unified || showSource}
+                  showWalls={!unified || showWalls}
+                  selectedWall={selectedWall}
+                  onWallSelect={selectWall}
+                  onWallDraw={drawWall}
+                  onWallMove={moveStructureWall}
+                  paperWidthMm={
+                    Number.isFinite(paperWidth) && paperWidth >= 50
+                      ? paperWidth
+                      : 297
+                  }
+                  pictograms={
+                    unified && showPictograms && lib
+                      ? annotations.flatMap((annotation) => {
+                          const asset = lib.assets.find(
+                            (x) => x.id === annotation.asset_id,
+                          );
+                          return annotation.anchor &&
+                            annotation.status !== "rejected" &&
+                            asset?.preview
+                            ? [
+                                {
+                                  id: annotation.id,
+                                  href: url(
+                                    `/libraries/${lib.id}/assets/${asset.id}/preview`,
+                                  ),
+                                  anchor: annotation.anchor,
+                                  rotation: annotation.rotation_deg,
+                                  sizeMm: annotation.size_mm,
+                                },
+                              ]
+                            : [];
+                        })
+                      : []
+                  }
                   onBox={draw}
                   onAnchor={(q) => {
                     if (a)
@@ -978,18 +1280,22 @@ function Studio({
             </div>
             <div className="canvas-bottom">
               <span>
-                {tool === "annotation"
-                  ? "Tracez le cadre du texte manuscrit"
-                  : tool === "floor"
-                    ? "Tracez le contour du niveau"
-                    : tool === "anchor"
-                      ? "Cliquez sur la position réelle de l’équipement"
-                      : tool === "pan"
-                        ? "Faites glisser pour déplacer la vue"
-                        : "Sélectionnez un cadre ou faites glisser son point de position"}
+                {tool === "wall"
+                  ? "Tracez le mur de son départ à son arrivée"
+                  : tool === "annotation"
+                    ? "Tracez le cadre du texte manuscrit"
+                    : tool === "floor"
+                      ? "Tracez le contour du niveau"
+                      : tool === "anchor"
+                        ? "Cliquez sur la position réelle de l’équipement"
+                        : tool === "pan"
+                          ? "Faites glisser pour déplacer la vue"
+                          : "Sélectionnez un cadre ou faites glisser son point de position"}
               </span>
               <span>
                 {selected.length} sélection · {annotations.length} annotations
+                {unified &&
+                  ` · ${structure?.walls.filter((w) => w.status !== "rejected").length || 0} murs`}
               </span>
             </div>
             <section className="annotation-table">
@@ -1005,7 +1311,7 @@ function Studio({
                     key={item.id}
                     className={selected.includes(item.id) ? "active" : ""}
                     onClick={() => {
-                      setSelected([item.id]);
+                      selectAnnotations([item.id]);
                       setTab("properties");
                     }}
                   >
@@ -1047,56 +1353,67 @@ function Studio({
                 </button>
               ))}
             </div>
+            {unified && tab === "properties" && (
+              <StructurePanel
+                frame={structure}
+                selected={selectedWall}
+                onSelect={selectWall}
+                onChange={patchWall}
+                onRemove={remove}
+              />
+            )}
             {tab === "properties" &&
               (!a ? (
-                <div className="inspector-empty">
-                  <span>↖</span>
-                  <h2>Une annotation, une preuve.</h2>
-                  <p>
-                    Sélectionnez un élément du relevé pour vérifier son texte,
-                    sa catégorie et sa position.
-                  </p>
-                  <h3>Bibliothèque du projet</h3>
-                  <select
-                    aria-label="Bibliothèque du projet"
-                    value={p.state.library_id || ""}
-                    onChange={(e) =>
-                      editor.edit((s) => ({
-                        ...s,
-                        library_id: e.target.value || null,
-                        mappings: [],
-                        annotations: s.annotations.map((a) =>
-                          clearReview(a, { asset_id: null }),
-                        ),
-                      }))
-                    }
-                  >
-                    <option value="">Choisir la bibliothèque SAI</option>
-                    {libraries.map((l) => (
-                      <option key={l.id} value={l.id}>
-                        {l.name}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    onClick={() =>
-                      void run("Ouverture…", async () => {
-                        await editor.save();
-                        onAdvanced();
-                      })
-                    }
-                  >
-                    Importer / contrôler SAI
-                  </button>
-                  <hr />
-                  <button
-                    className="primary"
-                    onClick={() => void run("Validation…", validate)}
-                  >
-                    Valider le projet
-                  </button>
-                  <p>La validation finale est réservée au responsable.</p>
-                </div>
+                selectedWall ? null : (
+                  <div className="inspector-empty">
+                    <span>↖</span>
+                    <h2>Une annotation, une preuve.</h2>
+                    <p>
+                      Sélectionnez un élément du relevé pour vérifier son texte,
+                      sa catégorie et sa position.
+                    </p>
+                    <h3>Bibliothèque du projet</h3>
+                    <select
+                      aria-label="Bibliothèque du projet"
+                      value={p.state.library_id || ""}
+                      onChange={(e) =>
+                        editor.edit((s) => ({
+                          ...s,
+                          library_id: e.target.value || null,
+                          mappings: [],
+                          annotations: s.annotations.map((a) =>
+                            clearReview(a, { asset_id: null }),
+                          ),
+                        }))
+                      }
+                    >
+                      <option value="">Choisir la bibliothèque SAI</option>
+                      {libraries.map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.name}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      onClick={() =>
+                        void run("Ouverture…", async () => {
+                          await editor.save();
+                          onAdvanced();
+                        })
+                      }
+                    >
+                      Importer / contrôler SAI
+                    </button>
+                    <hr />
+                    <button
+                      className="primary"
+                      onClick={() => void run("Validation…", validate)}
+                    >
+                      Valider le projet
+                    </button>
+                    <p>La validation finale est réservée au responsable.</p>
+                  </div>
+                )
               ) : (
                 <div className="property-form">
                   <div className="selection-heading">
@@ -1446,7 +1763,9 @@ function Studio({
                     {j.result && (
                       <>
                         <span>
-                          {j.result.annotations.length} observations localisées
+                          {j.result.structure_page
+                            ? `${j.result.structure_page.walls.length} murs proposés`
+                            : `${j.result.annotations.length} observations localisées`}
                         </span>
                         <details>
                           <summary>Observations non localisées</summary>
@@ -1454,7 +1773,8 @@ function Studio({
                             {JSON.stringify(j.result.observations, null, 2)}
                           </pre>
                         </details>
-                        {!!j.result.annotations.length && (
+                        {(!!j.result.annotations.length ||
+                          !!j.result.structure_page) && (
                           <button
                             onClick={() =>
                               void run("Intégration…", () => applyJob(j))
@@ -1565,6 +1885,10 @@ function Studio({
                           editor.edit((s) => ({
                             ...historical,
                             revision: s.revision,
+                            structure_pages: restoreStructureHistory(
+                              s,
+                              historical,
+                            ),
                           }));
                         })
                       }
