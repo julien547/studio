@@ -120,3 +120,26 @@ def test_reconstruct_joins_scan_fragments_keeps_the_door_and_drops_the_frame(tmp
     assert any('Nettoyage du scan' in text for text in level['warnings'])
     assert any('cadre' in text for text in level['warnings'])
     assert MERGE_OFFSET_FRACTION == .004 and MERGE_GAP_FRACTION == .006
+
+
+def test_a_gap_is_bridged_only_when_the_source_image_shows_a_stroke_there():
+    walls = [raster([0, 50], [100, 50]), raster([103, 50], [200, 50])]      # 3 unit gap, within max_gap
+    merged, report = merge_collinear_fragments(walls, 3., 5., gap_evidence=lambda p, q: False)
+    assert len(merged) == 2 and report['merged_groups'] == 0 and report['gaps_without_evidence'] == 1
+    seen = []
+    merged, report = merge_collinear_fragments(walls, 3., 5., gap_evidence=lambda p, q: seen.append((p, q)) or True)
+    assert len(merged) == 1 and report['merged_groups'] == 1 and report['gaps_without_evidence'] == 0
+    assert math.isclose(seen[0][0][0], 100, abs_tol=1e-6) and math.isclose(seen[0][1][0], 103, abs_tol=1e-6)
+
+
+def test_overlapping_fragments_need_no_gap_evidence():
+    walls = [raster([0, 100], [60, 100]), raster([40, 100], [120, 100])]
+    merged, _ = merge_collinear_fragments(walls, 3., 5., gap_evidence=lambda p, q: False)
+    assert len(merged) == 1
+
+
+def test_a_chain_of_fragments_that_drifts_is_not_fused_into_one_wall():
+    # chaque paire voisine est à ≤ 3 d'écart, mais six fragments en chaîne dérivent de 12,5 unités au total
+    walls = [raster([100*k, 100+2.5*k], [100*(k+1), 100+2.5*k]) for k in range(6)]
+    merged, report = merge_collinear_fragments(walls, 3., 5.)
+    assert report['merged_groups'] == 0 and len(merged) == 6

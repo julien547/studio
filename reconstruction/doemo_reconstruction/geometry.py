@@ -425,7 +425,7 @@ def joined_polygon(w, walls, start=0., end=1.):
 
 
 def merge_collinear_fragments(walls, max_offset, max_gap, *, max_angle_degrees=1., thickness_ratio=2., bounds=None,
-                              methods=('parallel_boundaries',)):
+                              methods=('parallel_boundaries',), gap_evidence=None):
     """Join raster wall fragments that are the same wall cut by the scan.
 
     Only candidates produced by ``pair_boundaries`` (method ``parallel_boundaries``, pending, no openings) are
@@ -434,6 +434,10 @@ def merge_collinear_fragments(walls, max_offset, max_gap, *, max_angle_degrees=1
     (overlaps and touching ends included). Gaps larger than ``max_gap`` are NEVER bridged: openings and distinct
     walls stay distinct, as everywhere else in this module. The merged wall keeps every member's evidence plus one
     ``collinear_fragment_merge/1`` record so the review can still see what it came from.
+    ``gap_evidence(p, q)`` (optional): called for every non-empty gap with the two ends of the gap in document units; the merge
+    happens only if it returns True (the source image shows a stroke there). A gap without evidence stays open: no passage is
+    closed just to make the drawing tidier. A merged group whose members drift more than 1.5 x ``max_offset`` from the final
+    line (chains of pairwise-parallel fragments can drift) is NOT merged.
     Returns ``(walls, report)``; walls that are not eligible keep their order and content.
     """
     if not all(math.isfinite(v) and v >= 0 for v in (max_offset, max_gap, max_angle_degrees)) or thickness_ratio < 1:
@@ -441,6 +445,7 @@ def merge_collinear_fragments(walls, max_offset, max_gap, *, max_angle_degrees=1
     eligible = [i for i, w in enumerate(walls)
                 if w.get('method') in methods and w.get('status') == 'pending' and not w.get('openings')]
     parent = {i: i for i in eligible}
+    skipped_for_lack_of_evidence = 0
 
     def find(i):
         while parent[i] != i:
@@ -474,8 +479,14 @@ def merge_collinear_fragments(walls, max_offset, max_gap, *, max_angle_degrees=1
                 continue
             lo1, hi1 = sorted(((p[0]-ra[0])*rx+(p[1]-ra[1])*ry) for p in (ra, rb))
             lo2, hi2 = sorted(((p[0]-ra[0])*rx+(p[1]-ra[1])*ry) for p in (oa, ob))
-            if max(lo2-hi1, lo1-hi2) > max_gap:
+            gap = max(lo2-hi1, lo1-hi2)
+            if gap > max_gap:
                 continue
+            if gap > 0 and gap_evidence is not None:
+                t0, t1 = (hi1, lo2) if lo2-hi1 >= lo1-hi2 else (hi2, lo1)
+                if not gap_evidence([ra[0]+rx*t0, ra[1]+ry*t0], [ra[0]+rx*t1, ra[1]+ry*t1]):
+                    skipped_for_lack_of_evidence += 1
+                    continue
             parent[find(j)] = find(i)
     groups = {}
     for i in eligible:
@@ -507,6 +518,10 @@ def merge_collinear_fragments(walls, max_offset, max_gap, *, max_angle_degrees=1
         if distance(start, end) < 1e-6:
             out.extend(walls[m] for m in members)
             continue
+        drift = max(abs(ux*(p[1]-cy)-uy*(p[0]-cx)) for m in members for p in (info[m][0], info[m][1]))
+        if drift > 1.5*max_offset:      # chaîne de fragments qui dérive : on ne la fond pas en un seul mur
+            out.extend(walls[m] for m in members)
+            continue
         thick = [(walls[m]['thickness'], info[m][2]) for m in members if walls[m]['thickness'] is not None]
         thickness = sum(t*l for t, l in thick)/sum(l for _, l in thick) if thick else None
         evidence = [e for m in members for e in walls[m]['evidence']]
@@ -519,7 +534,10 @@ def merge_collinear_fragments(walls, max_offset, max_gap, *, max_angle_degrees=1
             merged['kind'] = 'partition' if sum(info[m][2] for m in members if walls[m].get('kind') == 'partition') > total / 2 else 'wall'
         out.append(merged)
         merged_groups += 1
-    return out, {'input': len(walls), 'output': len(out), 'merged_groups': merged_groups}
+    report = {'input': len(walls), 'output': len(out), 'merged_groups': merged_groups}
+    if gap_evidence is not None:
+        report['gaps_without_evidence'] = skipped_for_lack_of_evidence
+    return out, report
 
 
 def drop_page_frames(walls, width, height, *, span=.9, margin=.06):

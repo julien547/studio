@@ -13,6 +13,7 @@ Configuration (variables d'environnement) :
   DOEMO_WALLS_MODE        'replace' (défaut : le modèle remplace les propositions raster) ou 'add' (les deux, superposés)
   DOEMO_WALLS_TIMEOUT     secondes (défaut 120)
 """
+import math
 import os
 import subprocess
 import tempfile
@@ -196,6 +197,23 @@ def straighten_walls(walls, width, height):
     return out, float(np.degrees(theta))
 
 
+def ink_evidence(gray, width, height, coverage=.6):
+    """Appui « encre » pour la fusion : gray = niveaux de gris de la page rendue (tableau 2D) ; renvoie gap_evidence(p, q) (coordonnées document).
+    Un espace n'est comblé que si au moins `coverage` de sa longueur est à quelques pixels d'un trait sombre du relevé."""
+    import cv2
+    h, w = gray.shape
+    _, ink = cv2.threshold(cv2.GaussianBlur(gray, (0, 0), 1), 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    dist = cv2.distanceTransform(255 - ink, cv2.DIST_L2, 3)
+    sx, sy, tol = w / width, h / height, max(4., .003 * max(w, h))
+
+    def evidence(p, q):
+        n = max(3, int(math.hypot((q[0]-p[0])*sx, (q[1]-p[1])*sy) / 3.))
+        xs = np.clip(((p[0] + (q[0]-p[0])*np.linspace(0, 1, n)) * sx).astype(int), 0, w-1)
+        ys = np.clip(((p[1] + (q[1]-p[1])*np.linspace(0, 1, n)) * sy).astype(int), 0, h-1)
+        return float((dist[ys, xs] <= tol).mean()) >= coverage
+    return evidence
+
+
 def propose(image, width, height, source_sha256, text_boxes=(), report=None):
     """image : PIL.Image de la page rendue ; width/height : taille du document (unités de la page).
 
@@ -252,12 +270,15 @@ def propose(image, width, height, source_sha256, text_boxes=(), report=None):
     span = max(width, height)
     walls, dropped = simplify_chains(result['walls'], SIMPLIFY_FRACTION * span, MIN_CHAIN_FRACTION * span)
     skeleton_walls = len(walls)
+    merge_report = None
     if walls:
         walls, axis = straighten_walls(walls, width, height)
-        walls, _ = merge_collinear_fragments(walls, ALIGN_FRACTION * span, 1.5 * MERGE_GAP_FRACTION * span, bounds=(width, height),
-                                             methods=('architectural_mask_medial_axis',))
+        evidence = ink_evidence(np.asarray(image.convert('L')), width, height)
+        walls, merge_report = merge_collinear_fragments(walls, ALIGN_FRACTION * span, 1.5 * MERGE_GAP_FRACTION * span, bounds=(width, height),
+                                                        methods=('architectural_mask_medial_axis',), gap_evidence=evidence)
     if report is not None:
-        report.update(skeleton_segments=len(result['walls']), proposed=len(walls), dropped_chains=dropped, after_simplification=skeleton_walls)
+        report.update(skeleton_segments=len(result['walls']), proposed=len(walls), dropped_chains=dropped, after_simplification=skeleton_walls,
+                      gaps_without_evidence=(merge_report or {}).get('gaps_without_evidence'))
     if not walls:
         return None, None, 'aucun mur après reconstruction'
     return walls, model_sha, None
