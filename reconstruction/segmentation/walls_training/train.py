@@ -42,6 +42,7 @@ def main(argv=None):
     a.add_argument('--device', default='auto'); a.add_argument('--workers', type=int, default=2)
     a.add_argument('--seed', type=int, default=0); a.add_argument('--train-fraction', type=float, default=1.)
     a.add_argument('--ignore-undrawn', action='store_true', help='ignorer dans la perte les pixels hors de la zone dessinée par le dessinateur')
+    a.add_argument('--random-init', action='store_true', help='même architecture à encodeur, mais poids ALÉATOIRES (témoin pour isoler l\'effet du pré-entraînement)')
     a.add_argument('--encoder', default=None, help='encodeur timm pré-entraîné (ex. resnet34.a1_in1k) ; absent = U-Net de zéro')
     a.add_argument('--rights', default=None, help='JSON des droits validés (voir rights.julien-2026-10-29.json) ; sinon tout reste à faux')
     args = a.parse_args(argv)
@@ -52,7 +53,7 @@ def main(argv=None):
     if args.train_fraction < 1:     # courbe d'apprentissage : sous-ensemble déterministe, validation/test inchangés
         train = sorted(train, key=lambda r: hashlib.sha256(r['ref'].encode()).hexdigest())[:max(1, int(len(train) * args.train_fraction))]
     device = pick_device(args.device)
-    model = build(args.encoder, args.base).to(device)
+    model = build(args.encoder, args.base, pretrained=not args.random_init).to(device)
     loader = torch.utils.data.DataLoader(WallDataset(train, args.size, train=True, seed=args.seed, repeat=args.repeat, ignore_outside=args.ignore_undrawn),
                                          batch_size=args.batch, shuffle=True, num_workers=args.workers, drop_last=len(train) * args.repeat >= args.batch)
     weights = torch.ones(len(CLASSES)); weights[1] = args.wall_weight
@@ -88,7 +89,7 @@ def main(argv=None):
                    training={'plans': {k: len(v) for k, v in records.items()}, 'train_used': len(train), 'epochs': args.epochs,
                              'bundle_sha256': hashlib.sha256(open(args.bundle, 'rb').read()).hexdigest(), 'onnx_max_abs_diff': diff,
                              'metrics': final, 'baseline_engine_before_training': BASELINE,
-                             'pretrained_encoder': dict(ENCODER_INFO.get(args.encoder, {}), name=args.encoder) if args.encoder else None})
+                             'pretrained_encoder': dict(ENCODER_INFO.get(args.encoder, {}), name=args.encoder, weights_loaded=not args.random_init) if args.encoder else None})
     test, base = final['test'], BASELINE['test']
     verdict = {'f1_above_baseline': test['f1'] > base['f1'], 'f1_strict_above_baseline': test['f1_strict'] > base['f1_strict'],
                'length_ratio': test['length_ratio'], 'length_ratio_better_than_baseline': abs(test['length_ratio'] - 1) < abs(base['length_ratio'] - 1),
