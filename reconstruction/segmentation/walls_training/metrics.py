@@ -11,12 +11,19 @@ BASELINE = {'all': {'f1': .40, 'f1_strict': .29, 'recall': .65, 'precision': .33
 
 
 def _points(segments, step=4.):
-    out = []
+    """Points d'échantillonnage PONDÉRÉS PAR LA LONGUEUR : un segment de longueur L pèse L, quel que soit son découpage
+    (l'ancienne version donnait au moins 2 points même à un segment minuscule : un mur fragmenté pesait plus qu'un mur entier)."""
+    pts, wts = [], []
     for x1, y1, x2, y2 in segments:
-        n = max(2, int(np.hypot(x2 - x1, y2 - y1) / step))
-        t = np.linspace(0, 1, n)[:, None]
-        out.append(np.hstack([x1 + (x2 - x1) * t, y1 + (y2 - y1) * t]))
-    return np.vstack(out) if out else np.zeros((0, 2))
+        length = float(np.hypot(x2 - x1, y2 - y1))
+        if length <= 0:
+            continue
+        n = max(1, int(np.ceil(length / step)))
+        t = ((np.arange(n) + .5) / n)[:, None]
+        pts.append(np.hstack([x1 + (x2 - x1) * t, y1 + (y2 - y1) * t])); wts.append(np.full(n, length / n))
+    if not pts:
+        return np.zeros((0, 2)), np.zeros(0)
+    return np.vstack(pts), np.concatenate(wts)
 
 
 def _distance_map(segments, width, height):
@@ -27,11 +34,12 @@ def _distance_map(segments, width, height):
 
 
 def _covered(points, distance, tolerance):
-    if not len(points):
+    pts, wts = points
+    if not len(pts) or wts.sum() <= 0:
         return 0.
     h, w = distance.shape
-    x, y = np.clip(points[:, 0].astype(int), 0, w - 1), np.clip(points[:, 1].astype(int), 0, h - 1)
-    return float((distance[y, x] <= tolerance).mean())
+    x, y = np.clip(pts[:, 0].astype(int), 0, w - 1), np.clip(pts[:, 1].astype(int), 0, h - 1)
+    return float((wts * (distance[y, x] <= tolerance)).sum() / wts.sum())
 
 
 def _length(segments):

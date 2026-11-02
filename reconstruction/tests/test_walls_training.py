@@ -175,3 +175,14 @@ def test_unet_preentraine_contrat_de_sortie_et_onnx(tmp_path):
     from segmentation.walls_training.export_onnx import export, verify
     export(model, tmp_path / 'm.onnx', 128)
     assert verify(tmp_path / 'm.onnx', model, 128) < 1e-3
+
+
+def test_zone_non_dessinee_ignoree_hors_enveloppe():
+    """Hors de l'enveloppe convexe des murs vérifiés (+ marge), les pixels sont IGNORE ; les murs et le fond proche restent intacts."""
+    from segmentation.walls_training.data import IGNORE
+    segments = [[400, 400, 800, 400], [800, 400, 800, 800], [800, 800, 400, 800]]
+    plain = rasterize(segments, 2048, 2048, 512)
+    masked = rasterize(segments, 2048, 2048, 512, ignore_outside=True)
+    assert (masked[plain == WALL] == WALL).all()
+    assert masked[5, 5] == IGNORE and masked[120, 120] != IGNORE
+    assert (rasterize([], 2048, 2048, 512, ignore_outside=True) == 0).all()

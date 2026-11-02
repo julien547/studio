@@ -12,7 +12,7 @@ import numpy as np
 import torch
 from torch import nn
 from . import CLASSES, bundle
-from .data import WallDataset
+from .data import IGNORE, WallDataset
 from .evaluate import evaluate
 from .export_onnx import export, manifest, verify
 from .metrics import BASELINE, honest
@@ -20,7 +20,8 @@ from .model import ENCODER_INFO, build
 
 
 def dice_loss(logits, target, cls=1):
-    p = torch.softmax(logits, 1)[:, cls]
+    valid = (target != IGNORE).float()
+    p = torch.softmax(logits, 1)[:, cls] * valid
     t = (target == cls).float()
     return 1 - (2 * (p * t).sum() + 1) / (p.sum() + t.sum() + 1)
 
@@ -40,6 +41,7 @@ def main(argv=None):
     a.add_argument('--wall-weight', type=float, default=6.); a.add_argument('--eval-every', type=int, default=5)
     a.add_argument('--device', default='auto'); a.add_argument('--workers', type=int, default=2)
     a.add_argument('--seed', type=int, default=0); a.add_argument('--train-fraction', type=float, default=1.)
+    a.add_argument('--ignore-undrawn', action='store_true', help='ignorer dans la perte les pixels hors de la zone dessinée par le dessinateur')
     a.add_argument('--encoder', default=None, help='encodeur timm pré-entraîné (ex. resnet34.a1_in1k) ; absent = U-Net de zéro')
     a.add_argument('--rights', default=None, help='JSON des droits validés (voir rights.julien-2026-10-29.json) ; sinon tout reste à faux')
     args = a.parse_args(argv)
@@ -51,10 +53,10 @@ def main(argv=None):
         train = sorted(train, key=lambda r: hashlib.sha256(r['ref'].encode()).hexdigest())[:max(1, int(len(train) * args.train_fraction))]
     device = pick_device(args.device)
     model = build(args.encoder, args.base).to(device)
-    loader = torch.utils.data.DataLoader(WallDataset(train, args.size, train=True, seed=args.seed, repeat=args.repeat),
+    loader = torch.utils.data.DataLoader(WallDataset(train, args.size, train=True, seed=args.seed, repeat=args.repeat, ignore_outside=args.ignore_undrawn),
                                          batch_size=args.batch, shuffle=True, num_workers=args.workers, drop_last=len(train) * args.repeat >= args.batch)
     weights = torch.ones(len(CLASSES)); weights[1] = args.wall_weight
-    ce = nn.CrossEntropyLoss(weight=weights.to(device))
+    ce = nn.CrossEntropyLoss(weight=weights.to(device), ignore_index=IGNORE)
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=1e-4)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=args.lr, total_steps=args.epochs * len(loader))
     amp = device.type == 'cuda'
