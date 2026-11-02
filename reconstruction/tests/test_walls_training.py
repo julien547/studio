@@ -163,3 +163,15 @@ def test_plans_validated_after_the_detection_export_join_train_only(tmp_path):
     records = bundle.unpack(out, tmp_path / 'u')
     assert {k: len(v) for k, v in records.items()} == {'train': 5, 'validation': 1, 'test': 1}
     assert any(r['ref'] == 'P6' for r in records['train']) and not any(r['ref'] == 'P7' for v in records.values() for r in v)
+
+
+def test_unet_preentraine_contrat_de_sortie_et_onnx(tmp_path):
+    """Même contrat que le U-Net maison : RGB [0,1] -> logits à la résolution d'entrée (poids aléatoires : test hors ligne)."""
+    pytest.importorskip('timm')
+    from segmentation.walls_training.model import build
+    model = build('resnet34.a1_in1k', pretrained=False).eval()
+    x = torch.rand(1, 3, 128, 128)
+    assert model(x).shape == (1, len(CLASSES), 128, 128)
+    from segmentation.walls_training.export_onnx import export, verify
+    export(model, tmp_path / 'm.onnx', 128)
+    assert verify(tmp_path / 'm.onnx', model, 128) < 1e-3
