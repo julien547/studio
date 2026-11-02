@@ -2,9 +2,11 @@
 
 **Déploiement et reprise par une autre session : [procédure complète](docs/PASSATION-PRODUCTION.md).**
 
+**Plan unifié (2 novembre 2026)** : un même projet pour la structure et les annotations, analyses sur la même page, corrections communes et export PDF de travail avec les ressources SAI compatibles. [Configuration, utilisation et déploiement coordonné](docs/plan-unifie.md). Cette extension ne déploie ni nouveau modèle ni fichier AI natif.
+
 ## Nouvel atelier Studio — MVP du 28 octobre 2026
 
-Le module comprend maintenant un tableau de bord, une connexion autonome optionnelle,
+Le module ouvre directement le dernier projet, avec une connexion autonome optionnelle,
 un éditeur de niveaux et d’annotations fonctionnant sans GPU, une sauvegarde automatique
 versionnée, les imports des sorties Qwen/PaddleOCR/RTMDet et une file de travaux persistante.
 
