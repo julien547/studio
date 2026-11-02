@@ -20,9 +20,16 @@ $socket = getenv('DOEMO_RELEVES_SOCKET') ?: '/var/run/doemo-releves/backend.sock
 if (@filetype($socket) !== 'socket') studio_json(503, ['ok'=>false,'error'=>'Service de reconnaissance indisponible.']);
 if ((int)($_SERVER['CONTENT_LENGTH'] ?? 0) > 540*1024*1024) studio_json(413, ['ok'=>false,'error'=>'Envoi trop volumineux.']);
 $headers = ['X-Doemo-User: '.rawurlencode($login), 'X-Doemo-Role: '.$role, 'Accept: */*'];
+$exportHeaders = [];
 $ch = curl_init('http://localhost'.$route);
 curl_setopt_array($ch,[CURLOPT_UNIX_SOCKET_PATH=>$socket,CURLOPT_PROXY=>'',CURLOPT_RETURNTRANSFER=>true,
-    CURLOPT_CONNECTTIMEOUT=>3,CURLOPT_TIMEOUT=>210,CURLOPT_CUSTOMREQUEST=>$method,CURLOPT_FOLLOWLOCATION=>false]);
+    CURLOPT_CONNECTTIMEOUT=>3,CURLOPT_TIMEOUT=>210,CURLOPT_CUSTOMREQUEST=>$method,CURLOPT_FOLLOWLOCATION=>false,
+    CURLOPT_HEADERFUNCTION=>static function($curl, $line) use (&$exportHeaders) {
+        if (preg_match('/^(X-Doemo-(?:Unresolved|Revision)):\s*(\d{1,12})\s*$/i', trim($line), $matches)) {
+            $exportHeaders[strtolower($matches[1])] = $matches[2];
+        }
+        return strlen($line);
+    }]);
 if ($method !== 'GET') {
     if (stripos($_SERVER['CONTENT_TYPE'] ?? '', 'multipart/form-data') === 0) {
         $body=[];
@@ -49,6 +56,10 @@ if ($body === false || $status<100) studio_json(503,['ok'=>false,'error'=>'Trait
 http_response_code($status);
 header('Cache-Control: private, no-store');
 header('X-Content-Type-Options: nosniff');
-header('Content-Type: '.(in_array(explode(';',$contentType)[0],['application/json','image/png','application/zip'],true)?$contentType:'application/json'));
+header('Content-Type: '.(in_array(explode(';',$contentType)[0],['application/json','image/png','application/zip','application/pdf'],true)?$contentType:'application/json'));
 if (str_ends_with(parse_url($route,PHP_URL_PATH) ?? '', '/bundle') && $status===200) header('Content-Disposition: attachment; filename="DOEMO-placements.zip"');
+if (str_ends_with(parse_url($route,PHP_URL_PATH) ?? '', '/unified-export') && $status===200) {
+    header('Content-Disposition: attachment; filename="DOEMO-plan-unifie-travail.pdf"');
+    foreach ($exportHeaders as $name=>$value) header($name.': '.$value);
+}
 echo $body;

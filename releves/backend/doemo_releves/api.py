@@ -112,6 +112,8 @@ def create_app(root=None):
     attach(app, store, actor, admin, get, doc)
     from .queue import attach_queue
     attach_queue(app, store, actor, get, doc)
+    from .unified_export import attach_unified_export
+    attach_unified_export(app, store, actor, get, doc)
     from .gpu import attach_gpu
     attach_gpu(app, store, actor, admin)
 
@@ -142,6 +144,31 @@ def create_app(root=None):
         elif any(a.asset_id for a in state.annotations) or state.mappings:
             raise ValueError("Sélectionner une bibliothèque")
         old = ProjectState.model_validate(p["state"])
+        # Older Relevés clients do not know the additive structure field.
+        if 'structure_pages' not in state.model_fields_set:
+            state.structure_pages = old.structure_pages
+        previous_structure = {(s.source_document_id, s.source_page): s for s in old.structure_pages}
+        next_structure = {(s.source_document_id, s.source_page) for s in state.structure_pages}
+        if any(s.analysis_ids and key not in next_structure for key, s in previous_structure.items()):
+            raise ValueError('Conserver les pages analysées et rejeter leurs murs pour préserver l’historique')
+        for structure in state.structure_pages:
+            prior_page = previous_structure.get((structure.source_document_id, structure.source_page))
+            if prior_page and any(getattr(structure, k) != getattr(prior_page, k)
+                                  for k in ('width', 'height', 'unit', 'source_sha256')):
+                raise ValueError('Le repère de la structure existante ne peut pas être modifié')
+            if structure.analysis_ids != (prior_page.analysis_ids if prior_page else []):
+                raise ValueError('L’historique des analyses de structure ne peut pas être modifié')
+            prior_walls = {w.id: w for w in prior_page.walls} if prior_page else {}
+            for wall in structure.walls:
+                prior_wall = prior_walls.get(wall.id)
+                opening_geometry = lambda w: [(o.start, o.end, o.kind) for o in w.openings]
+                changed = prior_wall and (any(getattr(wall, k) != getattr(prior_wall, k) for k in ('a', 'b', 'thickness'))
+                                          or opening_geometry(wall) != opening_geometry(prior_wall))
+                if changed:
+                    if wall.status == 'approved':
+                        wall.status = 'pending'
+                    for opening in wall.openings:
+                        opening.status = 'pending'
         # Client-side review controls are not an authorization boundary.
         previous = {a.id: a for a in old.annotations}
         fields = {"equipment": ("text", "equipment_type"), "asset": ("asset_id",),
@@ -171,6 +198,9 @@ def create_app(root=None):
                 raise HTTPException(403, "Validation finale réservée au responsable ou administrateur")
             if not state.annotations or any(a.status not in ("confirmed", "rejected") for a in state.annotations):
                 raise ValueError("Vérifier ou rejeter chaque annotation avant validation finale")
+            if any(w.status == 'pending' or (w.status != 'rejected' and any(o.status != 'approved' for o in w.openings))
+                   for structure in state.structure_pages for w in structure.walls):
+                raise ValueError('Vérifier les murs et ouvertures avant validation finale')
         if [m.model_dump() for m in old.mappings] != [m.model_dump() for m in state.mappings]:
             state.mapping_version = old.mapping_version + 1
         else:

@@ -20,7 +20,7 @@ from . import gpu
 class AnalysisJob(Model):
     document_id: str
     page: int = Field(ge=1)
-    engine: Literal['local','paddleocr','qwen','rtmdet']
+    engine: Literal['local','paddleocr','qwen','rtmdet','structure']
 
 
 def configured():
@@ -47,6 +47,11 @@ def remote_health():
 
 
 def attach_queue(app,store,actor,get,doc):
+    @app.get('/projects/structure-status')
+    def structure_status(who=Depends(actor)):
+        from .structure import public_status
+        return public_status()
+
     @app.get('/projects/ai-status')
     def ai_status(who=Depends(actor)):
         if gpu.enabled():return gpu.public_status(store)
@@ -56,11 +61,14 @@ def attach_queue(app,store,actor,get,doc):
     def submit(ident: str, data: AnalysisJob, who=Depends(actor)):
         get(ident,who);source,_=doc(ident,data.document_id,who,data.page)
         if source['role']!='survey': raise ValueError('Choisir un relevé')
+        if data.engine == 'structure':
+            from .structure import configuration
+            configuration()
         job=uuid.uuid4().hex
         with gpu.lifecycle_lock(store), store.connect() as c:
             c.execute('INSERT INTO jobs(id,project_id,actor,status,stage,payload) VALUES(?,?,?,?,?,?)',
                 (job,ident,who.login,'queued','En attente',data.model_dump_json()))
-            if data.engine!='local':
+            if data.engine not in ('local', 'structure'):
                 c.execute('UPDATE gpu_control SET last_activity=?,next_poll=0 WHERE id=1',(time.time(),))
         return {'id':job,'status':'queued'}
 
@@ -100,10 +108,14 @@ def process_one(store):
         with gpu.lifecycle_lock(store), store.connect() as c:
             c.execute('UPDATE jobs SET status=?,stage=?,result=?,error=?,updated=CURRENT_TIMESTAMP WHERE id=?',
                 (status,stage,json.dumps(result) if result is not None else None,error,job['id']))
-            if engine!='local':c.execute('UPDATE gpu_control SET last_activity=? WHERE id=1',(time.time(),))
+            if engine not in ('local', 'structure'):c.execute('UPDATE gpu_control SET last_activity=? WHERE id=1',(time.time(),))
     try:
         path=store.root/'documents'/payload['document_id']/f"page-{payload['page']}.png"
-        if engine=='local':
+        if engine == 'structure':
+            from .structure import analyze
+            update('running', 'Reconstruction des murs sur la page source')
+            result = analyze(store, job['project_id'], payload['document_id'], payload['page'])
+        elif engine=='local':
             from .worker import run_job
             update('running','Reconnaissance OCR locale')
             result=run_job('recognition',{'image_path':str(path),'document_id':payload['document_id'],'page':payload['page'],'mode':'local','legend_box':None})
@@ -130,7 +142,7 @@ def process_one(store):
             result['raw']=response
         update('completed','Résultat prêt à vérifier',result)
     except (httpx.HTTPError,KeyError) as exc:
-        if gpu.enabled() and engine!='local':
+        if gpu.enabled() and engine not in ('local', 'structure'):
             if job['attempts']>=4:
                 update('failed','Échec après cinq tentatives',error='Le GPU ou le moteur reste indisponible. Vérifier le journal puis relancer manuellement.')
                 return True

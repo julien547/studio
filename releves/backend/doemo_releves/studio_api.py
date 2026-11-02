@@ -9,6 +9,7 @@ from pydantic import Field
 from .models import Model, ProjectState
 from .coordinates import frames
 from .ai_contracts import normalise
+from .store import Conflict
 
 
 class Metadata(Model):
@@ -154,10 +155,22 @@ def attach(app, store, actor, admin, get, doc):
             row=c.execute('SELECT * FROM jobs WHERE id=? AND project_id=?',(job_id,ident)).fetchone()
         if not row or row['status']!='completed': raise ValueError('Analyse terminée requise')
         state=ProjectState.model_validate(p['state'])
-        if state.revision!=data.revision: raise ValueError('Recharger avant d’intégrer les propositions')
+        if state.revision!=data.revision: raise Conflict('Recharger avant d’intégrer les propositions')
+        result = json.loads(row['result'])
+        if 'structure_page' in result:
+            payload = json.loads(row['payload'])
+            if payload.get('engine') != 'structure':
+                raise ValueError('Analyse de structure attendue')
+            source, _ = doc(ident, payload['document_id'], who, payload['page'])
+            from .structure import apply_result
+            if not apply_result(state, result, job_id, source, payload['page']):
+                return p
+            from .exchange import validate_state
+            store.save(ident, who.login, validate_state(state, p['documents']), 'apply-structure:' + job_id)
+            return get(ident, who)
         from .models import Annotation
         known={a.id for a in state.annotations}
-        additions=[Annotation.model_validate(a) for a in json.loads(row['result'])['annotations'] if a['id'] not in known]
+        additions=[Annotation.model_validate(a) for a in result['annotations'] if a['id'] not in known]
         if not additions: return p
         # No replacement or implicit confirmation of human corrections.
         for a in additions:

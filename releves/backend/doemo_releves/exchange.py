@@ -11,6 +11,17 @@ def validate_state(state, documents):
     if len(targets) > 1:
         raise ValueError("Un seul BAT par projet")
     target = targets[0] if targets else None
+    for structure in state.structure_pages:
+        source = docs.get(structure.source_document_id)
+        if not source or source['role'] != 'survey' or structure.source_page > len(source['pages']):
+            raise ValueError('Structure sans page de relevé valide')
+        if structure.source_sha256 != source['sha256']:
+            raise ValueError('La structure appartient à un autre document source')
+        page = source['pages'][structure.source_page - 1]
+        expected = [page['width'], page['height']] if structure.unit == 'px' else page.get('pdf_size_pt')
+        if not expected or any(abs(actual - reference) > 1e-5 for actual, reference in
+                               zip((structure.width, structure.height), expected)):
+            raise ValueError('Le repère de la structure doit correspondre exactement à la page source')
     for f in state.floors:
         if f.source_document_id:
             source = docs.get(f.source_document_id)
